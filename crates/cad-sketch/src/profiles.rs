@@ -570,3 +570,32 @@ mod tests {
         assert!(p[0].contains(ip));
     }
 }
+
+/// Polyline approximation of one sketch entity (for display); empty for points.
+pub fn entity_polyline(sketch: &Sketch, e: &crate::model::Entity) -> Vec<[f64; 2]> {
+    match &e.kind {
+        EntityKind::Line { p1, p2 } => vec![sketch.point(p1).unwrap_or_default(), sketch.point(p2).unwrap_or_default()],
+        EntityKind::Circle { c, r } => {
+            let cc = sketch.point(c).unwrap_or_default();
+            (0..=72).map(|i| {
+                let t = TAU * i as f64 / 72.0;
+                [cc[0] + r * t.cos(), cc[1] + r * t.sin()]
+            }).collect()
+        }
+        EntityKind::Arc { c, start, end, r } => {
+            let cc = sketch.point(c).unwrap_or_default();
+            let (s, t) = (sketch.point(start).unwrap_or_default(), sketch.point(end).unwrap_or_default());
+            let a0 = (s[1] - cc[1]).atan2(s[0] - cc[0]);
+            let mut sweep = ((t[1] - cc[1]).atan2(t[0] - cc[0]) - a0).rem_euclid(TAU);
+            if sweep < 1e-9 {
+                sweep = TAU;
+            }
+            let n = ((sweep / (PI / 36.0)).ceil() as usize).max(2);
+            (0..=n).map(|i| {
+                let a = a0 + sweep * i as f64 / n as f64;
+                [cc[0] + r * a.cos(), cc[1] + r * a.sin()]
+            }).collect()
+        }
+        EntityKind::Point { .. } => Vec::new(),
+    }
+}

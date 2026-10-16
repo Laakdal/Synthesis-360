@@ -151,6 +151,29 @@ impl<'a> System<'a> {
         matches!(self.sketch.entity(id).map(|e| &e.kind), Some(EntityKind::Line { .. }))
     }
 
+    /// End points (line ends / arc start and end) of a curve; circles have none.
+    fn end_ids(&self, id: &str) -> Vec<&'a str> {
+        match self.sketch.entity(id).map(|e| &e.kind) {
+            Some(EntityKind::Line { p1, p2 }) => vec![p1.as_str(), p2.as_str()],
+            Some(EntityKind::Arc { start, end, .. }) => vec![start.as_str(), end.as_str()],
+            _ => Vec::new(),
+        }
+    }
+
+    /// Where two curves are joined end to end: (end point of `a`, end point of `b`), either
+    /// the same point or two points with a Coincident constraint between them.
+    fn joint(&self, a: &str, b: &str) -> Option<(String, String)> {
+        let (ea, eb) = (self.end_ids(a), self.end_ids(b));
+        if let Some(p) = ea.iter().find(|p| eb.contains(p)) {
+            return Some((p.to_string(), p.to_string()));
+        }
+        self.sketch.constraints.iter().find_map(|k| match &k.kind {
+            ConstraintKind::Coincident { a: p, b: q } if ea.contains(&p.as_str()) && eb.contains(&q.as_str()) => Some((p.clone(), q.clone())),
+            ConstraintKind::Coincident { a: q, b: p } if ea.contains(&p.as_str()) && eb.contains(&q.as_str()) => Some((p.clone(), q.clone())),
+            _ => None,
+        })
+    }
+
     /// Residual equations of one constraint. `x0` is the configuration before solving, used to
     /// pick the branch of sign-ambiguous constraints (so solutions keep their orientation).
     fn residuals(&self, kind: &ConstraintKind, value: Option<f64>, x: &DVector<f64>, x0: &DVector<f64>, out: &mut Vec<f64>) {
@@ -206,6 +229,22 @@ impl<'a> System<'a> {
             }
             Tangent { a, b } => {
                 let (l, c) = if self.is_line(a) { (a, b) } else { (b, a) };
+                // Curves joined at an end point: the distance form is first-order degenerate
+                // there (its gradient equals the arc's own end-on-circle rule), so require the
+                // radius at the joint to be perpendicular to the line / the centres and the
+                // joint to be collinear (FreeCAD's angle-via-point tangency).
+                if let Some((pl, pc)) = self.joint(l, c) {
+                    if self.is_line(l) {
+                        if let (Some((p1, p2)), Some((cc, _))) = (self.line(x, l), self.circ(x, c)) {
+                            let (d, rv) = (sub(p2, p1), sub(self.pt(x, &pc), cc));
+                            out.push(dot(rv, d) / (norm(rv) * norm(d)));
+                        }
+                    } else if let (Some((c1, _)), Some((c2, _))) = (self.circ(x, l), self.circ(x, c)) {
+                        let (u, v) = (sub(self.pt(x, &pl), c1), sub(self.pt(x, &pc), c2));
+                        out.push(cross(u, v) / (norm(u) * norm(v)));
+                    }
+                    return;
+                }
                 if self.is_line(l) {
                     if let (Some((p1, p2)), Some((cc, r))) = (self.line(x, l), self.circ(x, c)) {
                         let d = sub(p2, p1);
@@ -761,5 +800,48 @@ mod tests {
         assert!((measure(&s, &K::Distance { a: l.clone(), b: l.clone(), orientation: O::Horizontal }).unwrap() - 30.0).abs() < 1e-9);
         let c = s.add_circle([0.0, 0.0], 6.0);
         assert!((measure(&s, &K::Diameter { curve: c }).unwrap() - 12.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn endpoint_tangency_is_independent() {
+        // slot: two lines + two arcs joined end to end, four tangents
+        let mut s = Sketch::new();
+        let slot = s.add_slot(&DimensionValues::new(), [0.0, 0.0], [30.0, 10.0], 4.0).unwrap();
+        let tangents: Vec<crate::Constraint> = s.constraints.iter().filter(|c| matches!(c.kind, K::Tangent { .. })).cloned().collect();
+        assert_eq!(tangents.len(), 4, "every tangent was accepted");
+        for t in &tangents {
+            let mut without = s.clone();
+            without.delete_constraint(&t.id);
+            assert!(!would_overconstrain(&without, &t.kind, None, &DimensionValues::new()), "{:?}", t.kind);
+        }
+        let r = solve(&mut s, &DimensionValues::new(), &[]);
+        assert_eq!(r.status, SolveStatus::Solved);
+        assert_eq!(r.dof, 5, "two centres + radius");
+        // a radius dimension moves the end points along with the arcs and keeps the tangency
+        let k = s.add_dimension(K::Radius { curve: slot.arcs[0].clone() }, "d1", [0.0, 0.0], false);
+        let mut v = DimensionValues::new();
+        v.insert(k, 6.0);
+        assert_eq!(solve(&mut s, &v, &[]).status, SolveStatus::Solved);
+        let (a, b) = s.line_points(&slot.lines[0]).unwrap();
+        let c1 = s.point(&slot.centers[0]).unwrap();
+        let d = (c1[0] - a[0]) * (b[1] - a[1]) - (c1[1] - a[1]) * (b[0] - a[0]);
+        assert!((d.abs() / ((b[0] - a[0]).hypot(b[1] - a[1])) - 6.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn filleted_corner_of_constrained_rectangle_is_fully_constrained() {
+        let (mut s, mut v, lines) = rect_sketch(50.0, 30.0);
+        solve(&mut s, &v, &[]);
+        let plan = crate::modify::fillet_plan(&s, &lines[1], &lines[2], 5.0).unwrap();
+        let arc = crate::modify::apply_fillet(&mut s, &v, &plan).unwrap();
+        assert_eq!(s.constraints.iter().filter(|c| matches!(c.kind, K::Tangent { .. })).count(), 2);
+        let r = solve(&mut s, &v, &[]);
+        assert_eq!(r.dof, 1, "only the radius is free: {r:?}");
+        let k = s.add_dimension(K::Radius { curve: arc }, "d3", [0.0, 0.0], false);
+        v.insert(k, 5.0);
+        let r = solve(&mut s, &v, &[]);
+        assert!(r.is_fully_constrained(), "{r:?}");
+        let area: f64 = crate::find_profiles(&s).iter().map(|p| p.area).sum();
+        assert!((area - (1500.0 - (25.0 - std::f64::consts::PI * 25.0 / 4.0))).abs() < 1e-6, "{area}");
     }
 }
