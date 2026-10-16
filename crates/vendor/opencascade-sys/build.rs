@@ -96,6 +96,12 @@ fn main() {
         "src/topo_ds.rs",
         // CAD360 kernel shim
         "src/cad360.rs",
+        // CAD360 shim, naming section (own file: cxx rejects a type declared in two bridges of one file)
+        "src/cad360_naming.rs",
+        // CAD360 shim, surface section (own bridge file, see above)
+        "src/cad360_surface.rs",
+        // CAD360 shim, inspect section (own bridge file, see above)
+        "src/cad360_inspect.rs",
     ];
 
     let mut build = cxx_build::bridges(rust_bridges);

@@ -1,5 +1,8 @@
 pub mod b_rep;
 pub mod cad360;
+pub mod cad360_naming;
+pub mod cad360_surface;
+pub mod cad360_inspect;
 pub mod b_rep_adaptor;
 pub mod b_rep_algo_api;
 pub mod b_rep_bnd_lib;

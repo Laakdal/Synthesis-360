@@ -40,5 +40,27 @@ mod inner {
         pub fn cad_write_step(shape: &TopoDS_Shape, path: &str) -> bool;
         pub fn cad_read_step(path: &str) -> UniquePtr<TopoDS_Shape>;
         pub fn cad_write_stl(shape: &TopoDS_Shape, path: &str, ascii: bool) -> bool;
+
+        pub fn cad_shell(shape: &TopoDS_Shape, faces: &TopoDS_Shape, thickness: f64) -> UniquePtr<TopoDS_Shape>;
+        /// kind 0: 12 affine coefficients (row-major 3x4); kind 1: mirror plane (point, normal).
+        pub fn cad_transform(shape: &TopoDS_Shape, kind: i32, m: &[f64]) -> UniquePtr<TopoDS_Shape>;
     }
 }
+
+// ===== naming =====
+/// History-based face naming (see the `naming` section of include/cad360.hxx for the `hist`
+/// layout): each function mirrors its plain counterpart and also reports, per result face, the
+/// input sub-shapes it was made from. The bridge lives in `cad360_naming.rs` (cxx rejects a type
+/// declared in two bridges of one file); its functions are re-exported here.
+pub use crate::cad360_naming::{cad_blend_named, cad_boolean_named, cad_prism_named, cad_revol_named, cad_shell_named, cad_subshape_indices, cad_transform_named};
+
+// ===== surface =====
+/// Surface and mesh features (see the `surface` section of include/cad360.hxx). The bridge lives in
+/// `cad360_surface.rs` (cxx rejects a type declared in two bridges of one file).
+pub use crate::cad360_surface::{cad_children, cad_fill, cad_make_wires, cad_mesh_face, cad_mesh_to_brep, cad_offset_surface, cad_sew, cad_thicken};
+
+// ===== inspect =====
+/// INSPECT panel: minimum distance and mass properties (see the `inspect` section of
+/// include/cad360.hxx). The bridge lives in `cad360_inspect.rs` (cxx rejects a type declared in two
+/// bridges of one file).
+pub use crate::cad360_inspect::{cad_mass_props, cad_min_distance};

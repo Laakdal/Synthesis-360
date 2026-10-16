@@ -514,3 +514,706 @@ inline std::unique_ptr<TopoDS_Shape> cad_copy(const TopoDS_Shape &shape) {
 }
 
 inline int cad_shape_type(const TopoDS_Shape &shape) { return shape.IsNull() ? -1 : (int)shape.ShapeType(); }
+
+// ---------------------------------------------------------------------------------------------
+// CAD360 modelling features: shell and rigid / mirror transforms.
+
+#include <BRepBuilderAPI_Transform.hxx>
+#include <BRepOffsetAPI_MakeThickSolid.hxx>
+#include <gp_Trsf.hxx>
+
+/// Hollows `shape` (a solid) to an inside wall `thickness`, removing the faces in `faces` (a
+/// compound of faces of `shape`). Fails when OCCT cannot build the offset (e.g. too thick).
+inline std::unique_ptr<TopoDS_Shape> cad_shell(const TopoDS_Shape &shape, const TopoDS_Shape &faces, double thickness) {
+  try {
+    cad_err_ref().clear();
+    if (!(thickness > 0)) return cad_fail("thickness must be greater than zero");
+    TopTools_ListOfShape remove;
+    for (TopExp_Explorer ex(faces, TopAbs_FACE); ex.More(); ex.Next()) remove.Append(ex.Current());
+    if (remove.IsEmpty()) return cad_fail("no faces selected");
+    BRepOffsetAPI_MakeThickSolid mk;
+    mk.MakeThickSolidByJoin(shape, remove, -thickness, 1.0e-3, BRepOffset_Skin, Standard_False, Standard_False,
+                            GeomAbs_Arc);
+    if (!mk.IsDone()) return cad_fail("the shell could not be computed with this thickness");
+    return cad_own(mk.Shape());
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// Transformed copy of a shape.
+/// kind 0: rigid affine transform, m = 12 row-major coefficients [a11 a12 a13 a14  a21 .. a24  a31 .. a34]
+///         (rotation part must be orthonormal with determinant +1).
+/// kind 1: mirror across the plane through (m[0], m[1], m[2]) with normal (m[3], m[4], m[5]).
+inline std::unique_ptr<TopoDS_Shape> cad_transform(const TopoDS_Shape &shape, int kind, rust::Slice<const double> m) {
+  try {
+    cad_err_ref().clear();
+    gp_Trsf t;
+    if (kind == 0) {
+      if (m.size() < 12) return cad_fail("transform needs 12 coefficients");
+      t.SetValues(m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11]);
+    } else if (kind == 1) {
+      if (m.size() < 6) return cad_fail("mirror needs a point and a normal");
+      t.SetMirror(gp_Ax2(gp_Pnt(m[0], m[1], m[2]), gp_Dir(m[3], m[4], m[5])));
+    } else {
+      return cad_fail("unknown transform kind");
+    }
+    BRepBuilderAPI_Transform mk(shape, t, Standard_True);
+    if (!mk.IsDone()) return cad_fail("the transform failed");
+    return cad_own(mk.Shape());
+  }
+  CAD_CATCH(nullptr)
+}
+
+// ===== naming =====
+// History-based (generative) face naming. Each cad_*_named function performs the same operation
+// as its plain counterpart and additionally fills `hist` with the origin of every face of the
+// result (faces in TopExp::MapShapes order, i.e. cad_subshapes(result, FACE) order):
+//   hist = [nfaces, for each face: count, (input, kind, index) * count]
+// input: argument number (0 = the shape / first argument, 1 = the tool of a boolean)
+// index: 0-based MapShapes index of the origin sub-shape within that input (faces, edges or
+//        vertices of the input, depending on kind; for kinds 4/5 the face within the cap)
+// kind:  0 = same or modified face, 1 = face generated from a face (offset walls),
+//        2 = face generated from an edge (sweep sides, fillet/chamfer blends),
+//        3 = face generated from a vertex (corner blends), 4 = sweep start cap, 5 = sweep end cap
+// History queries are individually guarded: an algorithm that cannot answer for a sub-shape just
+// contributes no origin for it.
+
+#include <BRepBuilderAPI_MakeShape.hxx>
+#include <BRepBuilderAPI_MakeVertex.hxx>
+#include <BRepExtrema_DistShapeShape.hxx>
+
+struct CadHistory {
+  TopTools_IndexedMapOfShape faces;
+  std::vector<std::vector<int>> origins;  // per result face: flat (input, kind, index) triples
+  explicit CadHistory(const TopoDS_Shape &result) {
+    TopExp::MapShapes(result, TopAbs_FACE, faces);
+    origins.resize(faces.Extent());
+  }
+  void add(const TopoDS_Shape &s, int input, int kind, int index) {
+    if (s.IsNull()) return;
+    for (TopExp_Explorer ex(s, TopAbs_FACE); ex.More(); ex.Next()) {
+      int j = faces.FindIndex(ex.Current());
+      if (j <= 0) continue;
+      std::vector<int> &o = origins[j - 1];
+      bool dup = false;
+      for (size_t t = 0; t + 2 < o.size(); t += 3)
+        if (o[t] == input && o[t + 1] == kind && o[t + 2] == index) dup = true;
+      if (!dup) {
+        o.push_back(input);
+        o.push_back(kind);
+        o.push_back(index);
+      }
+    }
+  }
+  void add_list(const TopTools_ListOfShape &l, int input, int kind, int index) {
+    for (TopTools_ListOfShape::Iterator it(l); it.More(); it.Next()) add(it.Value(), input, kind, index);
+  }
+  /// Traces the faces, edges and vertices of `in` through `mk`. `face_generated`: also ask
+  /// Generated(face) (off for sweeps, where it returns the whole swept solid).
+  void trace(BRepBuilderAPI_MakeShape &mk, const TopoDS_Shape &in, int input, bool face_generated) {
+    TopTools_IndexedMapOfShape fm, em, vm;
+    TopExp::MapShapes(in, TopAbs_FACE, fm);
+    TopExp::MapShapes(in, TopAbs_EDGE, em);
+    TopExp::MapShapes(in, TopAbs_VERTEX, vm);
+    for (int i = 1; i <= fm.Extent(); ++i) {
+      const TopoDS_Shape &f = fm(i);
+      if (faces.Contains(f)) add(f, input, 0, i - 1);
+      try {
+        add_list(mk.Modified(f), input, 0, i - 1);
+      } catch (...) {
+      }
+      if (face_generated) {
+        try {
+          add_list(mk.Generated(f), input, 1, i - 1);
+        } catch (...) {
+        }
+      }
+    }
+    for (int i = 1; i <= em.Extent(); ++i) {
+      try {
+        add_list(mk.Generated(em(i)), input, 2, i - 1);
+      } catch (...) {
+      }
+    }
+    for (int i = 1; i <= vm.Extent(); ++i) {
+      try {
+        add_list(mk.Generated(vm(i)), input, 3, i - 1);
+      } catch (...) {
+      }
+    }
+  }
+  /// Sweep faces the algorithm reports no history for (observed: the planar faces of a full 360 deg
+  /// revolution): the face generated by a profile edge contains that edge's midpoint (the sweep
+  /// starts at the profile), so an untraced face is attributed to the profile edge, not yet
+  /// claimed by another face, whose midpoint lies on it.
+  void seam_fallback(const TopoDS_Shape &in) {
+    TopTools_IndexedMapOfShape em;
+    TopExp::MapShapes(in, TopAbs_EDGE, em);
+    std::vector<bool> used(em.Extent(), false);
+    bool missing = false;
+    for (const auto &o : origins) {
+      if (o.empty()) missing = true;
+      for (size_t t = 0; t + 2 < o.size(); t += 3) {
+        if (o[t] == 0 && o[t + 1] == 2 && o[t + 2] >= 0 && o[t + 2] < (int)used.size()) used[o[t + 2]] = true;
+      }
+    }
+    if (!missing) return;
+    for (int j = 1; j <= faces.Extent(); ++j) {
+      if (!origins[j - 1].empty()) continue;
+      for (int i = 1; i <= em.Extent(); ++i) {
+        if (used[i - 1]) continue;
+        const TopoDS_Edge &e = TopoDS::Edge(em(i));
+        if (BRep_Tool::Degenerated(e)) continue;
+        try {
+          BRepAdaptor_Curve c(e);
+          gp_Pnt p = c.Value(0.5 * (c.FirstParameter() + c.LastParameter()));
+          BRepExtrema_DistShapeShape d(BRepBuilderAPI_MakeVertex(p).Vertex(), faces(j));
+          if (d.IsDone() && d.Value() < 1e-6) {
+            add(faces(j), 0, 2, i - 1);
+            used[i - 1] = true;
+            break;
+          }
+        } catch (...) {
+        }
+      }
+    }
+  }
+  /// Faces of a sweep cap (FirstShape / LastShape), numbered within the cap.
+  void cap(const TopoDS_Shape &c, int kind) {
+    if (c.IsNull()) return;
+    TopTools_IndexedMapOfShape cm;
+    TopExp::MapShapes(c, TopAbs_FACE, cm);
+    for (int i = 1; i <= cm.Extent(); ++i) add(cm(i), 0, kind, i - 1);
+  }
+  void write(rust::Vec<int32_t> &out) const {
+    out.push_back((int32_t)origins.size());
+    for (const auto &o : origins) {
+      out.push_back((int32_t)(o.size() / 3));
+      for (int v : o) out.push_back(v);
+    }
+  }
+};
+
+inline std::unique_ptr<TopoDS_Shape> cad_prism_named(const TopoDS_Shape &face, double dx, double dy, double dz,
+                                                     rust::Vec<int32_t> &hist) {
+  try {
+    cad_err_ref().clear();
+    BRepPrimAPI_MakePrism mk(face, gp_Vec(dx, dy, dz));
+    if (!mk.IsDone()) return cad_fail("extrusion failed");
+    CadHistory h(mk.Shape());
+    h.trace(mk, face, 0, false);
+    h.cap(mk.FirstShape(), 4);
+    h.cap(mk.LastShape(), 5);
+    h.seam_fallback(face);
+    h.write(hist);
+    return cad_own(mk.Shape());
+  }
+  CAD_CATCH(nullptr)
+}
+
+inline std::unique_ptr<TopoDS_Shape> cad_revol_named(const TopoDS_Shape &face, double ox, double oy, double oz,
+                                                     double ax, double ay, double az, double angle,
+                                                     rust::Vec<int32_t> &hist) {
+  try {
+    cad_err_ref().clear();
+    BRepPrimAPI_MakeRevol mk(face, gp_Ax1(gp_Pnt(ox, oy, oz), gp_Dir(ax, ay, az)), angle);
+    if (!mk.IsDone()) return cad_fail("revolve failed");
+    CadHistory h(mk.Shape());
+    h.trace(mk, face, 0, false);
+    h.cap(mk.FirstShape(), 4);
+    h.cap(mk.LastShape(), 5);
+    h.seam_fallback(face);
+    h.write(hist);
+    return cad_own(mk.Shape());
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// op: 0 = fuse (join), 1 = cut, 2 = common (intersect); inputs 0 = a, 1 = b.
+inline std::unique_ptr<TopoDS_Shape> cad_boolean_named(const TopoDS_Shape &a, const TopoDS_Shape &b, int op,
+                                                       rust::Vec<int32_t> &hist) {
+  try {
+    cad_err_ref().clear();
+    std::unique_ptr<BRepAlgoAPI_BooleanOperation> mk;
+    if (op == 0)
+      mk.reset(new BRepAlgoAPI_Fuse(a, b));
+    else if (op == 1)
+      mk.reset(new BRepAlgoAPI_Cut(a, b));
+    else
+      mk.reset(new BRepAlgoAPI_Common(a, b));
+    if (!mk->IsDone() || mk->HasErrors())
+      return cad_fail(op == 0 ? "join (fuse) failed" : op == 1 ? "cut failed" : "intersect failed");
+    CadHistory h(mk->Shape());
+    h.trace(*mk, a, 0, true);
+    h.trace(*mk, b, 1, true);
+    h.write(hist);
+    return cad_own(mk->Shape());
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// fillet: true = constant-radius fillet, false = equal-distance chamfer.
+inline std::unique_ptr<TopoDS_Shape> cad_blend_named(const TopoDS_Shape &shape, const TopoDS_Shape &edges, double v,
+                                                     bool fillet, rust::Vec<int32_t> &hist) {
+  try {
+    cad_err_ref().clear();
+    std::unique_ptr<BRepFilletAPI_LocalOperation> op;
+    int n = 0;
+    if (fillet) {
+      auto *mk = new BRepFilletAPI_MakeFillet(shape);
+      op.reset(mk);
+      for (TopExp_Explorer ex(edges, TopAbs_EDGE); ex.More(); ex.Next(), ++n) mk->Add(v, TopoDS::Edge(ex.Current()));
+    } else {
+      auto *mk = new BRepFilletAPI_MakeChamfer(shape);
+      op.reset(mk);
+      for (TopExp_Explorer ex(edges, TopAbs_EDGE); ex.More(); ex.Next(), ++n) mk->Add(v, TopoDS::Edge(ex.Current()));
+    }
+    if (n == 0) return cad_fail("no edges selected");
+    op->Build();
+    if (!op->IsDone())
+      return cad_fail(fillet ? "fillet could not be computed with this radius"
+                             : "chamfer could not be computed with this distance");
+    CadHistory h(op->Shape());
+    h.trace(*op, shape, 0, true);
+    h.write(hist);
+    return cad_own(op->Shape());
+  }
+  CAD_CATCH(nullptr)
+}
+
+inline std::unique_ptr<TopoDS_Shape> cad_shell_named(const TopoDS_Shape &shape, const TopoDS_Shape &faces,
+                                                     double thickness, rust::Vec<int32_t> &hist) {
+  try {
+    cad_err_ref().clear();
+    if (!(thickness > 0)) return cad_fail("thickness must be greater than zero");
+    TopTools_ListOfShape remove;
+    for (TopExp_Explorer ex(faces, TopAbs_FACE); ex.More(); ex.Next()) remove.Append(ex.Current());
+    if (remove.IsEmpty()) return cad_fail("no faces selected");
+    BRepOffsetAPI_MakeThickSolid mk;
+    mk.MakeThickSolidByJoin(shape, remove, -thickness, 1.0e-3, BRepOffset_Skin, Standard_False, Standard_False,
+                            GeomAbs_Arc);
+    if (!mk.IsDone()) return cad_fail("the shell could not be computed with this thickness");
+    CadHistory h(mk.Shape());
+    h.trace(mk, shape, 0, true);
+    h.write(hist);
+    return cad_own(mk.Shape());
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// As cad_transform (kind 0 rigid 3x4, kind 1 mirror point + normal), with history.
+inline std::unique_ptr<TopoDS_Shape> cad_transform_named(const TopoDS_Shape &shape, int kind,
+                                                         rust::Slice<const double> m, rust::Vec<int32_t> &hist) {
+  try {
+    cad_err_ref().clear();
+    gp_Trsf t;
+    if (kind == 0) {
+      if (m.size() < 12) return cad_fail("transform needs 12 coefficients");
+      t.SetValues(m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11]);
+    } else if (kind == 1) {
+      if (m.size() < 6) return cad_fail("mirror needs a point and a normal");
+      t.SetMirror(gp_Ax2(gp_Pnt(m[0], m[1], m[2]), gp_Dir(m[3], m[4], m[5])));
+    } else {
+      return cad_fail("unknown transform kind");
+    }
+    BRepBuilderAPI_Transform mk(shape, t, Standard_True);
+    if (!mk.IsDone()) return cad_fail("the transform failed");
+    CadHistory h(mk.Shape());
+    h.trace(mk, shape, 0, false);
+    h.write(hist);
+    return cad_own(mk.Shape());
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// For each sub-shape of `child` of the given kind (MapShapes order), its 0-based MapShapes index in
+/// `parent`, or -1 (e.g. the faces of one solid of a boolean result within the whole result).
+inline bool cad_subshape_indices(const TopoDS_Shape &parent, const TopoDS_Shape &child, int kind,
+                                 rust::Vec<int32_t> &out) {
+  try {
+    TopTools_IndexedMapOfShape pm, cm;
+    TopExp::MapShapes(parent, (TopAbs_ShapeEnum)kind, pm);
+    TopExp::MapShapes(child, (TopAbs_ShapeEnum)kind, cm);
+    for (int i = 1; i <= cm.Extent(); ++i) out.push_back((int32_t)pm.FindIndex(cm(i)) - 1);
+    return true;
+  }
+  CAD_CATCH(false)
+}
+
+// ===== surface =====
+// CAD360 surface and mesh features: wires from sketch curves, sewing (stitch), offset surfaces,
+// thicken, patch (planar face or N-sided filling), triangulation-only mesh faces and mesh to B-rep.
+
+#include <BRepBuilderAPI_MakePolygon.hxx>
+#include <BRepBuilderAPI_MakeSolid.hxx>
+#include <BRepBuilderAPI_Sewing.hxx>
+#include <BRepLib.hxx>
+#include <BRepOffsetAPI_MakeFilling.hxx>
+#include <BRepOffsetAPI_MakeOffsetShape.hxx>
+#include <BRepOffset_MakeOffset.hxx>
+#include <ShapeAnalysis_FreeBounds.hxx>
+#include <ShapeFix_Shell.hxx>
+#include <ShapeFix_Solid.hxx>
+#include <ShapeUpgrade_UnifySameDomain.hxx>
+#include <TopTools_HSequenceOfShape.hxx>
+#include <TopoDS_Iterator.hxx>
+#include <TopoDS_Shell.hxx>
+#include <TopoDS_Solid.hxx>
+#include <gp_Circ.hxx>
+
+/// Wires from curve chains. data = [nchains, (nsegs, (kind, sx,sy,sz, mx,my,mz, ex,ey,ez)*)*];
+/// kind 0 = line s->e, 1 = arc through (s, m, e), 2 = full circle (centre s, point on it m,
+/// normal e). Each chain (edges in path order) becomes one wire; returns a compound of wires.
+inline std::unique_ptr<TopoDS_Shape> cad_make_wires(rust::Slice<const double> data) {
+  try {
+    cad_err_ref().clear();
+    size_t i = 0;
+    auto next = [&]() -> double {
+      if (i >= data.size()) throw Standard_Failure("malformed curve data");
+      return data[i++];
+    };
+    TopoDS_Compound out;
+    BRep_Builder bb;
+    bb.MakeCompound(out);
+    int nchains = (int)next();
+    int nwires = 0;
+    for (int l = 0; l < nchains; ++l) {
+      int nseg = (int)next();
+      BRepBuilderAPI_MakeWire mw;
+      for (int s = 0; s < nseg; ++s) {
+        int kind = (int)next();
+        double c[9];
+        for (int k = 0; k < 9; ++k) c[k] = next();
+        gp_Pnt a(c[0], c[1], c[2]);
+        gp_Pnt m(c[3], c[4], c[5]);
+        gp_Pnt b(c[6], c[7], c[8]);
+        TopoDS_Edge e;
+        if (kind == 0) {
+          BRepBuilderAPI_MakeEdge me(a, b);
+          if (!me.IsDone()) return cad_fail("could not build a line edge (zero length?)");
+          e = me.Edge();
+        } else if (kind == 1) {
+          GC_MakeArcOfCircle arc(a, m, b);
+          if (!arc.IsDone()) return cad_fail("could not build an arc edge (collinear points?)");
+          BRepBuilderAPI_MakeEdge me(arc.Value());
+          if (!me.IsDone()) return cad_fail("could not build an arc edge");
+          e = me.Edge();
+        } else {
+          double r = a.Distance(m);
+          if (r < 1e-9) return cad_fail("circle radius is zero");
+          gp_Circ circ(gp_Ax2(a, gp_Dir(c[6], c[7], c[8]), gp_Vec(a, m)), r);
+          BRepBuilderAPI_MakeEdge me(circ);
+          if (!me.IsDone()) return cad_fail("could not build a circle edge");
+          e = me.Edge();
+        }
+        mw.Add(e);
+        if (!mw.IsDone()) return cad_fail("the selected curves are not connected in order");
+      }
+      if (nseg == 0) continue;
+      bb.Add(out, mw.Wire());
+      ++nwires;
+    }
+    if (nwires == 0) return cad_fail("no curves selected");
+    return cad_own(out);
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// Direct children of a shape (TopoDS_Iterator order), e.g. the pieces of a compound.
+inline std::unique_ptr<std::vector<TopoDS_Shape>> cad_children(const TopoDS_Shape &shape) {
+  auto out = std::unique_ptr<std::vector<TopoDS_Shape>>(new std::vector<TopoDS_Shape>());
+  try {
+    for (TopoDS_Iterator it(shape); it.More(); it.Next()) out->push_back(it.Value());
+  } catch (...) {
+    cad_err_ref() = "could not iterate the shape";
+  }
+  return out;
+}
+
+/// Closed shell -> oriented, fixed solid (null on failure).
+/// Canonical solid from the faces of a closed shell or solid: one FORWARD shell holding the faces
+/// with their composed orientation, flipped when needed so the volume is positive (modelling
+/// algorithms such as fillet misbehave on solids whose shell orientation is reversed).
+inline TopoDS_Shape cad_canonical_solid(const TopoDS_Shape &s) {
+  BRep_Builder b;
+  for (int pass = 0; pass < 2; ++pass) {
+    TopoDS_Shell sh;
+    b.MakeShell(sh);
+    for (TopExp_Explorer ex(s, TopAbs_FACE); ex.More(); ex.Next()) b.Add(sh, pass == 0 ? ex.Current() : ex.Current().Reversed());
+    sh.Closed(Standard_True);
+    TopoDS_Solid so;
+    b.MakeSolid(so);
+    b.Add(so, sh);
+    GProp_GProps p;
+    BRepGProp::VolumeProperties(so, p);
+    if (p.Mass() > 0 || pass == 1) return so;
+  }
+  return TopoDS_Shape();
+}
+
+inline TopoDS_Shape cad_shell_to_solid(const TopoDS_Shell &shell) {
+  BRepBuilderAPI_MakeSolid ms(shell);
+  if (!ms.IsDone()) return TopoDS_Shape();
+  TopoDS_Solid so = ms.Solid();
+  BRepLib::OrientClosedSolid(so);
+  ShapeFix_Solid fix(so);
+  fix.Perform();
+  TopoDS_Shape r = fix.Solid();
+  if (r.IsNull()) r = so;
+  TopoDS_Shape c = cad_canonical_solid(r);
+  return c.IsNull() ? r : c;
+}
+
+/// Sews the faces of `shape` with `tolerance`. Returns a compound whose children are the
+/// pieces: with `make_solid`, every closed shell becomes a solid; other shells and loose faces
+/// stay surfaces.
+inline std::unique_ptr<TopoDS_Shape> cad_sew(const TopoDS_Shape &shape, double tolerance, bool make_solid) {
+  try {
+    cad_err_ref().clear();
+    if (!(tolerance > 0)) return cad_fail("tolerance must be greater than zero");
+    BRepBuilderAPI_Sewing sw(tolerance);
+    int n = 0;
+    for (TopExp_Explorer ex(shape, TopAbs_FACE); ex.More(); ex.Next(), ++n) sw.Add(ex.Current());
+    if (n == 0) return cad_fail("there are no faces to stitch");
+    sw.Perform();
+    TopoDS_Shape r = sw.SewedShape();
+    if (r.IsNull()) return cad_fail("sewing produced no shape");
+    TopoDS_Compound out;
+    BRep_Builder bb;
+    bb.MakeCompound(out);
+    for (TopExp_Explorer ex(r, TopAbs_SHELL); ex.More(); ex.Next()) {
+      TopoDS_Shell sh = TopoDS::Shell(ex.Current());
+      if (make_solid && BRep_Tool::IsClosed(sh)) {
+        TopoDS_Shape so = cad_shell_to_solid(sh);
+        bb.Add(out, so.IsNull() ? TopoDS_Shape(sh) : so);
+      } else {
+        bb.Add(out, sh);
+      }
+    }
+    for (TopExp_Explorer ex(r, TopAbs_FACE, TopAbs_SHELL); ex.More(); ex.Next()) bb.Add(out, ex.Current());
+    return cad_own(out);
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// Offset of faces / shells by `distance` along their normals (join algorithm, falling back to
+/// the simple algorithm).
+inline std::unique_ptr<TopoDS_Shape> cad_offset_surface(const TopoDS_Shape &shape, double distance) {
+  try {
+    cad_err_ref().clear();
+    try {
+      BRepOffsetAPI_MakeOffsetShape mk;
+      mk.PerformByJoin(shape, distance, 1.0e-4, BRepOffset_Skin, Standard_False, Standard_False, GeomAbs_Arc);
+      if (mk.IsDone() && !mk.Shape().IsNull()) return cad_own(mk.Shape());
+    } catch (Standard_Failure &) {
+    }
+    BRepOffsetAPI_MakeOffsetShape mk2;
+    mk2.PerformBySimple(shape, distance);
+    if (!mk2.IsDone()) return cad_fail("the offset surface could not be computed with this distance");
+    return cad_own(mk2.Shape());
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// Thickens a face or open shell into a solid (`thickness` along the normal; negative = opposite).
+inline std::unique_ptr<TopoDS_Shape> cad_thicken(const TopoDS_Shape &shape, double thickness) {
+  try {
+    cad_err_ref().clear();
+    if (thickness == 0) return cad_fail("thickness must not be zero");
+    TopoDS_Shape r;
+    // join algorithm with thickening (sharp corners between faces are intersected), falling
+    // back to the simple algorithm (no intersections; fine for smooth surfaces)
+    try {
+      BRepOffset_MakeOffset mo;
+      mo.Initialize(shape, thickness, 1.0e-4, BRepOffset_Skin, Standard_False, Standard_False, GeomAbs_Intersection,
+                    Standard_True);
+      mo.MakeOffsetShape();
+      if (mo.IsDone() && !mo.Shape().IsNull()) {
+        TopoDS_Shape t = mo.Shape();
+        TopExp_Explorer ex(t, TopAbs_SOLID);
+        if (ex.More()) r = ex.Current();
+        else if (t.ShapeType() == TopAbs_SHELL && BRep_Tool::IsClosed(t)) r = t;
+        if (!r.IsNull() && !BRepCheck_Analyzer(r).IsValid()) r.Nullify();
+      }
+    } catch (Standard_Failure &) {
+      r.Nullify();
+    }
+    if (r.IsNull()) {
+      BRepOffsetAPI_MakeThickSolid mk;
+      mk.MakeThickSolidBySimple(shape, thickness);
+      if (!mk.IsDone()) return cad_fail("the surface could not be thickened");
+      r = mk.Shape();
+    }
+    if (r.IsNull()) return cad_fail("thicken produced no shape");
+    // a closed shell result becomes a solid; solids are made outward-oriented
+    if (r.ShapeType() == TopAbs_SHELL && BRep_Tool::IsClosed(r)) {
+      TopoDS_Shape so = cad_shell_to_solid(TopoDS::Shell(r));
+      if (!so.IsNull()) r = so;
+    } else if (r.ShapeType() == TopAbs_SOLID) {
+      TopoDS_Shape so = cad_canonical_solid(r);
+      if (!so.IsNull()) r = so;
+    }
+    return cad_own(r);
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// Patch: fills the closed boundary formed by `edges` (a compound of edges). A planar loop
+/// becomes a planar face; otherwise an N-sided filling surface (C0 to the boundary) is built.
+inline std::unique_ptr<TopoDS_Shape> cad_fill(const TopoDS_Shape &edges) {
+  try {
+    cad_err_ref().clear();
+    Handle(TopTools_HSequenceOfShape) seq = new TopTools_HSequenceOfShape();
+    for (TopExp_Explorer ex(edges, TopAbs_EDGE); ex.More(); ex.Next()) seq->Append(ex.Current());
+    if (seq->IsEmpty()) return cad_fail("no boundary edges selected");
+    Handle(TopTools_HSequenceOfShape) wires = new TopTools_HSequenceOfShape();
+    ShapeAnalysis_FreeBounds::ConnectEdgesToWires(seq, 1.0e-4, Standard_False, wires);
+    if (wires->Length() != 1) return cad_fail("the boundary edges must form one closed loop");
+    TopoDS_Wire w = TopoDS::Wire(wires->Value(1));
+    if (!BRep_Tool::IsClosed(w)) return cad_fail("the boundary is not closed");
+    {
+      BRepBuilderAPI_MakeFace mf(w, Standard_True);
+      if (mf.IsDone()) {
+        ShapeFix_Face fix(mf.Face());
+        fix.FixOrientation();
+        fix.Perform();
+        return cad_own(fix.Face());
+      }
+    }
+    BRepOffsetAPI_MakeFilling fill;
+    for (int k = 1; k <= seq->Length(); ++k) fill.Add(TopoDS::Edge(seq->Value(k)), GeomAbs_C0, Standard_True);
+    fill.Build();
+    if (!fill.IsDone()) return cad_fail("the boundary could not be filled");
+    return cad_own(fill.Shape());
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// A mesh body: one face without a surface that carries the triangles as its triangulation
+/// (tris = 9 coordinates per triangle; nodes are not shared so each triangle is shaded flat).
+inline std::unique_ptr<TopoDS_Shape> cad_mesh_face(rust::Slice<const double> tris) {
+  try {
+    cad_err_ref().clear();
+    const int n = (int)(tris.size() / 9);
+    if (n == 0) return cad_fail("the mesh has no triangles");
+    Handle(Poly_Triangulation) t = new Poly_Triangulation(3 * n, n, Standard_False, Standard_True);
+    for (int k = 0; k < n; ++k) {
+      const double *c = tris.data() + 9 * k;
+      gp_Pnt p[3] = {gp_Pnt(c[0], c[1], c[2]), gp_Pnt(c[3], c[4], c[5]), gp_Pnt(c[6], c[7], c[8])};
+      gp_Vec nv = gp_Vec(p[0], p[1]).Crossed(gp_Vec(p[0], p[2]));
+      gp_Dir d = nv.Magnitude() > 1e-300 ? gp_Dir(nv) : gp_Dir(0, 0, 1);
+      for (int j = 0; j < 3; ++j) {
+        t->SetNode(3 * k + j + 1, p[j]);
+        t->SetNormal(3 * k + j + 1, d);
+      }
+      t->SetTriangle(k + 1, Poly_Triangle(3 * k + 1, 3 * k + 2, 3 * k + 3));
+    }
+    TopoDS_Face f;
+    BRep_Builder bb;
+    bb.MakeFace(f, t);
+    return cad_own(f);
+  }
+  CAD_CATCH(nullptr)
+}
+
+/// Mesh -> B-rep: one planar face per triangle, sewn with `tolerance`; closed shells become
+/// solids; coplanar triangles are merged (ShapeUpgrade_UnifySameDomain). Returns a compound of
+/// the pieces (see cad_sew).
+inline std::unique_ptr<TopoDS_Shape> cad_mesh_to_brep(rust::Slice<const double> tris, double tolerance) {
+  try {
+    cad_err_ref().clear();
+    const int n = (int)(tris.size() / 9);
+    if (n == 0) return cad_fail("the mesh has no triangles");
+    BRepBuilderAPI_Sewing sw(tolerance);
+    int faces = 0;
+    for (int k = 0; k < n; ++k) {
+      const double *c = tris.data() + 9 * k;
+      gp_Pnt p0(c[0], c[1], c[2]), p1(c[3], c[4], c[5]), p2(c[6], c[7], c[8]);
+      if (gp_Vec(p0, p1).Crossed(gp_Vec(p0, p2)).Magnitude() < 1e-12) continue;  // degenerate
+      BRepBuilderAPI_MakePolygon poly(p0, p1, p2, Standard_True);
+      if (!poly.IsDone()) continue;
+      BRepBuilderAPI_MakeFace mf(poly.Wire(), Standard_True);
+      if (!mf.IsDone()) continue;
+      sw.Add(mf.Face());
+      ++faces;
+    }
+    if (faces == 0) return cad_fail("the mesh has no valid triangles");
+    sw.Perform();
+    TopoDS_Shape r = sw.SewedShape();
+    TopoDS_Compound out;
+    BRep_Builder bb;
+    bb.MakeCompound(out);
+    for (TopExp_Explorer ex(r, TopAbs_SHELL); ex.More(); ex.Next()) {
+      TopoDS_Shell sh = TopoDS::Shell(ex.Current());
+      TopoDS_Shape piece = sh;
+      if (BRep_Tool::IsClosed(sh)) {
+        TopoDS_Shape so = cad_shell_to_solid(sh);
+        if (!so.IsNull()) piece = so;
+      }
+      try {
+        ShapeUpgrade_UnifySameDomain u(piece, Standard_True, Standard_True, Standard_False);
+        u.Build();
+        if (!u.Shape().IsNull()) piece = u.Shape();
+      } catch (Standard_Failure &) {
+      }
+      bb.Add(out, piece);
+    }
+    for (TopExp_Explorer ex(r, TopAbs_FACE, TopAbs_SHELL); ex.More(); ex.Next()) bb.Add(out, ex.Current());
+    return cad_own(out);
+  }
+  CAD_CATCH(nullptr)
+}
+
+// ===== inspect =====
+// CAD360 INSPECT panel: minimum distance (Measure) and mass properties (Center of Mass). The
+// interference check uses cad_boolean (common) + cad_volume.
+
+#include <BRepExtrema_DistShapeShape.hxx>
+#include <cmath>
+
+/// Minimum distance between two shapes (faces, edges, vertices, solids or compounds).
+/// out = [distance, ax, ay, az, bx, by, bz, inner] where a / b are the closest points on the
+/// first / second shape and inner = 1 when one solid lies inside the other (distance 0).
+inline bool cad_min_distance(const TopoDS_Shape &a, const TopoDS_Shape &b, rust::Slice<double> out) {
+  try {
+    cad_err_ref().clear();
+    if (out.size() < 8) throw Standard_Failure("output buffer too small");
+    if (a.IsNull() || b.IsNull()) throw Standard_Failure("empty shape");
+    BRepExtrema_DistShapeShape d(a, b, Extrema_ExtFlag_MIN);
+    if (!d.IsDone() || d.NbSolution() < 1) throw Standard_Failure("the minimum distance could not be computed");
+    gp_Pnt pa = d.PointOnShape1(1), pb = d.PointOnShape2(1);
+    out[0] = d.Value();
+    out[1] = pa.X();
+    out[2] = pa.Y();
+    out[3] = pa.Z();
+    out[4] = pb.X();
+    out[5] = pb.Y();
+    out[6] = pb.Z();
+    out[7] = d.InnerSolution() ? 1.0 : 0.0;
+    return true;
+  }
+  CAD_CATCH(false)
+}
+
+/// Mass properties with unit density. out = [volume, area, cx, cy, cz] where (cx, cy, cz) is the
+/// centre of mass of the volume (of the surface when the shape encloses no volume).
+inline bool cad_mass_props(const TopoDS_Shape &s, rust::Slice<double> out) {
+  try {
+    cad_err_ref().clear();
+    if (out.size() < 5) throw Standard_Failure("output buffer too small");
+    if (s.IsNull()) throw Standard_Failure("empty shape");
+    GProp_GProps vp, sp;
+    BRepGProp::SurfaceProperties(s, sp);
+    bool solid = TopExp_Explorer(s, TopAbs_SOLID).More();
+    if (solid) BRepGProp::VolumeProperties(s, vp);
+    const GProp_GProps &c = solid && std::abs(vp.Mass()) > 1e-12 ? vp : sp;
+    gp_Pnt g = c.CentreOfMass();
+    out[0] = solid ? std::abs(vp.Mass()) : 0.0;
+    out[1] = sp.Mass();
+    out[2] = g.X();
+    out[3] = g.Y();
+    out[4] = g.Z();
+    return true;
+  }
+  CAD_CATCH(false)
+}
