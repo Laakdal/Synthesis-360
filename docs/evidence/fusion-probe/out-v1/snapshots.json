@@ -1,0 +1,1853 @@
+[
+ {
+  "label": "after_extrude_10mm",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 6,
+    "edges": 12,
+    "vertices": 8,
+    "volume_cm3": 15.0,
+    "volume_mm3": 15000.0,
+    "area_cm2": 46.0,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      50.0,
+      30.0,
+      10.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 2,
+   "markerPosition": 2,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "50 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "10 mm",
+    "value": 1.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   }
+  ]
+ },
+ {
+  "label": "after_extrude_distance_20mm",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 6,
+    "edges": 12,
+    "vertices": 8,
+    "volume_cm3": 30.0,
+    "volume_mm3": 30000.0,
+    "area_cm2": 62.0,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      50.0,
+      30.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 2,
+   "markerPosition": 2,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "50 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   }
+  ]
+ },
+ {
+  "label": "after_sketch_width_60mm",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 6,
+    "edges": 12,
+    "vertices": 8,
+    "volume_cm3": 33.0,
+    "volume_mm3": 33000.0,
+    "area_cm2": 67.32455532033676,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      60.0,
+      30.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 2,
+   "markerPosition": 2,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "60 mm",
+    "value": 6.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   }
+  ]
+ },
+ {
+  "label": "after_fillet_4_vertical_edges_5mm",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 10,
+    "edges": 24,
+    "vertices": 16,
+    "volume_cm3": 32.51670377340544,
+    "volume_mm3": 32516.70377340544,
+    "area_cm2": 64.90807418736395,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      58.0629,
+      30.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 3,
+   "markerPosition": 3,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 2,
+     "name": "Fillet1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "FilletFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "60 mm",
+    "value": 6.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d6",
+    "expression": "1",
+    "value": 1.0,
+    "unit": "",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d7",
+    "expression": "5 mm",
+    "value": 0.5,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   }
+  ]
+ },
+ {
+  "label": "after_width_70mm_with_fillet_downstream",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 10,
+    "edges": 24,
+    "vertices": 16,
+    "volume_cm3": 35.36894590164023,
+    "volume_mm3": 35368.94590164023,
+    "area_cm2": 70.05583205912914,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      65.6574,
+      30.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 3,
+   "markerPosition": 3,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 2,
+     "name": "Fillet1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "FilletFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "70 mm",
+    "value": 7.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d6",
+    "expression": "1",
+    "value": 1.0,
+    "unit": "",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d7",
+    "expression": "5 mm",
+    "value": 0.5,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   }
+  ]
+ },
+ {
+  "label": "after_fillet_radius_40mm_invalid",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 4,
+    "edges": 6,
+    "vertices": 4,
+    "volume_cm3": 0.26561150839056713,
+    "volume_mm3": 265.6115083905671,
+    "area_cm2": 6.165635360624735,
+    "bbox_mm": [
+     [
+      53.7894,
+      0.0,
+      0.0
+     ],
+     [
+      68.2074,
+      2.6889,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 3,
+   "markerPosition": 3,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 2,
+     "name": "Fillet1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "FilletFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "70 mm",
+    "value": 7.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d6",
+    "expression": "1",
+    "value": 1.0,
+    "unit": "",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d7",
+    "expression": "40 mm",
+    "value": 4.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   }
+  ]
+ },
+ {
+  "label": "after_fillet_radius_restored",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 10,
+    "edges": 24,
+    "vertices": 16,
+    "volume_cm3": 35.36894590164023,
+    "volume_mm3": 35368.94590164023,
+    "area_cm2": 70.05583205912914,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      65.6574,
+      30.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 3,
+   "markerPosition": 3,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 2,
+     "name": "Fillet1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "FilletFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "70 mm",
+    "value": 7.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d6",
+    "expression": "1",
+    "value": 1.0,
+    "unit": "",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d7",
+    "expression": "5 mm",
+    "value": 0.5,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   }
+  ]
+ },
+ {
+  "label": "after_through_all_cut_12mm_hole",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 11,
+    "edges": 26,
+    "vertices": 18,
+    "volume_cm3": 33.10699919105549,
+    "volume_mm3": 33106.999191055496,
+    "area_cm2": 75.33370771716,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      65.6574,
+      30.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 5,
+   "markerPosition": 5,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 2,
+     "name": "Fillet1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "FilletFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 3,
+     "name": "Sketch3",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 4,
+     "name": "Extrude2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "70 mm",
+    "value": 7.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d6",
+    "expression": "1",
+    "value": 1.0,
+    "unit": "",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d7",
+    "expression": "5 mm",
+    "value": 0.5,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d8",
+    "expression": "12.00 mm",
+    "value": 1.2000000000000002,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d9",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   }
+  ]
+ },
+ {
+  "label": "after_chamfer_2mm",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 12,
+    "edges": 27,
+    "vertices": 19,
+    "volume_cm3": 33.023223386959764,
+    "volume_mm3": 33023.22338695976,
+    "area_cm2": 74.94408675997765,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      65.6574,
+      30.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 6,
+   "markerPosition": 6,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 2,
+     "name": "Fillet1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "FilletFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 3,
+     "name": "Sketch3",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 4,
+     "name": "Extrude2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 5,
+     "name": "Chamfer1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ChamferFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "70 mm",
+    "value": 7.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d6",
+    "expression": "1",
+    "value": 1.0,
+    "unit": "",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d7",
+    "expression": "5 mm",
+    "value": 0.5,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d8",
+    "expression": "12.00 mm",
+    "value": 1.2000000000000002,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d9",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d10",
+    "expression": "2 mm",
+    "value": 0.2,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ChamferFeature"
+   }
+  ]
+ },
+ {
+  "label": "timeline_rolled_before_cut",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 10,
+    "edges": 24,
+    "vertices": 16,
+    "volume_cm3": 35.36894590164023,
+    "volume_mm3": 35368.94590164023,
+    "area_cm2": 70.05583205912914,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      65.6574,
+      30.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 6,
+   "markerPosition": 4,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 2,
+     "name": "Fillet1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "FilletFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 3,
+     "name": "Sketch3",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 4,
+     "name": "Extrude2",
+     "isSuppressed": false,
+     "isRolledBack": true,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 5,
+     "name": "Chamfer1",
+     "isSuppressed": false,
+     "isRolledBack": true,
+     "isGroup": false,
+     "entityType": "ChamferFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "70 mm",
+    "value": 7.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d6",
+    "expression": "1",
+    "value": 1.0,
+    "unit": "",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d7",
+    "expression": "5 mm",
+    "value": 0.5,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d8",
+    "expression": "12.00 mm",
+    "value": 1.2000000000000002,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d9",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d10",
+    "expression": "2 mm",
+    "value": 0.2,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ChamferFeature"
+   }
+  ]
+ },
+ {
+  "label": "fillet_suppressed",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 8,
+    "edges": 15,
+    "vertices": 11,
+    "volume_cm3": 33.654277485319525,
+    "volume_mm3": 33654.27748531952,
+    "area_cm2": 78.09935725177648,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      70.0,
+      30.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 6,
+   "markerPosition": 6,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 2,
+     "name": "Fillet1",
+     "isSuppressed": true,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "FilletFeature",
+     "health": "Suppressed",
+     "message": ""
+    },
+    {
+     "index": 3,
+     "name": "Sketch3",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 4,
+     "name": "Extrude2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 5,
+     "name": "Chamfer1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ChamferFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "70 mm",
+    "value": 7.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d6",
+    "expression": "1",
+    "value": 1.0,
+    "unit": "",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d7",
+    "expression": "5 mm",
+    "value": 0.5,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d8",
+    "expression": "12.00 mm",
+    "value": 1.2000000000000002,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d9",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d10",
+    "expression": "2 mm",
+    "value": 0.2,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ChamferFeature"
+   }
+  ]
+ },
+ {
+  "label": "fillet_unsuppressed",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 12,
+    "edges": 27,
+    "vertices": 19,
+    "volume_cm3": 33.023223386959764,
+    "volume_mm3": 33023.22338695976,
+    "area_cm2": 74.94408675997765,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      65.6574,
+      30.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 6,
+   "markerPosition": 6,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 2,
+     "name": "Fillet1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "FilletFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 3,
+     "name": "Sketch3",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 4,
+     "name": "Extrude2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 5,
+     "name": "Chamfer1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ChamferFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "70 mm",
+    "value": 7.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d6",
+    "expression": "1",
+    "value": 1.0,
+    "unit": "",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d7",
+    "expression": "5 mm",
+    "value": 0.5,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d8",
+    "expression": "12.00 mm",
+    "value": 1.2000000000000002,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d9",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d10",
+    "expression": "2 mm",
+    "value": 0.2,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ChamferFeature"
+   }
+  ]
+ },
+ {
+  "label": "after_revolve_ring",
+  "bodies": [
+   {
+    "name": "Body1",
+    "isSolid": true,
+    "faces": 12,
+    "edges": 27,
+    "vertices": 19,
+    "volume_cm3": 33.023223386959764,
+    "volume_mm3": 33023.22338695976,
+    "area_cm2": 74.94408675997765,
+    "bbox_mm": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      65.6574,
+      30.0,
+      20.0
+     ]
+    ]
+   },
+   {
+    "name": "Body2",
+    "isSolid": true,
+    "faces": 4,
+    "edges": 4,
+    "vertices": 4,
+    "volume_cm3": 12.566370614359712,
+    "volume_mm3": 12566.370614359712,
+    "area_cm2": 37.69911184307752,
+    "bbox_mm": [
+     [
+      -45.0,
+      -15.0,
+      0.0
+     ],
+     [
+      -15.0,
+      15.0,
+      20.0
+     ]
+    ]
+   }
+  ],
+  "timeline": {
+   "count": 8,
+   "markerPosition": 8,
+   "items": [
+    {
+     "index": 0,
+     "name": "Sketch2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 1,
+     "name": "Extrude1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 2,
+     "name": "Fillet1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "FilletFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 3,
+     "name": "Sketch3",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 4,
+     "name": "Extrude2",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ExtrudeFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 5,
+     "name": "Chamfer1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "ChamferFeature",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 6,
+     "name": "Sketch4",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "Sketch",
+     "health": "Healthy",
+     "message": ""
+    },
+    {
+     "index": 7,
+     "name": "Revolve1",
+     "isSuppressed": false,
+     "isRolledBack": false,
+     "isGroup": false,
+     "entityType": "RevolveFeature",
+     "health": "Healthy",
+     "message": ""
+    }
+   ]
+  },
+  "parameters": [
+   {
+    "name": "d1",
+    "expression": "70 mm",
+    "value": 7.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d2",
+    "expression": "30 mm",
+    "value": 3.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d3",
+    "expression": "50.00 mm",
+    "value": 5.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d4",
+    "expression": "20 mm",
+    "value": 2.0,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d5",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d6",
+    "expression": "1",
+    "value": 1.0,
+    "unit": "",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d7",
+    "expression": "5 mm",
+    "value": 0.5,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "FilletFeature"
+   },
+   {
+    "name": "d8",
+    "expression": "12.00 mm",
+    "value": 1.2000000000000002,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "Sketch"
+   },
+   {
+    "name": "d9",
+    "expression": "0.0 deg",
+    "value": 0.0,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "ExtrudeFeature"
+   },
+   {
+    "name": "d10",
+    "expression": "2 mm",
+    "value": 0.2,
+    "unit": "mm",
+    "type": "ModelParameter",
+    "createdBy": "ChamferFeature"
+   },
+   {
+    "name": "d11",
+    "expression": "360 deg",
+    "value": 6.283185307179586,
+    "unit": "deg",
+    "type": "ModelParameter",
+    "createdBy": "RevolveFeature"
+   }
+  ]
+ }
+]

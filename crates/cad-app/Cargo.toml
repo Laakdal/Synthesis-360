@@ -1,0 +1,24 @@
+[package]
+name = "cad-app"
+description = "CAD360 native desktop application (egui + wgpu)"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "cad360"
+path = "src/main.rs"
+
+[dependencies]
+cad-core = { path = "../cad-core" }
+cad-sketch = { path = "../cad-sketch" }
+cad-kernel = { path = "../cad-kernel" }
+eframe = { version = "0.37", default-features = false, features = ["wgpu", "default_fonts", "accesskit"] }
+egui = "0.37"
+egui-wgpu = "0.37"
+bytemuck = { version = "1", features = ["derive"] }
+glam = "0.34"
+rfd = "0.17"
+
+[dev-dependencies]
+egui_kittest = { version = "0.37", features = ["wgpu", "snapshot"] }

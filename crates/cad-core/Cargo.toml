@@ -1,0 +1,12 @@
+[package]
+name = "cad-core"
+description = "Document model, parameters/expressions, feature history, undo/redo and native persistence"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+cad-sketch = { path = "../cad-sketch" }

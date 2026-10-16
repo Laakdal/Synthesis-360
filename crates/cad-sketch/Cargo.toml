@@ -1,0 +1,11 @@
+[package]
+name = "cad-sketch"
+description = "2D sketch model, numerical geometric constraint solver (Levenberg-Marquardt + SVD DOF analysis) and profile detection"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+nalgebra = "0.35"
+thiserror = "2"

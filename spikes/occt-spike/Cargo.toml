@@ -1,0 +1,9 @@
+[package]
+name = "occt-spike"
+edition.workspace = true
+version.workspace = true
+publish = false
+
+[dependencies]
+opencascade = "0.3"
+glam = "0.24"

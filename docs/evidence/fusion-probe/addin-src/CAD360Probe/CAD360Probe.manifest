@@ -1,0 +1,11 @@
+{
+	"autodeskProduct": "Fusion",
+	"type": "addin",
+	"id": "6c1f3d2a-9b8e-4c51-a0d7-cad360probe01",
+	"author": "CAD360 investigation",
+	"description": { "": "Temporary, sentinel-gated investigation probe. Safe to delete." },
+	"version": "1.0.0",
+	"runOnStartup": true,
+	"supportedOS": "windows",
+	"editEnabled": true
+}

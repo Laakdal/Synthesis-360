@@ -1,0 +1,2183 @@
+{
+ "activeWorkspace": null,
+ "workspaces": [
+  {
+   "id": "TSplineEnvironment",
+   "name": "Form",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionSolidEnvironment",
+   "name": "Design",
+   "productType": "DesignProductType",
+   "isActive": false,
+   "tabs": [],
+   "tabs_error": "Traceback (most recent call last):\n  File \"C:/Users/Nightingale/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/AddIns/CAD360Probe/CAD360Probe.py\", line 243, in dump_ui\n    \"controls\": dump_controls(p.controls)})\n                ~~~~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:/Users/Nightingale/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/AddIns/CAD360Probe/CAD360Probe.py\", line 213, in dump_controls\n    d[\"name\"] = getattr(dd, \"name\", \"\")\n                ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"C:\\Users/Nightingale/AppData/Local/Autodesk/webdeploy/production/736d2b4c5e6b95e77c11721da222cf21c6a1fc1f/Api/Python/packages\\adsk\\core.py\", line 33768, in _get_name\n    return _core.DropDownControl__get_name(self)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\nRuntimeError: 2 : InternalValidationError : nuInputControl\n"
+  },
+  {
+   "id": "GenerativeEnvironment",
+   "name": "Generative Design",
+   "productType": "GenerativeToolbar",
+   "isActive": false
+  },
+  {
+   "id": "EditModelWMEnv",
+   "name": "Edit Model",
+   "productType": "SimStudiesProductType",
+   "isActive": false
+  },
+  {
+   "id": "ExploreEnvironment",
+   "name": "Explore",
+   "productType": "SimStudiesProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionSurfaceEnvironment",
+   "name": "Surface",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionSheetMetalEnvironment",
+   "name": "Sheet Metal",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "PCBEnvironment",
+   "name": "PCB",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "PCB3DEnvironment",
+   "name": "3D PCB",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "Package3DEnvironment",
+   "name": "Package",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionRenderEnvironment",
+   "name": "Render",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "Publisher3DEnvironment",
+   "name": "Animation",
+   "productType": "AnimationProductType",
+   "isActive": false
+  },
+  {
+   "id": "SimulationEnvironment",
+   "name": "Simulation",
+   "productType": "SimStudiesProductType",
+   "isActive": false
+  },
+  {
+   "id": "SimplifyWMEnv",
+   "name": "Simplify",
+   "productType": "SimStudiesProductType",
+   "isActive": false
+  },
+  {
+   "id": "SimCompareEnvironment",
+   "name": "Compare",
+   "productType": "SimStudiesProductType",
+   "isActive": false
+  },
+  {
+   "id": "CAMEnvironment",
+   "name": "Manufacture",
+   "productType": "CAMProductType",
+   "isActive": false
+  },
+  {
+   "id": "DebugEnvironment",
+   "name": "Debug",
+   "productType": null,
+   "isActive": false
+  },
+  {
+   "id": "FusionModelingEnvironment",
+   "name": "Modeling",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionAssembleEnvironment",
+   "name": "Assemble",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionVisualizationEnvironment",
+   "name": "Visualization",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "ResultsViewerEnvironmentDora",
+   "name": "ResultsViewerDora",
+   "productType": "SimStudiesProductType",
+   "isActive": false
+  },
+  {
+   "id": "ResultsViewerEnvironmentHawkeye",
+   "name": "ResultsViewerHawkeye",
+   "productType": "SimStudiesProductType",
+   "isActive": false
+  },
+  {
+   "id": "MfgWorkingModelEnv",
+   "name": "Prepare",
+   "productType": "MfgWorkingModelToolbar",
+   "isActive": false
+  },
+  {
+   "id": "MachineBuilderEnvironment",
+   "name": "Machine Builder",
+   "productType": "DesignProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionDocumentationEnvironment",
+   "name": "Drawing",
+   "productType": "FusionDrawingProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionDrawingsBlockEditorEnv",
+   "name": "Drawings Block Editor",
+   "productType": "FusionDrawingProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionDrawingsSketchEnv",
+   "name": "Drawings Sketch Editor",
+   "productType": "FusionDrawingProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionDrawingsSketchSymbolEnv",
+   "name": "Drawings Sketch Symbol Editor",
+   "productType": "FusionDrawingProductType",
+   "isActive": false
+  },
+  {
+   "id": "FusionDrawingsViewSketchEnv",
+   "name": "Drawings Sketch Editor",
+   "productType": "FusionDrawingProductType",
+   "isActive": false
+  },
+  {
+   "id": "ElectronEmptyLbrEnvironment",
+   "name": "Electronics Library",
+   "productType": "ElectronLbrDocProductType",
+   "isActive": false
+  },
+  {
+   "id": "ElectronDeviceEnvironment",
+   "name": "Electronics Library - Component",
+   "productType": "ElectronLbrDocProductType",
+   "isActive": false
+  },
+  {
+   "id": "ElectronFootprintEnvironment",
+   "name": "Electronics Library - Footprint",
+   "productType": "ElectronLbrDocProductType",
+   "isActive": false
+  },
+  {
+   "id": "ElectronSymbolEnvironment",
+   "name": "Electronics Library - Symbol",
+   "productType": "ElectronLbrDocProductType",
+   "isActive": false
+  },
+  {
+   "id": "ElectronPackageEnvironment",
+   "name": "Electronics 3D Package",
+   "productType": "ElectronLbrDocProductType",
+   "isActive": false
+  },
+  {
+   "id": "PCBDesignEnvironement",
+   "name": "Electronics Design",
+   "productType": "ElectronProjectDocProductType",
+   "isActive": false
+  },
+  {
+   "id": "SchEditorEnvironement",
+   "name": "Schematic Editor",
+   "productType": "ElectronSchDocProductType",
+   "isActive": false
+  },
+  {
+   "id": "BoardLayoutEnvironement",
+   "name": "PCB Editor",
+   "productType": "ElectronPcbDocProductType",
+   "isActive": false
+  },
+  {
+   "id": "ParaMeshEnvironment",
+   "name": "ParaMesh",
+   "productType": "DesignProductType",
+   "isActive": false
+  }
+ ],
+ "toolbars": [
+  {
+   "id": "ActiveDocumentsToolbar",
+   "controls": [
+    {
+     "id": "ActiveDocumentState",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "ActiveDocumentReason",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "SeparatorAfter_ActiveDocumentReason",
+     "type": "SeparatorControl",
+     "isVisible": true
+    },
+    {
+     "id": "ActiveDocumentAction",
+     "type": "CommandControl",
+     "isVisible": false
+    }
+   ]
+  },
+  {
+   "id": "ActiveViewToolbar",
+   "controls": []
+  },
+  {
+   "id": "BFOMToolbar",
+   "controls": [
+    {
+     "id": "BFOMObjectName",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "FusionEndDConfigBlockFromObjectModeCmd",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "FusionEndDConfigBlockFromObjectModeCmd",
+     "name": "End Block From Object Mode",
+     "tooltip": ""
+    }
+   ]
+  },
+  {
+   "id": "ConfigToolbar",
+   "controls": [
+    {
+     "id": "ConfigObjectName",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "DesignConfigurationToolbarCmd",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "DesignConfigurationToolbarCmd",
+     "name": "End Configuration Mode",
+     "tooltip": ""
+    }
+   ]
+  },
+  {
+   "id": "EIPToolbar",
+   "error": "Traceback (most recent call last):\n  File \"C:/Users/Nightingale/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/AddIns/CAD360Probe/CAD360Probe.py\", line 250, in dump_ui\n    data[\"toolbars\"].append({\"id\": tb.id, \"controls\": dump_controls(tb.controls)})\n                                                      ~~~~~~~~~~~~~^^^^^^^^^^^^^\n  File \"C:/Users/Nightingale/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/AddIns/CAD360Probe/CAD360Probe.py\", line 213, in dump_controls\n    d[\"name\"] = getattr(dd, \"name\", \"\")\n                ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"C:\\Users/Nightingale/AppData/Local/Autodesk/webdeploy/production/736d2b4c5e6b95e77c11721da222cf21c6a1fc1f/Api/Python/packages\\adsk\\core.py\", line 33768, in _get_name\n    return _core.DropDownControl__get_name(self)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\nRuntimeError: 2 : InternalValidationError : nuInputControl\n"
+  },
+  {
+   "id": "Electron::NavToolbar",
+   "controls": [
+    {
+     "id": "Electron::Info",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "Electron::Info",
+     "name": "Info",
+     "tooltip": "Displays and modifies object properties.<br><br>An object's properties are displayed in a dialog, where they can be modified.<br>"
+    },
+    {
+     "id": "Electron::Show",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "Electron::Show",
+     "name": "Show",
+     "tooltip": "Highlights objects.<br><br>Highlight complete signals and nets with the Show command. Select parts in Design Manager or enter names on the command line in format @ <partname> (example: @ FB2 FB4). If a bus is selected, all nets belonging to that bus are also highlighted.<br>"
+    },
+    {
+     "id": "Electron::Edit",
+     "type": "CommandControl",
+     "isVisible": false
+    },
+    {
+     "id": "Electron::ZoomIn",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "Electron::ZoomIn",
+     "name": "Zoom In",
+     "tooltip": ""
+    },
+    {
+     "id": "Electron::ZoomOut",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "Electron::ZoomOut",
+     "name": "Zoom Out",
+     "tooltip": ""
+    },
+    {
+     "id": "Electron::ZoomToFit",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "Electron::ZoomToFit",
+     "name": "Zoom to Fit",
+     "tooltip": ""
+    },
+    {
+     "id": "Electron::ZoomSelect",
+     "type": "CommandControl",
+     "isVisible": false
+    },
+    {
+     "id": "Electron::Grid",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "Electron::Grid",
+     "name": "Grid Settings",
+     "tooltip": "Provides controls for defining the drawing grid.<br><br>Set grid display on/off, display style, and size.<br>"
+    },
+    {
+     "id": "Electron::Mark",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "Electron::Mark",
+     "name": "Mark Local Origin",
+     "tooltip": "Defines a mark on the drawing area.<br><br>The X and Y coordinates of the mouse cursor relative to that point are displayed above the canvas, with an R prefix, polar coordinates with P prefix. This command is useful when defining locations of components or cutouts. Enter MARK; to turn the mark off.<br>"
+    },
+    {
+     "id": "Electron::StopCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "Electron::StopCommand",
+     "name": "Stop Command",
+     "tooltip": ""
+    },
+    {
+     "id": "Electron::Group",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "Electron::Group",
+     "name": "Select",
+     "tooltip": "Selection is always active and the active selection mode displays here.<br><br>Hold Ctrl (Windows) or Command (MacOS) to add objects to or remove objects from the selection. Change the active selection mode by selecting the mode you want to work with from the menu. Use the selection mode and selection filters to fine tune selection.<br>"
+    },
+    {
+     "id": "ViolationModeCommand",
+     "type": "DropDownControl",
+     "isVisible": true,
+     "name": "ViolationMode",
+     "children": [
+      {
+       "id": "IgnoreViolatorsCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "IgnoreViolatorsCommand",
+       "name": "Ignore Violators",
+       "tooltip": "Ignores design rules, allowing different copper objects to connect.<br><br>"
+      },
+      {
+       "id": "PushViolatorsCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "PushViolatorsCommand",
+       "name": "Push Violators",
+       "tooltip": "Moves existing copper objects to make way for new copper objects while maintaining connectivity.<br><br>"
+      },
+      {
+       "id": "WalkaroundViolatorsCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "WalkaroundViolatorsCommand",
+       "name": "Walkaround Violators",
+       "tooltip": "Moves new copper objects around existing copper objects and components while following Design Rules.<br><br>"
+      },
+      {
+       "id": "SeparatorAfter_WalkaroundViolatorsCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "TogglePushViasCmd",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "TogglePushViasCmd",
+       "name": "Push Vias",
+       "tooltip": "Moves vias to accommodate new copper objects.<br><br>"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ElectronicDesign::NavToolbar",
+   "controls": [
+    {
+     "id": "PanCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "PanCommand",
+     "name": "Pan",
+     "tooltip": ""
+    },
+    {
+     "id": "ZoomCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "ZoomCommand",
+     "name": "Zoom",
+     "tooltip": ""
+    },
+    {
+     "id": "ZoomFitCommandGroup",
+     "type": "SplitButtonControl",
+     "isVisible": true
+    }
+   ]
+  },
+  {
+   "id": "ExpiredUserBanner",
+   "controls": [
+    {
+     "id": "ExpiredUserBannerState",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "ExpiredUserBannerReason",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "SeparatorAfter_ExpiredUserBannerReason",
+     "type": "SeparatorControl",
+     "isVisible": true
+    },
+    {
+     "id": "ExpiredUserBannerAction",
+     "type": "CommandControl",
+     "isVisible": false
+    }
+   ]
+  },
+  {
+   "id": "FusionDocNavToolbar",
+   "controls": [
+    {
+     "id": "FusionDrawingPanCmd",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "FusionDrawingPanCmd",
+     "name": "Pan",
+     "tooltip": ""
+    },
+    {
+     "id": "FusionDrawingZoomCmd",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "FusionDrawingZoomCmd",
+     "name": "Zoom Window",
+     "tooltip": ""
+    },
+    {
+     "id": "FusionDrawingFitCmd",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "FusionDrawingFitCmd",
+     "name": "Fit",
+     "tooltip": ""
+    }
+   ]
+  },
+  {
+   "id": "MachineBuilderStatusToolbar",
+   "controls": [
+    {
+     "id": "StatusToolbarLabel",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "MachineBuilder_Stop",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "MachineBuilder_Stop",
+     "name": "Finish",
+     "tooltip": "Saves the design file containing the machine model and closes the Machine Builder contextual environment.\n\nIf the machine is selected in a setup, its machine model is displayed in the canvas during machine simulation."
+    },
+    {
+     "id": "MachineBuilder_Cancel",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "MachineBuilder_Cancel",
+     "name": "Cancel",
+     "tooltip": "Discards any unsaved changes and closes with Machine Builder contextual environment without saving the design file."
+    }
+   ]
+  },
+  {
+   "id": "MachineBuilderStatusToolbar_SameDoc",
+   "controls": [
+    {
+     "id": "StatusToolbarLabel",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "MachineBuilder_Stop",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "MachineBuilder_Stop",
+     "name": "Finish",
+     "tooltip": "Saves the design file containing the machine model and closes the Machine Builder contextual environment.\n\nIf the machine is selected in a setup, its machine model is displayed in the canvas during machine simulation."
+    }
+   ]
+  },
+  {
+   "id": "MessageTray",
+   "controls": [
+    {
+     "id": "MessageResult",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "AlertCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "AlertCommand",
+     "name": "Alert",
+     "tooltip": ""
+    },
+    {
+     "id": "PerformanceFeedbackCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "PerformanceFeedbackCommand",
+     "name": "perfFeedback",
+     "tooltip": ""
+    },
+    {
+     "id": "ChatCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "ChatCommand",
+     "name": "Autodesk Assistant",
+     "tooltip": ""
+    }
+   ]
+  },
+  {
+   "id": "NavToolbar",
+   "controls": [
+    {
+     "id": "OrbitCommand",
+     "type": "SplitButtonControl",
+     "isVisible": true
+    },
+    {
+     "id": "LookAtCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "LookAtCommand",
+     "name": "Look At",
+     "tooltip": ""
+    },
+    {
+     "id": "PanCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "PanCommand",
+     "name": "Pan",
+     "tooltip": ""
+    },
+    {
+     "id": "ZoomCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "ZoomCommand",
+     "name": "Zoom",
+     "tooltip": ""
+    },
+    {
+     "id": "ZoomFitCommandGroup",
+     "type": "SplitButtonControl",
+     "isVisible": true
+    },
+    {
+     "id": "ViewDisplayCommand",
+     "type": "DropDownControl",
+     "isVisible": true,
+     "name": "Display Settings",
+     "children": [
+      {
+       "id": "ViewVisualStyleCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "ViewVisualStyleCommand",
+       "name": "Visual Style",
+       "tooltip": ""
+      },
+      {
+       "id": "ViewEnvCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "ViewEnvCommand",
+       "name": "Environment",
+       "tooltip": ""
+      },
+      {
+       "id": "ViewGraphicsPresetCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "ViewGraphicsPresetCommand",
+       "name": "Graphics Preset",
+       "tooltip": ""
+      },
+      {
+       "id": "ViewEffectCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "ViewEffectCommand",
+       "name": "Effects",
+       "tooltip": ""
+      },
+      {
+       "id": "VisibilityOverrideCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "VisibilityOverrideCommand",
+       "name": "Object Visibility",
+       "tooltip": ""
+      },
+      {
+       "id": "ViewCameraCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "ViewCameraCommand",
+       "name": "Camera",
+       "tooltip": ""
+      },
+      {
+       "id": "SplitViewVisualStyleCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "SplitViewVisualStyleCommand",
+       "name": "Visual Style",
+       "tooltip": ""
+      },
+      {
+       "id": "SplitViewCameraCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "SplitViewCameraCommand",
+       "name": "Camera",
+       "tooltip": ""
+      },
+      {
+       "id": "GroundPlaneOffsetCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "GroundPlaneOffsetCommand",
+       "name": "Ground Plane Offset",
+       "tooltip": ""
+      },
+      {
+       "id": "SeparatorAfter_GroundPlaneOffsetCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "ShowWorkspaceFullScreenCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "ShowWorkspaceFullScreenCommand",
+       "name": "Enter Full Screen",
+       "tooltip": ""
+      },
+      {
+       "id": "ShowWorkspaceNormalCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "ShowWorkspaceNormalCommand",
+       "name": "Exit Full Screen",
+       "tooltip": ""
+      }
+     ]
+    },
+    {
+     "id": "ViewLayoutGridCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "ViewLayoutGridCommand",
+     "name": "Grid and Snaps",
+     "tooltip": ""
+    },
+    {
+     "id": "SplitViewWindowSyncCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "SplitViewWindowSyncCommand",
+     "name": "Viewports",
+     "tooltip": ""
+    },
+    {
+     "id": "IronViewOrientation",
+     "type": "DropDownControl",
+     "isVisible": true,
+     "name": "View Orientation",
+     "children": [
+      {
+       "id": "IronViewOrientationTop",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "IronViewOrientationTop",
+       "name": "Tool Top",
+       "tooltip": ""
+      },
+      {
+       "id": "IronViewOrientationBottom",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "IronViewOrientationBottom",
+       "name": "Tool Bottom",
+       "tooltip": ""
+      },
+      {
+       "id": "IronViewOrientationFront",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "IronViewOrientationFront",
+       "name": "Tool Front",
+       "tooltip": ""
+      },
+      {
+       "id": "IronViewOrientationBack",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "IronViewOrientationBack",
+       "name": "Tool Back",
+       "tooltip": ""
+      },
+      {
+       "id": "IronViewOrientationLeft",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "IronViewOrientationLeft",
+       "name": "Tool Left",
+       "tooltip": ""
+      },
+      {
+       "id": "IronViewOrientationRight",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "IronViewOrientationRight",
+       "name": "Tool Right",
+       "tooltip": ""
+      },
+      {
+       "id": "IronViewOrientationIso",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "IronViewOrientationIso",
+       "name": "Tool Isometric",
+       "tooltip": ""
+      }
+     ]
+    },
+    {
+     "id": "IronShowHideToolpathMoves",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "IronShowHideToolpathMoves",
+     "name": "Toolpath visibility",
+     "tooltip": ""
+    },
+    {
+     "id": "IronSyncActiveSetup",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "IronSyncActiveSetup",
+     "name": "Synchronize active setup",
+     "tooltip": ""
+    },
+    {
+     "id": "IronViewStock",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "IronViewStock",
+     "name": "Stock visibility",
+     "tooltip": ""
+    },
+    {
+     "id": "IronMachineVisibility",
+     "type": "DropDownControl",
+     "isVisible": true,
+     "name": "Machine visibility",
+     "children": [
+      {
+       "id": "IronShowMachine",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "IronShowMachine",
+       "name": "Show machine",
+       "tooltip": ""
+      },
+      {
+       "id": "IronMachineTransparency",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "IronMachineTransparency",
+       "name": "Transparent",
+       "tooltip": ""
+      }
+     ]
+    },
+    {
+     "id": "IronShowHideTool",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "IronShowHideTool",
+     "name": "Tool visibility",
+     "tooltip": ""
+    },
+    {
+     "id": "IronShowHideTurningProfile",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "IronShowHideTurningProfile",
+     "name": "Turning profile visibility",
+     "tooltip": ""
+    }
+   ]
+  },
+  {
+   "id": "Pcb2d3dOutOfSyncBanner",
+   "controls": [
+    {
+     "id": "Pcb2d3dOutOfSyncBannerState",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "Pcb2d3dOutOfSyncBannerReason",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "Pcb2d3dOutOfSyncBannerAction",
+     "type": "CommandControl",
+     "isVisible": false
+    },
+    {
+     "id": "Pcb2d3dOutOfSyncBannerClose",
+     "type": "CommandControl",
+     "isVisible": false
+    }
+   ]
+  },
+  {
+   "id": "QAT",
+   "controls": [
+    {
+     "id": "ShowFusionHomeCmd",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "ShowFusionHomeCmd",
+     "name": "Show Home",
+     "tooltip": ""
+    },
+    {
+     "id": "DashboardModeSwitchCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "DashboardModeSwitchCommand",
+     "name": "Show Data Panel",
+     "tooltip": ""
+    },
+    {
+     "id": "FileSubMenuCommand",
+     "type": "DropDownControl",
+     "isVisible": true,
+     "name": "File",
+     "children": [
+      {
+       "id": "NewDocumentCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "NewDocumentCommand",
+       "name": "New...",
+       "tooltip": "Create a new Part, Assembly, Hybrid, or Electronics Design, a Drawing for the active design, or an Electronics Library."
+      },
+      {
+       "id": "NewElectronDesignDocumentCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "NewElectronDesignDocumentCommand",
+       "name": "New Electronics Design",
+       "tooltip": ""
+      },
+      {
+       "id": "NewElectronIntegratedDesignDocumentCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "NewElectronIntegratedDesignDocumentCommand",
+       "name": "New Integrated Electronics Design ",
+       "tooltip": ""
+      },
+      {
+       "id": "NewElectronLbrDocumentCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "NewElectronLbrDocumentCommand",
+       "name": "New Electronics Library",
+       "tooltip": ""
+      },
+      {
+       "id": "NewAssemblyFromPartCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "NewAssemblyFromPartCommand",
+       "name": "Add To Assembly",
+       "tooltip": "Inserts the active design into an Assembly Design as an external component.<br><br>Select an Assembly Design to insert into, then use the manipulators in the canvas or Initial Position dialog to place the component in the target design.<br>"
+      },
+      {
+       "id": "NewDrawingMenuCommand",
+       "type": "DropDownControl",
+       "isVisible": false,
+       "name": "New Drawing",
+       "children": [
+        {
+         "id": "NewFusionDrawingDocumentCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "NewFusionDrawingDocumentCommand",
+         "name": "From Design",
+         "tooltip": ""
+        },
+        {
+         "id": "ECADNewDrawingDocumentCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ECADNewDrawingDocumentCommand",
+         "name": "From Design",
+         "tooltip": "Creates a drawing of the electronics design.<br><br>Place a view of the PCB. Place a diagram and table for the PCB Layer Stack.<br>"
+        },
+        {
+         "id": "ECADNewDrawingFromPCB3dCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ECADNewDrawingFromPCB3dCommand",
+         "name": "From Design",
+         "tooltip": ""
+        },
+        {
+         "id": "PublisherNewDrawingDocumentCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "PublisherNewDrawingDocumentCommand",
+         "name": "From Animation",
+         "tooltip": ""
+        }
+       ]
+      },
+      {
+       "id": "NewFusionDrawingTemplateCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "NewFusionDrawingTemplateCommand",
+       "name": "New Drawing Template",
+       "tooltip": ""
+      },
+      {
+       "id": "OpenCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "OpenCommand",
+       "name": "Open...",
+       "tooltip": "Opens a design or drawing from your projects or local computer.<br><br>Select a design or drawing from the project browser and click Open, or click \u201cOpen from my computer\u201d and select a supported file.<br>"
+      },
+      {
+       "id": "NotifyAutoSaveFilesCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "NotifyAutoSaveFilesCommand",
+       "name": "Open Recovered Documents (0)",
+       "tooltip": "Opens the <b>Document Recovery<b> dialog and displays a list of recovery documents.<br><br>Recovery documents are cached locally. Use them to recover design data if Fusion closes unexpectedly.<br><br>In Preferences, set the <b>Automatic Backup Interval<b> to control how frequently data is backed up.<br>"
+      },
+      {
+       "id": "UploadCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "UploadCommand",
+       "name": "Upload...",
+       "tooltip": ""
+      },
+      {
+       "id": "SeparatorAfter_UploadCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "PLM360SaveCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "PLM360SaveCommand",
+       "name": "Save",
+       "tooltip": "Saves a design to a selected location within a project.<br><br>Save your design frequently to prevent loss of work in the event of a power failure or unexpected crash.<br>"
+      },
+      {
+       "id": "PLM360SaveAsCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "PLM360SaveAsCommand",
+       "name": "Save As",
+       "tooltip": ""
+      },
+      {
+       "id": "PLM360SaveAsLatestOnQATCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "PLM360SaveAsLatestOnQATCommand",
+       "name": "Save As Latest",
+       "tooltip": ""
+      },
+      {
+       "id": "SaveComputedStateCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "SaveComputedStateCommand",
+       "name": "Save Computed State",
+       "tooltip": ""
+      },
+      {
+       "id": "AdvanceToLatestCmd",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "AdvanceToLatestCmd",
+       "name": "Advance to Latest",
+       "tooltip": "Advances all components in the assembly with their latest changes, even if those changes are not versions.<br>"
+      },
+      {
+       "id": "ExportCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "ExportCommand",
+       "name": "Export...",
+       "tooltip": ""
+      },
+      {
+       "id": "SeparatorAfter_ExportCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "CreateVersionCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "CreateVersionCommand",
+       "name": "Create Version",
+       "tooltip": "Marks the current state of the design as a significant iteration.<br><br>By default, the latest version of your design is the one referenced by other designs. Changes don't appear in external references until you create a new version of your design.<br>"
+      },
+      {
+       "id": "SeparatorAfter_CreateVersionCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "FusionDrawingPrintCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "FusionDrawingPrintCommand",
+       "name": "Print...",
+       "tooltip": ""
+      },
+      {
+       "id": "ThreeDprintCmdDef",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "ThreeDprintCmdDef",
+       "name": "3D Print",
+       "tooltip": "Prepares solid or mesh bodies to be 3D printed directly from Fusion's Manufacture workspace or from an external application.<br><br>Select solid or mesh bodies to prepare, then select a Preparation Type to switch to the Manufacture workspace, export and send to an installed 3D printing application, or export a 3MF, STL, or OBJ file. For exports, adjust the output and refinement settings to control the resolution of the mesh.<br>"
+      },
+      {
+       "id": "SaveAsImageCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "SaveAsImageCommand",
+       "name": "Capture Image...",
+       "tooltip": "Captures the current canvas as an image.<br><br>Set the image size and resolution then set the file type (*.png, *.jpg, *.tiff) and file name.<br>"
+      },
+      {
+       "id": "SimpleSharingPublicLinkCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "SimpleSharingPublicLinkCommand",
+       "name": "Share File Link",
+       "tooltip": "Creates a shareable link so that viewers can download the design, view it online, or share it with others.<br><br>You can protect the link with a password; the design can be viewed in the cloud even without Fusion installed.<br>"
+      },
+      {
+       "id": "SeparatorAfter_SimpleSharingPublicLinkCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "PLM360OpenDetailsCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "PLM360OpenDetailsCommand",
+       "name": "View Details on Web",
+       "tooltip": ""
+      },
+      {
+       "id": "ViewWidgetCommand",
+       "type": "DropDownControl",
+       "isVisible": true,
+       "name": "View",
+       "children": [
+        {
+         "id": "HideViewCubeCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideViewCubeCommand",
+         "name": "Hide ViewCube",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowViewCubeCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowViewCubeCommand",
+         "name": "Show ViewCube",
+         "tooltip": ""
+        },
+        {
+         "id": "HideBrowserCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideBrowserCommand",
+         "name": "Hide Browser",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowBrowserCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowBrowserCommand",
+         "name": "Show Browser",
+         "tooltip": ""
+        },
+        {
+         "id": "HideActivityFeedCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideActivityFeedCommand",
+         "name": "Hide Comments",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowActivityFeedCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowActivityFeedCommand",
+         "name": "Show Comments",
+         "tooltip": ""
+        },
+        {
+         "id": "HideCommandPaletteCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideCommandPaletteCommand",
+         "name": "Hide Command Palette",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowCommandPaletteCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowCommandPaletteCommand",
+         "name": "Show Command Palette",
+         "tooltip": ""
+        },
+        {
+         "id": "HideElectronDescriptionCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideElectronDescriptionCommand",
+         "name": "Hide Electron Design Description",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowElectronDescriptionCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowElectronDescriptionCommand",
+         "name": "Show Electron Design Description",
+         "tooltip": ""
+        },
+        {
+         "id": "HideElectronBrowserPanelCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideElectronBrowserPanelCommand",
+         "name": "Hide Browser",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowElectronBrowserPanelCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowElectronBrowserPanelCommand",
+         "name": "Show Browser",
+         "tooltip": ""
+        },
+        {
+         "id": "HideElectronDesignManagerCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideElectronDesignManagerCommand",
+         "name": "Hide Design Manager",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowElectronDesignManagerCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowElectronDesignManagerCommand",
+         "name": "Show Design Manager",
+         "tooltip": ""
+        },
+        {
+         "id": "HideElectronLayersPanelCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideElectronLayersPanelCommand",
+         "name": "Hide Display Layers Panel",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowElectronLayersPanelCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowElectronLayersPanelCommand",
+         "name": "Show Display Layers Panel",
+         "tooltip": ""
+        },
+        {
+         "id": "HideElectronErrorsPanelCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideElectronErrorsPanelCommand",
+         "name": "Hide Errors Panel",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowElectronErrorsPanelCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowElectronErrorsPanelCommand",
+         "name": "Show Errors Panel",
+         "tooltip": ""
+        },
+        {
+         "id": "HideElectronInspectorCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideElectronInspectorCommand",
+         "name": "Hide Inspector",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowElectronInspectorCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowElectronInspectorCommand",
+         "name": "Show Inspector",
+         "tooltip": ""
+        },
+        {
+         "id": "HideElectronPlacePartPanelCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideElectronPlacePartPanelCommand",
+         "name": "Hide Place Component Panel",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowElectronPlacePartPanelCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowElectronPlacePartPanelCommand",
+         "name": "Show Place Component Panel",
+         "tooltip": ""
+        },
+        {
+         "id": "HideElectronSelectionFilterCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideElectronSelectionFilterCommand",
+         "name": "Hide Selection Filter",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowElectronSelectionFilterCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowElectronSelectionFilterCommand",
+         "name": "Show Selection Filter",
+         "tooltip": ""
+        },
+        {
+         "id": "HideElectronAnalyzeSignalCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideElectronAnalyzeSignalCommand",
+         "name": "Hide Analyze Signal",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowElectronAnalyzeSignalCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowElectronAnalyzeSignalCommand",
+         "name": "Show Analyze Signal",
+         "tooltip": ""
+        },
+        {
+         "id": "HideCommandGuidanceCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideCommandGuidanceCommand",
+         "name": "Hide Command Guidance",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowCommandGuidanceCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowCommandGuidanceCommand",
+         "name": "Show Command Guidance",
+         "tooltip": ""
+        },
+        {
+         "id": "HideElectronSheetsCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideElectronSheetsCommand",
+         "name": "Hide Sheets",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowElectronSheetsCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowElectronSheetsCommand",
+         "name": "Show Sheets",
+         "tooltip": ""
+        },
+        {
+         "id": "HideTextCommandsCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideTextCommandsCommand",
+         "name": "Hide Text Commands",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowTextCommandsCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "ShowTextCommandsCommand",
+         "name": "Show Text Commands",
+         "tooltip": ""
+        },
+        {
+         "id": "HideNavigationToolbarCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideNavigationToolbarCommand",
+         "name": "Hide Navigation Bar",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowNavigationToolbarCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowNavigationToolbarCommand",
+         "name": "Show Navigation Bar",
+         "tooltip": ""
+        },
+        {
+         "id": "HideCommandToolbarCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HideCommandToolbarCommand",
+         "name": "Hide Command Toolbar",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowCommandToolbarCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowCommandToolbarCommand",
+         "name": "Show Command Toolbar",
+         "tooltip": ""
+        },
+        {
+         "id": "DashboardModeOpenCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "DashboardModeOpenCommand",
+         "name": "Show Data Panel",
+         "tooltip": ""
+        },
+        {
+         "id": "DashboardModeCloseCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "DashboardModeCloseCommand",
+         "name": "Hide Data Panel",
+         "tooltip": ""
+        },
+        {
+         "id": "HidePerformanceOverlayCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "HidePerformanceOverlayCommand",
+         "name": "Hide Performance Overlay",
+         "tooltip": ""
+        },
+        {
+         "id": "ShowPerformanceOverlayCommand",
+         "type": "CommandControl",
+         "isVisible": false,
+         "command": "ShowPerformanceOverlayCommand",
+         "name": "Show Performance Overlay",
+         "tooltip": ""
+        },
+        {
+         "id": "SeparatorAfter_ShowPerformanceOverlayCommand",
+         "type": "SeparatorControl",
+         "isVisible": true
+        },
+        {
+         "id": "ResetToDefaultLayoutCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "ResetToDefaultLayoutCommand",
+         "name": "Reset to Default Layout",
+         "tooltip": ""
+        }
+       ]
+      },
+      {
+       "id": "SeparatorAfter_ViewWidgetCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      }
+     ]
+    },
+    {
+     "id": "OpenDocumentCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "OpenDocumentCommand",
+     "name": "Open...",
+     "tooltip": ""
+    },
+    {
+     "id": "SaveDocumentCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "SaveDocumentCommand",
+     "name": "Save Local",
+     "tooltip": ""
+    },
+    {
+     "id": "PLM360SaveCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "PLM360SaveCommand",
+     "name": "Save",
+     "tooltip": "Saves a design to a selected location within a project.<br><br>Save your design frequently to prevent loss of work in the event of a power failure or unexpected crash.<br>"
+    },
+    {
+     "id": "UndoDropDown",
+     "type": "SplitButtonControl",
+     "isVisible": true
+    },
+    {
+     "id": "ElectronUndo",
+     "type": "SplitButtonControl",
+     "isVisible": false
+    },
+    {
+     "id": "FusionDrawingUndoCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "FusionDrawingUndoCommand",
+     "name": "Undo",
+     "tooltip": ""
+    },
+    {
+     "id": "DoraUndoCommand",
+     "type": "SplitButtonControl",
+     "isVisible": false
+    },
+    {
+     "id": "RedoDropDown",
+     "type": "SplitButtonControl",
+     "isVisible": true
+    },
+    {
+     "id": "ElectronRedo",
+     "type": "SplitButtonControl",
+     "isVisible": false
+    },
+    {
+     "id": "FusionDrawingRedoCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "FusionDrawingRedoCommand",
+     "name": "Redo",
+     "tooltip": ""
+    },
+    {
+     "id": "DoraRedoCommand",
+     "type": "SplitButtonControl",
+     "isVisible": false
+    },
+    {
+     "id": "NTestExcMetaCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "NTestExcMetaCommand",
+     "name": "Show NTest",
+     "tooltip": ""
+    },
+    {
+     "id": "ShowChangeAwarenessQATCmd",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "ShowChangeAwarenessQATCmd",
+     "name": "User Change Awareness",
+     "tooltip": ""
+    },
+    {
+     "id": "PLM360DeepRefreshDocumentCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "PLM360DeepRefreshDocumentCommand",
+     "name": "Get Latest Updates",
+     "tooltip": ""
+    },
+    {
+     "id": "RefreshDocumentCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "RefreshDocumentCommand",
+     "name": "Refresh",
+     "tooltip": ""
+    },
+    {
+     "id": "GetLatestElectronCmd",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "GetLatestElectronCmd",
+     "name": "Get All Latest",
+     "tooltip": ""
+    },
+    {
+     "id": "GetLatestPcbCmd",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "GetLatestPcbCmd",
+     "name": "Get Latest PCB",
+     "tooltip": ""
+    },
+    {
+     "id": "GetLatestSchCmd",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "GetLatestSchCmd",
+     "name": "Get Latest Schematic",
+     "tooltip": ""
+    },
+    {
+     "id": "UpdateDerivedSchCmd",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "UpdateDerivedSchCmd",
+     "name": "Get Latest Derived Schematic",
+     "tooltip": ""
+    },
+    {
+     "id": "ReferenceManagerCmd",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "ReferenceManagerCmd",
+     "name": "Update Referenced model",
+     "tooltip": ""
+    },
+    {
+     "id": "FusionDocUpdateCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "FusionDocUpdateCommand",
+     "name": "Get Latest",
+     "tooltip": ""
+    },
+    {
+     "id": "DrawingReloadDocumentCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "DrawingReloadDocumentCommand",
+     "name": "Get Latest",
+     "tooltip": ""
+    },
+    {
+     "id": "FusionDrawingFeatureToggleCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "FusionDrawingFeatureToggleCommand",
+     "name": "Feature Toggle...",
+     "tooltip": ""
+    },
+    {
+     "id": "DrawingShowChangeAwarenessQATCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "DrawingShowChangeAwarenessQATCommand",
+     "name": "User Change Awareness",
+     "tooltip": ""
+    }
+   ]
+  },
+  {
+   "id": "QATRight",
+   "controls": [
+    {
+     "id": "BasicAccessCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "BasicAccessCommand",
+     "name": "Basic Access",
+     "tooltip": ""
+    },
+    {
+     "id": "HealthStatusCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "HealthStatusCommand",
+     "name": "0 E - 0 W",
+     "tooltip": ""
+    },
+    {
+     "id": "TryToBuyCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "TryToBuyCommand",
+     "name": "Expired: Subscribe Now",
+     "tooltip": ""
+    },
+    {
+     "id": "RequestTrialCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "RequestTrialCommand",
+     "name": "Upgrade to a Fusion subscription",
+     "tooltip": ""
+    },
+    {
+     "id": "ConnectivityStatusCommand",
+     "type": "CommandControl",
+     "isVisible": false
+    },
+    {
+     "id": "CloudServiceStatusCommand",
+     "type": "CommandControl",
+     "isVisible": false,
+     "command": "CloudServiceStatusCommand",
+     "name": "Cloud service maintenance.",
+     "tooltip": ""
+    },
+    {
+     "id": "UpdateAvailableCommand",
+     "type": "CommandControl",
+     "isVisible": false
+    },
+    {
+     "id": "NotificationCommand",
+     "type": "CommandControl",
+     "isVisible": false
+    },
+    {
+     "id": "AANewChatCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "AANewChatCommand",
+     "name": "Autodesk Assistant",
+     "tooltip": ""
+    },
+    {
+     "id": "FeaturePacksCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "FeaturePacksCommand",
+     "name": "",
+     "tooltip": ""
+    },
+    {
+     "id": "CloudStatusCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "CloudStatusCommand",
+     "name": "",
+     "tooltip": ""
+    },
+    {
+     "id": "NotificationCenterCommand",
+     "type": "CommandControl",
+     "isVisible": true,
+     "command": "NotificationCenterCommand",
+     "name": "Notification Center",
+     "tooltip": ""
+    },
+    {
+     "id": "SubscriptionCommand",
+     "type": "DropDownControl",
+     "isVisible": false,
+     "name": "Subscription",
+     "children": [
+      {
+       "id": "SubscriptionCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "SubscriptionCommand",
+       "name": "Subscription",
+       "tooltip": ""
+      }
+     ]
+    },
+    {
+     "id": "HelpGroupCommand",
+     "type": "DropDownControl",
+     "isVisible": true,
+     "name": "Help",
+     "children": [
+      {
+       "id": "SearchCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "SearchCommand",
+       "name": "Search",
+       "tooltip": ""
+      },
+      {
+       "id": "SeparatorAfter_SearchCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "WalkthroughCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "WalkthroughCommand",
+       "name": "Take a Tour",
+       "tooltip": ""
+      },
+      {
+       "id": "LearningAndHelpCommand",
+       "type": "DropDownControl",
+       "isVisible": true,
+       "name": "Learning and Documentation",
+       "children": [
+        {
+         "id": "HelpCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "HelpCommand",
+         "name": "Self-Paced Learning",
+         "tooltip": ""
+        },
+        {
+         "id": "LearningAndTutorialsCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "LearningAndTutorialsCommand",
+         "name": "Product Documentation",
+         "tooltip": ""
+        },
+        {
+         "id": "APIHelpCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "APIHelpCommand",
+         "name": "Fusion API",
+         "tooltip": ""
+        }
+       ]
+      },
+      {
+       "id": "LearningPaletteCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "LearningPaletteCommand",
+       "name": "Quick Setup",
+       "tooltip": ""
+      },
+      {
+       "id": "AAChatCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "AAChatCommand",
+       "name": "Autodesk Assistant",
+       "tooltip": ""
+      },
+      {
+       "id": "CommunityCommand",
+       "type": "DropDownControl",
+       "isVisible": true,
+       "name": "Community",
+       "children": [
+        {
+         "id": "ForumCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "ForumCommand",
+         "name": "Forum",
+         "tooltip": ""
+        },
+        {
+         "id": "SubmitAnIdeaCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "SubmitAnIdeaCommand",
+         "name": "Insider Program",
+         "tooltip": ""
+        },
+        {
+         "id": "BlogCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "BlogCommand",
+         "name": "Blog",
+         "tooltip": ""
+        }
+       ]
+      },
+      {
+       "id": "SupportAndDiagnosticsCommand",
+       "type": "DropDownControl",
+       "isVisible": true,
+       "name": "Support and Diagnostics",
+       "children": [
+        {
+         "id": "FeedbackCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "FeedbackCommand",
+         "name": "Get Support",
+         "tooltip": ""
+        },
+        {
+         "id": "AnnotateLogFileCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "AnnotateLogFileCommand",
+         "name": "Annotate Log File",
+         "tooltip": ""
+        },
+        {
+         "id": "GatherDiagnosticsDataCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "GatherDiagnosticsDataCommand",
+         "name": "Diagnostic Log Files",
+         "tooltip": ""
+        },
+        {
+         "id": "GraphicsDiagnosticsCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "GraphicsDiagnosticsCommand",
+         "name": "Graphics Diagnostic",
+         "tooltip": ""
+        },
+        {
+         "id": "ClearUserCacheCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "ClearUserCacheCommand",
+         "name": "Clear Cache Data",
+         "tooltip": ""
+        },
+        {
+         "id": "ServiceUtilityCommand",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "ServiceUtilityCommand",
+         "name": "Service Utility",
+         "tooltip": ""
+        },
+        {
+         "id": "PerfFeedbackRecorderCmd",
+         "type": "CommandControl",
+         "isVisible": true,
+         "command": "PerfFeedbackRecorderCmd",
+         "name": "Report Performance Issue",
+         "tooltip": ""
+        }
+       ]
+      },
+      {
+       "id": "StreetTeamCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "StreetTeamCommand",
+       "name": "Connect with an Expert",
+       "tooltip": ""
+      },
+      {
+       "id": "SeparatorAfter_StreetTeamCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "PreReleaseFeedbackCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "PreReleaseFeedbackCommand",
+       "name": "Give Feedback",
+       "tooltip": ""
+      },
+      {
+       "id": "SeparatorAfter_PreReleaseFeedbackCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "ReportProblemCmd",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "ReportProblemCmd",
+       "name": "Report a Problem",
+       "tooltip": ""
+      },
+      {
+       "id": "UpdateNowCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "UpdateNowCommand",
+       "name": "Check for Updates",
+       "tooltip": ""
+      },
+      {
+       "id": "WhatsNewCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "WhatsNewCommand",
+       "name": "What's New",
+       "tooltip": ""
+      },
+      {
+       "id": "ReleaseNotesCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "ReleaseNotesCommand",
+       "name": "Release Notes",
+       "tooltip": ""
+      },
+      {
+       "id": "AboutBoxCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "AboutBoxCommand",
+       "name": "About",
+       "tooltip": ""
+      },
+      {
+       "id": "SeparatorAfter_AboutBoxCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "TutorialsCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "TutorialsCommand",
+       "name": "Tutorials",
+       "tooltip": ""
+      },
+      {
+       "id": "QuickStartCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "QuickStartCommand",
+       "name": "Quick Start",
+       "tooltip": ""
+      },
+      {
+       "id": "VideosCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "VideosCommand",
+       "name": "Essential Videos",
+       "tooltip": ""
+      },
+      {
+       "id": "CIPCommand",
+       "type": "CommandControl",
+       "isVisible": true
+      }
+     ]
+    },
+    {
+     "id": "UserDisplayNameCommand",
+     "type": "DropDownControl",
+     "isVisible": true,
+     "name": "no user logged in",
+     "children": [
+      {
+       "id": "GoToMyAccountCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "GoToMyAccountCommand",
+       "name": "Autodesk Account",
+       "tooltip": ""
+      },
+      {
+       "id": "PreferencesCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "PreferencesCommand",
+       "name": "Preferences",
+       "tooltip": ""
+      },
+      {
+       "id": "UserHubsCommand",
+       "type": "DropDownControl",
+       "isVisible": false,
+       "name": "Switch Team",
+       "children": []
+      },
+      {
+       "id": "GoToMyProfileCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "GoToMyProfileCommand",
+       "name": "My Profile",
+       "tooltip": ""
+      },
+      {
+       "id": "MyCloudCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "MyCloudCommand",
+       "name": "My Cloud",
+       "tooltip": ""
+      },
+      {
+       "id": "ShareFeedbackCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "ShareFeedbackCommand",
+       "name": "Share Feedback",
+       "tooltip": ""
+      },
+      {
+       "id": "SeparatorAfter_ShareFeedbackCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "SubscribeNowCommand",
+       "type": "CommandControl",
+       "isVisible": false,
+       "command": "SubscribeNowCommand",
+       "name": "Subscribe Now",
+       "tooltip": ""
+      },
+      {
+       "id": "SeparatorAfter_SubscribeNowCommand",
+       "type": "SeparatorControl",
+       "isVisible": true
+      },
+      {
+       "id": "QontextLogoutCommand",
+       "type": "CommandControl",
+       "isVisible": true,
+       "command": "QontextLogoutCommand",
+       "name": "Sign Out",
+       "tooltip": ""
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ReadOnlyBanner",
+   "controls": [
+    {
+     "id": "ReadOnlyPermissionState",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "ReadOnlyPermissionReason",
+     "type": "CommandControl",
+     "isVisible": true
+    },
+    {
+     "id": "SeparatorAfter_ReadOnlyPermissionReason",
+     "type": "SeparatorControl",
+     "isVisible": true
+    },
+    {
+     "id": "ReadOnlyPermissionAction",
+     "type": "CommandControl",
+     "isVisible": false
+    }
+   ]
+  }
+ ],
+ "palettes": [
+  {
+   "id": "TextCommands",
+   "name": "Text Commands",
+   "isVisible": false,
+   "dockingState": 2
+  },
+  {
+   "id": "AAPalette",
+   "name": "Autodesk Assistant",
+   "isVisible": true,
+   "dockingState": 4
+  }
+ ]
+}

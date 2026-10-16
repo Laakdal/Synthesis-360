@@ -1,0 +1,46 @@
+{"t": "2026-10-16T19:46:17", "kind": "heartbeat", "version": "2705.1.30", "mode": "v3"}
+{"t": "2026-10-16T19:47:02", "kind": "step_begin", "step": "v3_start"}
+{"t": "2026-10-16T19:47:03", "kind": "environment", "version": "2705.1.30", "user": true, "os": "nt", "documents": 0}
+{"t": "2026-10-16T19:47:03", "kind": "window_capture", "name": "00_startup", "width": 1936, "height": 1176, "printwindow_ok": true}
+{"t": "2026-10-16T19:47:03", "kind": "command_definitions", "count": 3121}
+{"t": "2026-10-16T19:47:03", "kind": "step_end", "step": "v3_start"}
+{"t": "2026-10-16T19:47:07", "kind": "step_begin", "step": "v3_plane_frames"}
+{"t": "2026-10-16T19:47:10", "kind": "new_document", "name": "Untitled", "designType": 1, "defaultLengthUnits": "mm", "workspace": "FusionSolidEnvironment"}
+{"t": "2026-10-16T19:47:10", "kind": "v3_origin_plane_sketch_frames", "XY": {"origin": [0.0, 0.0, 0.0], "xDir": [1.0, 0.0, 0.0], "yDir": [0.0, 1.0, 0.0], "normal": [0.0, 0.0, 1.0], "sketch_point_2_3_in_model": [2.0, 3.0, 0.0]}, "XZ": {"origin": [0.0, 0.0, 0.0], "xDir": [1.0, 0.0, 0.0], "yDir": [0.0, 0.0, -1.0], "normal": [0.0, 1.0, 0.0], "sketch_point_2_3_in_model": [2.0, 0.0, -3.0]}, "YZ": {"origin": [0.0, 0.0, 0.0], "xDir": [0.0, 0.0, -1.0], "yDir": [0.0, 1.0, 0.0], "normal": [1.0, 0.0, 0.0], "sketch_point_2_3_in_model": [0.0, 3.0, -2.0]}}
+{"t": "2026-10-16T19:47:11", "kind": "ui_dump", "tag": "v3-design-workspace", "workspaces": 38}
+{"t": "2026-10-16T19:47:11", "kind": "step_end", "step": "v3_plane_frames"}
+{"t": "2026-10-16T19:47:15", "kind": "step_begin", "step": "v3_enter_sketch"}
+{"t": "2026-10-16T19:47:15", "kind": "command_executed", "id": "SketchCreate", "preselected": true}
+{"t": "2026-10-16T19:47:15", "kind": "step_end", "step": "v3_enter_sketch"}
+{"t": "2026-10-16T19:47:19", "kind": "step_begin", "step": "v3_focus"}
+{"t": "2026-10-16T19:47:19", "kind": "ui_dump", "tag": "v3-sketch-mode", "workspaces": 38}
+{"t": "2026-10-16T19:47:19", "kind": "step_end", "step": "v3_focus"}
+{"t": "2026-10-16T19:47:23", "kind": "step_begin", "step": "v3_rect_tool"}
+{"t": "2026-10-16T19:47:23", "kind": "command_executed", "id": "ShapeRectangleTwoPoint", "preselected": false}
+{"t": "2026-10-16T19:47:23", "kind": "step_end", "step": "v3_rect_tool"}
+{"t": "2026-10-16T19:47:27", "kind": "step_begin", "step": "v3_click1"}
+{"t": "2026-10-16T19:47:27", "kind": "synthetic_click", "label": "rect_corner_1", "model": [-4.0, -2.0, 0.0], "screen": [558, 734]}
+{"t": "2026-10-16T19:47:27", "kind": "step_end", "step": "v3_click1"}
+{"t": "2026-10-16T19:47:31", "kind": "step_begin", "step": "v3_click2"}
+{"t": "2026-10-16T19:47:31", "kind": "synthetic_click", "label": "rect_corner_2", "model": [3.0, 2.5, 0.0], "screen": [940, 488]}
+{"t": "2026-10-16T19:47:31", "kind": "step_end", "step": "v3_click2"}
+{"t": "2026-10-16T19:47:35", "kind": "step_begin", "step": "v3_rect_check"}
+{"t": "2026-10-16T19:47:36", "kind": "window_capture", "name": "v3_ui_rectangle", "width": 1936, "height": 1176, "printwindow_ok": true}
+{"t": "2026-10-16T19:47:36", "kind": "v3_ui_rectangle_sketch", "name": "Sketch4", "curves": 4, "points": 5, "profiles": 1, "isFullyConstrained": false, "constraints": {"HorizontalConstraint": 2, "VerticalConstraint": 2}, "dimensions": [], "health": "Healthy", "message": ""}
+{"t": "2026-10-16T19:47:36", "kind": "step_end", "step": "v3_rect_check"}
+{"t": "2026-10-16T19:47:40", "kind": "step_begin", "step": "v3_circle_tool"}
+{"t": "2026-10-16T19:47:40", "kind": "command_executed", "id": "CircleCenterRadius", "preselected": false}
+{"t": "2026-10-16T19:47:40", "kind": "step_end", "step": "v3_circle_tool"}
+{"t": "2026-10-16T19:47:44", "kind": "step_begin", "step": "v3_circle_click1"}
+{"t": "2026-10-16T19:47:44", "kind": "synthetic_click", "label": "circle_center", "model": [-1.0, 0.0, 0.0], "screen": [722, 625]}
+{"t": "2026-10-16T19:47:44", "kind": "step_end", "step": "v3_circle_click1"}
+{"t": "2026-10-16T19:47:48", "kind": "step_begin", "step": "v3_circle_click2"}
+{"t": "2026-10-16T19:47:48", "kind": "synthetic_click", "label": "circle_radius", "model": [0.0, 0.0, 0.0], "screen": [777, 625]}
+{"t": "2026-10-16T19:47:48", "kind": "step_end", "step": "v3_circle_click2"}
+{"t": "2026-10-16T19:47:52", "kind": "step_begin", "step": "v3_circle_check"}
+{"t": "2026-10-16T19:47:53", "kind": "v3_ui_circle_sketch", "name": "Sketch4", "curves": 5, "points": 6, "profiles": 2, "isFullyConstrained": false, "constraints": {"HorizontalConstraint": 2, "VerticalConstraint": 2, "CoincidentConstraint": 1}, "dimensions": [], "health": "Healthy", "message": ""}
+{"t": "2026-10-16T19:47:53", "kind": "window_capture", "name": "v3_ui_rectangle_and_circle", "width": 1936, "height": 1176, "printwindow_ok": true}
+{"t": "2026-10-16T19:47:53", "kind": "step_end", "step": "v3_circle_check"}
+{"t": "2026-10-16T19:47:57", "kind": "step_begin", "step": "v3_close"}
+{"t": "2026-10-16T19:47:58", "kind": "done"}
+{"t": "2026-10-16T19:47:58", "kind": "step_end", "step": "v3_close"}
