@@ -1,0 +1,18 @@
+CAD360 licence
+==============
+
+PLACEHOLDER - to be confirmed by the CAD360 project owner before public distribution.
+
+The CAD360 source code declares the licence "LGPL-2.1-only" in its Cargo workspace manifest
+(Cargo.toml, [workspace.package] license). Until the project owner publishes a final licence
+statement, this binary distribution is provided under the GNU Lesser General Public License,
+version 2.1 only, the text of which is included as
+THIRD-PARTY-NOTICES\OpenCASCADE-LGPL-2.1.txt.
+
+Copyright (c) CAD360 contributors.
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. See the licence text for details.
+
+Source code: @SOURCE_URL@

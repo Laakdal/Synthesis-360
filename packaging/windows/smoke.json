@@ -1,0 +1,28 @@
+{
+  "steps": [
+    { "op": "log", "text": "CAD360 packaged-build smoke test" },
+    { "op": "wait", "frames": 30 },
+    { "op": "screenshot", "name": "01_startup" },
+    { "op": "select_plane", "plane": "XY" },
+    { "op": "cmd", "id": "CreateSketch" },
+    { "op": "cmd", "id": "Rectangle2Pt" },
+    { "op": "sketch_click", "at": [0, 0] },
+    { "op": "sketch_click", "at": [40, 25] },
+    { "op": "key", "key": "Escape" },
+    { "op": "cmd", "id": "FinishSketch" },
+    { "op": "select_profile", "sketch": 0, "profile": 0 },
+    { "op": "cmd", "id": "Extrude" },
+    { "op": "set_dialog_param", "expr": "15 mm" },
+    { "op": "dialog_ok" },
+    { "op": "view", "view": "Home" },
+    { "op": "fit" },
+    { "op": "wait", "frames": 10 },
+    { "op": "screenshot", "name": "02_extruded_box" },
+    { "op": "export_step", "path": "smoke-box.step" },
+    { "op": "open", "path": "samples/mounting-plate.c360" },
+    { "op": "fit" },
+    { "op": "wait", "frames": 15 },
+    { "op": "screenshot", "name": "03_sample_design" },
+    { "op": "close" }
+  ]
+}

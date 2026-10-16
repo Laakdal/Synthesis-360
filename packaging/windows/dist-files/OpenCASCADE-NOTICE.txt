@@ -1,0 +1,27 @@
+Open CASCADE Technology notice
+==============================
+
+cad360.exe makes use of Open CASCADE Technology software, version @OCCT_VERSION@
+(https://dev.opencascade.org), which is statically linked into the executable.
+
+Open CASCADE Technology is free software; you can redistribute it and/or modify it under the
+terms of the GNU Lesser General Public License version 2.1 as published by the Free Software
+Foundation, with a special exception defined in the file OCCT_LGPL_EXCEPTION.txt. The full
+licence text is in OpenCASCADE-LGPL-2.1.txt and the exception in
+OpenCASCADE-LGPL-EXCEPTION.txt, both in this folder.
+
+Copyright (c) Open CASCADE SAS and contributors.
+
+Relinking (LGPL-2.1 section 6): because the library is linked statically, the complete
+corresponding source of CAD360 and of the Open CASCADE bindings it uses is provided at
+@SOURCE_URL@, together with the build instructions (docs/build-and-release.md), so that the
+application can be rebuilt against a modified version of Open CASCADE Technology.
+
+
+opencascade-rs bindings
+-----------------------
+CAD360 includes a modified copy of the "opencascade-sys" and "opencascade" crates, version
+0.3.0, from the opencascade-rs project by Brian Schwind and contributors
+(https://github.com/bschwind/opencascade-rs), licensed under LGPL-2.1. CAD360's changes
+(MSVC handle-type fixes and additional bindings used by the CAD360 kernel) are in
+crates/vendor/opencascade-sys and crates/vendor/opencascade of the CAD360 source code.

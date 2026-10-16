@@ -1,0 +1,39 @@
+<!--
+  CAD360 per-machine MSI (WiX Toolset v4/v5 schema). Built by make-dist.ps1 when `wix` is on
+  PATH:  wix build cad360.wxs -arch x64 -d Version=0.1.0 -d StageDir=<dist\CAD360-...-win64>
+         -d IconPath=<crates\cad-app\assets\cad360.ico> -o CAD360.msi
+  NOTE: not yet built on the reference machine (WiX was not installed); see
+  docs/build-and-release.md.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="CAD360" Manufacturer="CAD360 contributors" Version="$(var.Version)"
+           UpgradeCode="6f3c1a7e-2b8d-4e51-9c0a-3d7e5b9f1a24" Scope="perMachine">
+    <MajorUpgrade DowngradeErrorMessage="A newer version of CAD360 is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+    <Icon Id="CAD360Icon" SourceFile="$(var.IconPath)" />
+    <Property Id="ARPPRODUCTICON" Value="CAD360Icon" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="CAD360">
+        <!-- every file of the staged folder (exe, notices, samples, runtime DLLs) -->
+        <Files Include="$(var.StageDir)\**" />
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="StartMenuShortcut" Guid="b2d4f6a8-1c3e-4a5b-8d7f-0e2a4c6b8d10">
+        <Shortcut Id="CAD360Shortcut" Name="CAD360" Description="Parametric CAD"
+                  Target="[INSTALLFOLDER]cad360.exe" WorkingDirectory="INSTALLFOLDER" Icon="CAD360Icon" />
+        <RegistryValue Root="HKLM" Key="Software\CAD360" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <!-- .c360 files open in CAD360 -->
+    <Component Id="FileAssociation" Directory="INSTALLFOLDER" Guid="c3e5a7b9-2d4f-4b6c-9e8a-1f3b5d7c9e21">
+      <RegistryValue Root="HKLM" Key="Software\Classes\.c360" Value="CAD360.Design" Type="string" KeyPath="yes" />
+      <RegistryValue Root="HKLM" Key="Software\Classes\CAD360.Design" Value="CAD360 Design" Type="string" />
+      <RegistryValue Root="HKLM" Key="Software\Classes\CAD360.Design\DefaultIcon" Value="[INSTALLFOLDER]cad360.exe,0" Type="string" />
+      <RegistryValue Root="HKLM" Key="Software\Classes\CAD360.Design\shell\open\command" Value="&quot;[INSTALLFOLDER]cad360.exe&quot; &quot;%1&quot;" Type="string" />
+    </Component>
+  </Package>
+</Wix>
