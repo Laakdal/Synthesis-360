@@ -1074,6 +1074,133 @@ def v3_close():
     s_close()
 
 
+# =========================================================================== v4 pass: joints
+def _occ_info(occ):
+    m = occ.transform2
+    bb = None
+    try:
+        b = occ.bRepBodies.item(0)
+        bx = b.boundingBox
+        bb = [[round(v * 10, 3) for v in (bx.minPoint.x, bx.minPoint.y, bx.minPoint.z)],
+              [round(v * 10, 3) for v in (bx.maxPoint.x, bx.maxPoint.y, bx.maxPoint.z)]]
+    except Exception:
+        pass
+    return {"name": occ.name, "translation_mm": [round(m.getCell(i, 3) * 10, 3) for i in range(3)],
+            "rotation_row0": [round(m.getCell(0, j), 4) for j in range(3)],
+            "isGrounded": safe(lambda: occ.isGrounded), "bbox_world_mm": bb}
+
+
+def _box_component(root, transform, w, d, h):
+    occ = root.occurrences.addNewComponent(transform)
+    comp = occ.component
+    sk = comp.sketches.add(comp.xYConstructionPlane)
+    sk.sketchCurves.sketchLines.addTwoPointRectangle(P(0, 0, 0), P(w, d, 0))
+    comp.features.extrudeFeatures.addSimple(sk.profiles.item(0), adsk.core.ValueInput.createByReal(h),
+                                            adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    return occ
+
+
+def _outward_normal(f):
+    ok, n = f.evaluator.getNormalAtPoint(f.pointOnFace)
+    return n if ok else None
+
+
+def _planar_face(occ, nz):
+    """Planar face of the first body of occ whose outward normal z equals nz (+1 top, -1 bottom)."""
+    for f in occ.bRepBodies.item(0).faces:
+        if not adsk.core.Plane.cast(f.geometry):
+            continue
+        n = _outward_normal(f)
+        if n and abs(n.z - nz) < 1e-6:
+            return f
+    return None
+
+
+def v4_joints():
+    s_new_doc()
+    d = design()
+    root = d.rootComponent
+    occA = _box_component(root, adsk.core.Matrix3D.create(), 4, 4, 2)
+    t = adsk.core.Matrix3D.create()
+    t.translation = adsk.core.Vector3D.create(10, 0, 0)
+    occB = _box_component(root, t, 3, 1.5, 1)
+    state["occA"], state["occB"] = occA, occB
+    log("v4_before", A=_occ_info(occA), B=_occ_info(occB))
+    topA = _planar_face(occA, 1)
+    botB = _planar_face(occB, -1)
+    g1 = adsk.fusion.JointGeometry.createByPlanarFace(topA, None, adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
+    g2 = adsk.fusion.JointGeometry.createByPlanarFace(botB, None, adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
+    ji = root.joints.createInput(g1, g2)  # geometryOne = A (top face), geometryTwo = B (bottom face)
+    ji.setAsRevoluteJointMotion(adsk.fusion.JointDirections.ZAxisJointDirection)
+    ji.angle = adsk.core.ValueInput.createByString("30 deg")
+    j = root.joints.add(ji)
+    state["j1"] = j
+    log("v4_joint_A_then_B", joint=j.name, health=HEALTH.get(j.healthState, j.healthState), msg=j.errorOrWarningMessage,
+        occOne=j.occurrenceOne.name if j.occurrenceOne else None, occTwo=j.occurrenceTwo.name if j.occurrenceTwo else None,
+        A=_occ_info(occA), B=_occ_info(occB), timeline=timeline_info())
+    app.activeViewport.fit()
+
+
+def v4_shot1():
+    state["screen_capture"] = True
+    shot("v4_01_joint_A_then_B")
+
+
+def v4_reverse():
+    occA, occB = state["occA"], state["occB"]
+    state["j1"].deleteMe()
+    log("v4_after_delete", A=_occ_info(occA), B=_occ_info(occB))
+    topA = _planar_face(occA, 1)
+    botB = _planar_face(occB, -1)
+    g1 = adsk.fusion.JointGeometry.createByPlanarFace(botB, None, adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
+    g2 = adsk.fusion.JointGeometry.createByPlanarFace(topA, None, adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
+    ji = design().rootComponent.joints.createInput(g1, g2)  # geometryOne = B, geometryTwo = A
+    ji.setAsRigidJointMotion()
+    j = design().rootComponent.joints.add(ji)
+    state["j2"] = j
+    log("v4_joint_B_then_A", health=HEALTH.get(j.healthState, j.healthState), msg=j.errorOrWarningMessage,
+        A=_occ_info(occA), B=_occ_info(occB))
+
+
+def v4_conflict():
+    occA, occB = state["occA"], state["occB"]
+    # a second joint between the same pair using side faces: over-constrains the pair
+    sideA = None
+    sideB = None
+    for f in occA.bRepBodies.item(0).faces:
+        n = _outward_normal(f) if adsk.core.Plane.cast(f.geometry) else None
+        if n and abs(n.x - 1) < 1e-6:
+            sideA = f
+    for f in occB.bRepBodies.item(0).faces:
+        n = _outward_normal(f) if adsk.core.Plane.cast(f.geometry) else None
+        if n and abs(n.x + 1) < 1e-6:
+            sideB = f
+    res = {}
+    try:
+        g1 = adsk.fusion.JointGeometry.createByPlanarFace(sideA, None, adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
+        g2 = adsk.fusion.JointGeometry.createByPlanarFace(sideB, None, adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
+        ji = design().rootComponent.joints.createInput(g2, g1)
+        ji.setAsRigidJointMotion()
+        j = design().rootComponent.joints.add(ji)
+        res = {"created": True, "health": HEALTH.get(j.healthState, j.healthState), "msg": j.errorOrWarningMessage,
+               "first_joint_health": HEALTH.get(state["j2"].healthState, state["j2"].healthState),
+               "first_joint_msg": state["j2"].errorOrWarningMessage}
+    except Exception as e:
+        res = {"created": False, "error": str(e)}
+    log("v4_conflicting_second_joint", A=_occ_info(occA), B=_occ_info(occB), timeline=timeline_info(), **res)
+
+
+def v4_shot2():
+    shot("v4_02_after_conflict")
+
+
+def v4_close():
+    write_json("snapshots-v4.json", state.get("snapshots", []))
+    s_close()
+
+
+STEPS_V4 = [v3_start, v4_joints, v4_shot1, v4_reverse, v4_conflict, v4_shot2, v4_close]
+
 STEPS_V3 = [v3_start, v3_plane_frames, v3_enter_sketch, v3_focus, v3_rect_tool, v3_click1, v3_click2, v3_rect_check,
             v3_circle_tool, v3_circle_click1, v3_circle_click2, v3_circle_check, v3_close]
 
@@ -1124,7 +1251,7 @@ def run(context):
         with open(SENTINEL) as f:
             mode = f.read().strip()
         os.remove(SENTINEL)
-        state["steps"] = {"v2": STEPS_V2, "v3": STEPS_V3}.get(mode, STEPS)
+        state["steps"] = {"v2": STEPS_V2, "v3": STEPS_V3, "v4": STEPS_V4}.get(mode, STEPS)
         log("heartbeat", version=app.version, mode=mode)
         ev = app.registerCustomEvent(EVENT_ID)
         h = StepHandler()
