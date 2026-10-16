@@ -8,10 +8,14 @@
 pub mod body;
 pub mod exchange;
 pub mod frame;
+pub mod inspect;
+pub mod mesh;
+pub mod naming;
 pub mod occ;
 pub mod recompute;
 pub mod refs;
+pub mod surface;
 
-pub use body::{Body, BodyMesh, EdgeInfo, FaceInfo, Topology};
+pub use body::{new_body_with, Body, BodyKind, BodyMesh, EdgeInfo, FaceInfo, Topology};
 pub use frame::Frame;
-pub use recompute::{store_solved_sketches, Health, Kernel, Model, SketchResult};
+pub use recompute::{edge_joint_frame, face_joint_frame, joint_frame, joint_moves_b, mate_transform, store_solved_sketches, OVER_CONSTRAINED, Health, Kernel, Model, SketchResult};

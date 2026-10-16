@@ -13,6 +13,8 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 
 pub type FeatureId = String;
 pub type BodyId = String;
+/// Id of a (non-root) component; `None` designates the implicit root component.
+pub type ComponentId = String;
 
 pub const FORMAT: &str = "cad360";
 pub const FORMAT_VERSION: u32 = 1;
@@ -53,6 +55,10 @@ pub struct FaceRef {
     /// Centroid normalised to the body's bounding box (0..1 per axis).
     pub nc: [f64; 3],
     pub area: f64,
+    /// Generative (history-based) name of the face, e.g. "extrude3/side:l2#0"; preferred over the
+    /// geometric descriptor when present (see cad-kernel naming). Absent in older documents.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
 }
 
 /// Geometric descriptor used to re-find an edge after upstream edits.
@@ -67,6 +73,9 @@ pub struct EdgeRef {
     /// Normals of the adjacent planar faces, sorted (disambiguates parallel edges).
     #[serde(default)]
     pub face_normals: Vec<[f64; 3]>,
+    /// Generative names of the two adjacent faces (sorted); an edge is identified by them.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub face_names: Vec<String>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -180,10 +189,161 @@ pub enum FeatureKind {
     },
     /// Geometry imported from a STEP file (a non-parametric base feature).
     Import { source: String, step: String },
+    /// SURFACE ▸ Extrude: open or closed sketch curves swept into a surface body.
+    SurfaceExtrude { sketch: FeatureId, curves: Vec<String>, distance: String, direction: ExtentDirection },
+    /// SURFACE ▸ Revolve: sketch curves revolved into a surface body.
+    SurfaceRevolve { sketch: FeatureId, curves: Vec<String>, axis: RevolveAxis, angle: String },
+    /// SURFACE ▸ Patch: fills a closed boundary (sketch profiles or a loop of body edges).
+    Patch {
+        #[serde(default)]
+        sketch: Option<FeatureId>,
+        #[serde(default)]
+        profiles: Vec<ProfileRef>,
+        #[serde(default)]
+        edges: Vec<EdgeRef>,
+    },
+    /// SURFACE ▸ Stitch: sews surface bodies into one (a solid when closed).
+    Stitch { bodies: Vec<BodyId>, tolerance: String },
+    /// SURFACE ▸ Offset: offsets faces into a new surface body.
+    OffsetSurface { faces: Vec<FaceRef>, distance: String },
+    /// SURFACE/SOLID ▸ Thicken: turns faces or surface bodies into a solid.
+    Thicken { faces: Vec<FaceRef>, thickness: String, symmetric: bool },
+    /// INSERT ▸ Insert Mesh: an STL embedded in the document (base64), optionally converted to B-rep.
+    InsertMesh { source: String, data: String, to_brep: bool },
+    /// MODIFY > Shell: removes the selected faces and hollows the body to an inside thickness.
+    Shell { faces: Vec<FaceRef>, thickness: String },
+    /// MODIFY > Combine: joins, cuts or intersects tool bodies with a target body.
+    Combine {
+        target: BodyId,
+        tools: Vec<BodyId>,
+        operation: Operation,
+        #[serde(default)]
+        keep_tools: bool,
+    },
+    /// CREATE > Mirror (bodies): mirrored copies of bodies across a plane, as new bodies.
+    MirrorBodies { bodies: Vec<BodyId>, plane: PlaneRef },
+    /// CREATE > Rectangular Pattern (bodies) along one or two origin axes. Quantities count the
+    /// original; distances are the spacing between instances (negative flips the direction).
+    RectangularPattern {
+        bodies: Vec<BodyId>,
+        axis1: OriginAxis,
+        quantity1: String,
+        distance1: String,
+        /// Second direction; `None` for a one-direction pattern.
+        #[serde(default)]
+        axis2: Option<OriginAxis>,
+        quantity2: String,
+        distance2: String,
+        /// Join the instances to the original instead of creating new bodies.
+        #[serde(default)]
+        join: bool,
+    },
+    /// CREATE > Circular Pattern (bodies) about an origin axis. 360 deg spaces N instances at
+    /// 360/N; a partial angle spreads them from 0 to the angle (angle/(N-1)).
+    CircularPattern {
+        bodies: Vec<BodyId>,
+        axis: OriginAxis,
+        quantity: String,
+        angle: String,
+        #[serde(default)]
+        join: bool,
+    },
+    /// ASSEMBLE > Joint: constrains the components of `a` and `b` so that the two joint frames
+    /// coincide with their z axes aligned in the same direction (Fusion F35), offset by `angle`
+    /// about and `offset` along the joint z axis. The assembly solve decides which component
+    /// moves: root / grounded components never move, otherwise the earlier-created one stays.
+    Joint {
+        a: JointOrigin,
+        b: JointOrigin,
+        kind: JointKind,
+        /// Parameter holding the rotation about the joint axis (deg).
+        angle: String,
+        /// Parameter holding the translation along the joint axis (mm).
+        offset: String,
+        /// Reverses b's joint z axis (the z axes end up opposed instead of aligned).
+        #[serde(default)]
+        flip: bool,
+    },
+    /// MODIFY > Move/Copy (bodies): rotation about an origin axis, then a translation.
+    MoveBodies {
+        bodies: Vec<BodyId>,
+        dx: String,
+        dy: String,
+        dz: String,
+        axis: OriginAxis,
+        angle: String,
+        /// Copy: keep the originals and create the moved copies as new bodies.
+        #[serde(default)]
+        copy: bool,
+    },
 }
 
 fn yes() -> bool {
     true
+}
+
+/// Joint type (the Fusion motion types CAD360 supports).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum JointKind {
+    /// No relative motion (angle / offset only position the component).
+    Rigid,
+    /// Rotation about the joint z axis.
+    Revolute,
+    /// Translation along the joint z axis.
+    Slider,
+}
+
+impl JointKind {
+    pub const ALL: [JointKind; 3] = [JointKind::Rigid, JointKind::Revolute, JointKind::Slider];
+    pub fn label(self) -> &'static str {
+        match self {
+            JointKind::Rigid => "Rigid",
+            JointKind::Revolute => "Revolute",
+            JointKind::Slider => "Slider",
+        }
+    }
+}
+
+/// Geometry a joint frame is derived from.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "camelCase")]
+pub enum JointGeometry {
+    /// Planar face: origin at the face centroid, z = outward normal.
+    Face { face: FaceRef },
+    /// Circular edge: origin at the circle centre, z = circle axis.
+    Edge { edge: EdgeRef },
+}
+
+/// One side of a joint: a persistent geometry reference plus the component its body belonged
+/// to when it was picked (informative; the kernel derives the moving component from the body).
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct JointOrigin {
+    pub geometry: JointGeometry,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub component: Option<ComponentId>,
+}
+
+impl JointOrigin {
+    pub fn body(&self) -> &str {
+        match &self.geometry {
+            JointGeometry::Face { face } => &face.body,
+            JointGeometry::Edge { edge } => &edge.body,
+        }
+    }
+}
+
+/// A component (Fusion: a design container with its own bodies, sketches and features). The
+/// root component is implicit (`None`).
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Component {
+    pub id: ComponentId,
+    pub name: String,
+    #[serde(default = "yes")]
+    pub visible: bool,
+    /// Grounded (Fusion "Ground"): joints never move this component (the other side moves).
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub grounded: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -199,6 +359,10 @@ pub struct Feature {
     pub name: String,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub suppressed: bool,
+    /// Component that was active when the feature was created (`None` = root). Bodies belong to
+    /// the component of the feature that created them.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub component: Option<ComponentId>,
     #[serde(flatten)]
     pub kind: FeatureKind,
 }
@@ -230,6 +394,35 @@ impl Feature {
             FeatureKind::Hole { diameter, depth, .. } => vec![diameter, depth],
             FeatureKind::Plane { offset, .. } => vec![offset],
             FeatureKind::Import { .. } => vec![],
+            FeatureKind::Shell { thickness, .. } => vec![thickness],
+            FeatureKind::Combine { .. } | FeatureKind::MirrorBodies { .. } => vec![],
+            FeatureKind::RectangularPattern { quantity1, distance1, quantity2, distance2, .. } => vec![quantity1, distance1, quantity2, distance2],
+            FeatureKind::CircularPattern { quantity, angle, .. } => vec![quantity, angle],
+            FeatureKind::MoveBodies { dx, dy, dz, angle, .. } => vec![dx, dy, dz, angle],
+            FeatureKind::Joint { angle, offset, .. } => vec![angle, offset],
+            FeatureKind::SurfaceExtrude { distance, .. } => vec![distance],
+            FeatureKind::SurfaceRevolve { angle, .. } => vec![angle],
+            FeatureKind::Stitch { tolerance, .. } => vec![tolerance],
+            FeatureKind::OffsetSurface { distance, .. } => vec![distance],
+            FeatureKind::Thicken { thickness, .. } => vec![thickness],
+            FeatureKind::Patch { .. } | FeatureKind::InsertMesh { .. } => vec![],
+        }
+    }
+
+    /// Ids of the bodies this feature takes as inputs.
+    pub fn input_bodies(&self) -> Vec<&str> {
+        match &self.kind {
+            FeatureKind::Combine { target, tools, .. } => std::iter::once(target.as_str()).chain(tools.iter().map(String::as_str)).collect(),
+            FeatureKind::MirrorBodies { bodies, .. }
+            | FeatureKind::RectangularPattern { bodies, .. }
+            | FeatureKind::CircularPattern { bodies, .. }
+            | FeatureKind::MoveBodies { bodies, .. } => bodies.iter().map(String::as_str).collect(),
+            FeatureKind::Shell { faces, .. } => faces.iter().map(|f| f.body.as_str()).collect(),
+            FeatureKind::Joint { a, b, .. } => vec![a.body(), b.body()],
+            FeatureKind::Stitch { bodies, .. } => bodies.iter().map(String::as_str).collect(),
+            FeatureKind::OffsetSurface { faces, .. } | FeatureKind::Thicken { faces, .. } => faces.iter().map(|f| f.body.as_str()).collect(),
+            FeatureKind::Patch { edges, .. } => edges.iter().map(|e| e.body.as_str()).collect(),
+            _ => vec![],
         }
     }
 }
@@ -244,6 +437,20 @@ pub fn type_label(kind: &FeatureKind) -> &'static str {
         FeatureKind::Hole { .. } => "Hole",
         FeatureKind::Plane { .. } => "Plane",
         FeatureKind::Import { .. } => "Import",
+        FeatureKind::Shell { .. } => "Shell",
+        FeatureKind::Combine { .. } => "Combine",
+        FeatureKind::MirrorBodies { .. } => "Mirror",
+        FeatureKind::RectangularPattern { .. } => "RectangularPattern",
+        FeatureKind::CircularPattern { .. } => "CircularPattern",
+        FeatureKind::MoveBodies { .. } => "Move",
+        FeatureKind::Joint { .. } => "Joint",
+        FeatureKind::SurfaceExtrude { .. } => "SurfaceExtrude",
+        FeatureKind::SurfaceRevolve { .. } => "SurfaceRevolve",
+        FeatureKind::Patch { .. } => "Patch",
+        FeatureKind::Stitch { .. } => "Stitch",
+        FeatureKind::OffsetSurface { .. } => "OffsetSurface",
+        FeatureKind::Thicken { .. } => "Thicken",
+        FeatureKind::InsertMesh { .. } => "Mesh",
     }
 }
 
@@ -272,6 +479,12 @@ pub struct Document {
     pub bodies: BTreeMap<BodyId, BodyMeta>,
     #[serde(default = "yes")]
     pub origin_visible: bool,
+    /// Components of the design (the root component is implicit and not listed).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub components: Vec<Component>,
+    /// Component new features are created in (`None` = root).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub active_component: Option<ComponentId>,
 }
 
 impl Default for Document {
@@ -294,6 +507,10 @@ pub enum DocError {
     DuplicateName(String),
     #[error("Parameter \"{0}\" is used by {1} and cannot be deleted")]
     ParameterInUse(String, String),
+    #[error("Unknown component \"{0}\"")]
+    UnknownComponent(String),
+    #[error("{0} still contains {1} feature(s) and cannot be deleted. Delete its features first.")]
+    ComponentInUse(String, usize),
     #[error("{0}")]
     Format(String),
 }
@@ -310,7 +527,10 @@ impl Document {
             marker: 0,
             counters: BTreeMap::new(),
             bodies: BTreeMap::new(),
-            origin_visible: true,
+            // Fusion: the Origin folder is hidden by default (probe browser screenshots)
+            origin_visible: false,
+            components: Vec::new(),
+            active_component: None,
         }
     }
 
@@ -459,6 +679,70 @@ impl Document {
         true
     }
 
+    // ------------------------------------------------------------------ components
+    pub fn component(&self, id: &str) -> Option<&Component> {
+        self.components.iter().find(|c| c.id == id)
+    }
+    pub fn component_mut(&mut self, id: &str) -> Option<&mut Component> {
+        self.components.iter_mut().find(|c| c.id == id)
+    }
+
+    /// Creates a component named "Component1", "Component2" ... and returns its id (it is not
+    /// activated).
+    pub fn add_component(&mut self) -> ComponentId {
+        let name = self.next_name("Component");
+        let n = self.counters.get("__component").copied().unwrap_or(0) + 1;
+        self.counters.insert("__component".into(), n);
+        let id = format!("component{n}");
+        self.components.push(Component { id: id.clone(), name, visible: true, grounded: false });
+        id
+    }
+
+    /// Display name of a component (`None` = the root component, named after the document).
+    pub fn component_name(&self, id: Option<&str>) -> String {
+        match id {
+            None => self.name.clone(),
+            Some(c) => self.component(c).map(|c| c.name.clone()).unwrap_or_else(|| c.to_string()),
+        }
+    }
+
+    /// Component of a feature (`None` = root, also for unknown features).
+    pub fn feature_component(&self, feature: &str) -> Option<&str> {
+        self.feature(feature).and_then(|f| f.component.as_deref())
+    }
+
+    /// Component a body belongs to: the component of the feature that created it. `created_by`
+    /// is the kernel's creating feature; without it the feature id encoded in the body id
+    /// (`{feature}` / `{feature}~k`) is used.
+    pub fn body_component(&self, body: &str, created_by: Option<&str>) -> Option<&str> {
+        let owner = created_by.unwrap_or_else(|| body.split([':', '~']).next().unwrap_or(body));
+        self.feature_component(owner)
+    }
+
+    /// Whether a component is shown (the root component and unknown ids count as visible).
+    pub fn component_visible(&self, id: Option<&str>) -> bool {
+        id.and_then(|c| self.component(c)).is_none_or(|c| c.visible)
+    }
+
+    /// Features owned by a component (timeline order).
+    pub fn component_features(&self, id: &str) -> Vec<FeatureId> {
+        self.features.iter().filter(|f| f.component.as_deref() == Some(id)).map(|f| f.id.clone()).collect()
+    }
+
+    /// Deletes an empty component (refused while it still owns features).
+    pub fn delete_component(&mut self, id: &str) -> Result<(), DocError> {
+        let c = self.component(id).ok_or_else(|| DocError::UnknownComponent(id.into()))?;
+        let n = self.component_features(id).len();
+        if n > 0 {
+            return Err(DocError::ComponentInUse(c.name.clone(), n));
+        }
+        self.components.retain(|c| c.id != id);
+        if self.active_component.as_deref() == Some(id) {
+            self.active_component = None;
+        }
+        Ok(())
+    }
+
     pub fn to_json(&self) -> String {
         serde_json::to_string_pretty(self).expect("document serialises")
     }
@@ -474,6 +758,9 @@ impl Document {
         }
         let mut doc: Document = serde_json::from_value(v).map_err(|e| DocError::Format(format!("The document is damaged: {e}")))?;
         doc.marker = doc.marker.min(doc.features.len());
+        if doc.active_component.as_ref().is_some_and(|c| doc.component(c).is_none()) {
+            doc.active_component = None;
+        }
         Ok(doc)
     }
 }
@@ -547,7 +834,8 @@ pub fn feature_dependencies(doc: &Document, f: &Feature) -> Vec<FeatureId> {
             deps.push(id.to_string());
         }
     };
-    let body_owner = |b: &str| b.split(':').next().unwrap_or(b).to_string();
+    // body ids are "{feature}" or "{feature}~k" (further solids / copies made by one feature)
+    let body_owner = |b: &str| b.split([':', '~']).next().unwrap_or(b).to_string();
     let plane_dep = |p: &PlaneRef| match p {
         PlaneRef::Face { face } => Some(body_owner(&face.body)),
         PlaneRef::Construction { feature } => Some(feature.clone()),
@@ -571,7 +859,39 @@ pub fn feature_dependencies(doc: &Document, f: &Feature) -> Vec<FeatureId> {
                 add(&d);
             }
         }
-        FeatureKind::Import { .. } => {}
+        FeatureKind::Import { .. } | FeatureKind::InsertMesh { .. } => {}
+        FeatureKind::SurfaceExtrude { sketch, .. } | FeatureKind::SurfaceRevolve { sketch, .. } => add(sketch),
+        FeatureKind::Patch { sketch, .. } => {
+            if let Some(sk) = sketch {
+                add(sk);
+            }
+            for b in f.input_bodies() {
+                add(&body_owner(b));
+            }
+        }
+        FeatureKind::Stitch { .. } | FeatureKind::OffsetSurface { .. } | FeatureKind::Thicken { .. } => {
+            for b in f.input_bodies() {
+                add(&body_owner(b));
+            }
+        }
+        FeatureKind::MirrorBodies { plane, .. } => {
+            if let Some(d) = plane_dep(plane) {
+                add(&d);
+            }
+            for b in f.input_bodies() {
+                add(&body_owner(b));
+            }
+        }
+        FeatureKind::Shell { .. }
+        | FeatureKind::Combine { .. }
+        | FeatureKind::RectangularPattern { .. }
+        | FeatureKind::CircularPattern { .. }
+        | FeatureKind::MoveBodies { .. }
+        | FeatureKind::Joint { .. } => {
+            for b in f.input_bodies() {
+                add(&body_owner(b));
+            }
+        }
     }
     deps
 }
@@ -595,7 +915,7 @@ pub fn new_feature(doc: &mut Document, kind: FeatureKind) -> Feature {
     let name = doc.next_name(label);
     let n = doc.counters.get("__uid").copied().unwrap_or(0) + 1;
     doc.counters.insert("__uid".into(), n);
-    Feature { id: format!("{}{}", label.to_lowercase(), n), name, suppressed: false, kind }
+    Feature { id: format!("{}{}", label.to_lowercase(), n), name, suppressed: false, component: doc.active_component.clone(), kind }
 }
 
 #[cfg(test)]

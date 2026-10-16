@@ -53,10 +53,22 @@ pub struct BodyMesh {
     pub edge_lines: Vec<Vec<[f32; 3]>>,
 }
 
+/// What a body is: a closed solid, an open surface (quilt) or a tessellated mesh.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum BodyKind {
+    #[default]
+    Solid,
+    Surface,
+    Mesh,
+}
+
 pub struct BodyData {
     pub id: BodyId,
     pub created_by: FeatureId,
     pub shape: Shape,
+    pub kind: BodyKind,
+    /// Generative face names aligned with `topology().faces` (empty strings where unknown).
+    pub face_names: Vec<String>,
     topo: OnceLock<Arc<Topology>>,
     mesh: OnceLock<Arc<BodyMesh>>,
     volume: OnceLock<f64>,
@@ -65,7 +77,12 @@ pub struct BodyData {
 pub type Body = Arc<BodyData>;
 
 pub fn new_body(id: BodyId, created_by: FeatureId, shape: Shape) -> Body {
-    Arc::new(BodyData { id, created_by, shape, topo: OnceLock::new(), mesh: OnceLock::new(), volume: OnceLock::new() })
+    new_body_with(id, created_by, shape, BodyKind::Solid, Vec::new())
+}
+
+/// Body with an explicit kind and generative face names (aligned with `topology().faces`).
+pub fn new_body_with(id: BodyId, created_by: FeatureId, shape: Shape, kind: BodyKind, face_names: Vec<String>) -> Body {
+    Arc::new(BodyData { id, created_by, shape, kind, face_names, topo: OnceLock::new(), mesh: OnceLock::new(), volume: OnceLock::new() })
 }
 
 fn surface_kind(t: f64) -> SurfaceKind {
@@ -87,8 +104,14 @@ fn v(a: &[f64]) -> V3 {
 }
 
 impl BodyData {
+    /// Generative name of face `i`, if known.
+    pub fn face_name(&self, i: usize) -> Option<&str> {
+        self.face_names.get(i).map(String::as_str).filter(|n| !n.is_empty())
+    }
+
     pub fn volume(&self) -> f64 {
-        *self.volume.get_or_init(|| self.shape.volume())
+        // an open surface encloses no volume (OCCT's divergence integral is not 0 for it)
+        *self.volume.get_or_init(|| if self.kind == BodyKind::Surface { 0.0 } else { self.shape.volume() })
     }
 
     pub fn topology(&self) -> Arc<Topology> {
@@ -100,7 +123,17 @@ impl BodyData {
                 let face_info = faces
                     .iter()
                     .map(|f| {
-                        let o = f.face_info().unwrap_or([0.0; 15]);
+                        // a triangulation-only face (mesh body) has no surface: type Other, area and
+                        // centre from its triangles
+                        let o = f.face_info().unwrap_or_else(|| {
+                            let mut o = [0.0; 15];
+                            o[0] = -1.0;
+                            o[1] = f.area();
+                            if let Some(bb) = f.bbox() {
+                                o[2..5].copy_from_slice(&[(bb[0] + bb[3]) / 2.0, (bb[1] + bb[4]) / 2.0, (bb[2] + bb[5]) / 2.0]);
+                            }
+                            o
+                        });
                         FaceInfo { surface: surface_kind(o[0]), area: o[1], centroid: v(&o[2..5]), normal: normalize(v(&o[5..8])), axis: v(&o[8..11]), axis_origin: v(&o[11..14]), radius: o[14] }
                     })
                     .collect();

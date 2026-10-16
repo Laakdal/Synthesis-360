@@ -246,3 +246,43 @@ fn revolve_chamfer_hole_plane_and_exchange() {
     let mesh = m.bodies[0].mesh();
     assert!(!mesh.indices.is_empty() && mesh.face_ranges.len() == m.bodies[0].topology().faces.len());
 }
+
+#[test]
+fn constraint_only_sketch_edits_are_not_served_from_cache() {
+    let mut doc = Document::new("cache");
+    let mut k = Kernel::new();
+    let (sk, _, _) = rectangle_sketch(&mut doc, "50 mm", "30 mm");
+    recompute(&mut k, &mut doc);
+    let before = doc.feature(&sk).unwrap().sketch().unwrap().constraints.len();
+    let victim = doc.feature(&sk).unwrap().sketch().unwrap().constraints.iter().find(|c| c.param.is_none()).unwrap().id.clone();
+    ops::sketch_mut(&mut doc, &sk).unwrap().delete_constraint(&victim);
+    let m = recompute(&mut k, &mut doc);
+    assert_eq!(doc.feature(&sk).unwrap().sketch().unwrap().constraints.len(), before - 1, "stale constraints must not be written back");
+    assert!(!m.sketches[&sk].report.is_fully_constrained());
+}
+
+#[test]
+fn face_sketch_projects_face_boundary_like_fusion() {
+    // Fusion probe: a sketch on the 70x30 top face with one Ø12 circle had 2 profiles
+    // (1965.4 mm² ring and 113.1 mm² disc) because the face boundary is projected.
+    let mut doc = Document::new("proj");
+    let mut k = Kernel::new();
+    let (sk, pw, _) = rectangle_sketch(&mut doc, "70 mm", "30 mm");
+    let m = recompute(&mut k, &mut doc);
+    ops::new_extrude(&mut doc, &sk, whole_profile(&m, &sk), "20 mm", ExtentDirection::Normal, Operation::New);
+    let m = recompute(&mut k, &mut doc);
+    let b = &m.bodies[0];
+    let top = b.topology().face_info.iter().position(|f| f.surface == SurfaceKind::Plane && f.normal[2] > 0.99).unwrap();
+    let sk2 = ops::new_sketch(&mut doc, PlaneRef::Face { face: refs::face_ref(b, top).unwrap() });
+    ops::sketch_mut(&mut doc, &sk2).unwrap().add_circle([35.0, 15.0], 6.0);
+    let m = recompute(&mut k, &mut doc);
+    let r = &m.sketches[&sk2];
+    assert_eq!(r.profiles.len(), 2);
+    assert!(close(r.profiles[0].area, 2100.0 - 113.097, 0.05), "{}", r.profiles[0].area);
+    assert!(close(r.profiles[1].area, 113.097, 0.01));
+    assert_eq!(r.projected.len(), 4);
+    // associative: the projection follows an upstream width change
+    doc.set_expression(&pw, "80 mm").unwrap();
+    let m = recompute(&mut k, &mut doc);
+    assert!(close(m.sketches[&sk2].profiles[0].area, 2400.0 - 113.097, 0.05));
+}

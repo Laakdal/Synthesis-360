@@ -10,6 +10,8 @@ pub struct KernelError(pub String);
 
 pub type KResult<T> = Result<T, KernelError>;
 
+static EXCHANGE: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
 fn last_error(context: &str) -> KernelError {
     let e = ffi::cad_last_error();
     KernelError(if e.is_empty() { context.to_string() } else { format!("{context}: {e}") })
@@ -40,6 +42,11 @@ pub const EDGE: i32 = 6;
 
 fn wrap(p: UniquePtr<TopoDS_Shape>, context: &str) -> KResult<Shape> {
     if p.is_null() { Err(last_error(context)) } else { Ok(Shape(p)) }
+}
+
+/// Wraps a shim result (null = failure, reason from `cad_last_error`); used by `naming`.
+pub(crate) fn wrap_ffi(p: UniquePtr<TopoDS_Shape>, context: &str) -> KResult<Shape> {
+    wrap(p, context)
 }
 
 /// One profile loop segment in 3D: a line, or an arc through start/mid/end.
@@ -110,6 +117,23 @@ impl Shape {
         wrap(ffi::cad_chamfer(&self.0, &c.0, distance), "Chamfer failed")
     }
 
+    /// Hollows the solid to an inside wall `thickness`, removing `faces` (faces of this shape).
+    pub fn shell(&self, faces: &[&Shape], thickness: f64) -> KResult<Shape> {
+        let c = Shape::compound(faces)?;
+        wrap(ffi::cad_shell(&self.0, &c.0, thickness), "Shell failed")
+    }
+
+    /// Copy transformed by a rigid motion given as a row-major 3x4 matrix [R | t].
+    pub fn transformed(&self, m: &[f64; 12]) -> KResult<Shape> {
+        wrap(ffi::cad_transform(&self.0, 0, m), "Transform failed")
+    }
+
+    /// Copy mirrored across the plane through `point` with normal `normal`.
+    pub fn mirrored(&self, point: [f64; 3], normal: [f64; 3]) -> KResult<Shape> {
+        let m = [point[0], point[1], point[2], normal[0], normal[1], normal[2]];
+        wrap(ffi::cad_transform(&self.0, 1, &m), "Mirror failed")
+    }
+
     pub fn cylinder(origin: [f64; 3], dir: [f64; 3], r: f64, h: f64) -> KResult<Shape> {
         wrap(ffi::cad_cylinder(origin[0], origin[1], origin[2], dir[0], dir[1], dir[2], r, h), "Cylinder failed")
     }
@@ -168,18 +192,26 @@ impl Shape {
         ffi::cad_shape_type(&self.0)
     }
 
+    // OCCT's data-exchange layer keeps process-global state (Interface_Static parameters,
+    // STEP controller registration), so exchange calls are serialised.
     pub fn write_step(&self, path: &str) -> KResult<()> {
+        let _g = EXCHANGE.lock().unwrap_or_else(|p| p.into_inner());
         if ffi::cad_write_step(&self.0, path) { Ok(()) } else { Err(last_error("STEP export failed")) }
     }
     pub fn read_step(path: &str) -> KResult<Shape> {
+        let _g = EXCHANGE.lock().unwrap_or_else(|p| p.into_inner());
         wrap(ffi::cad_read_step(path), "STEP import failed")
     }
     pub fn write_stl(&self, path: &str, ascii: bool) -> KResult<()> {
+        let _g = EXCHANGE.lock().unwrap_or_else(|p| p.into_inner());
         if ffi::cad_write_stl(&self.0, path, ascii) { Ok(()) } else { Err(last_error("STL export failed")) }
     }
 }
 
-/// Silences Open CASCADE's console messages (e.g. STEP transfer statistics).
+/// Silences Open CASCADE's console messages (e.g. STEP transfer statistics). The default
+/// messenger is process-global and not thread-safe, so this runs exactly once per process
+/// (concurrent calls from parallel tests corrupted the heap).
 pub fn quiet() {
-    ffi::cad_quiet();
+    static ONCE: std::sync::Once = std::sync::Once::new();
+    ONCE.call_once(ffi::cad_quiet);
 }

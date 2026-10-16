@@ -7,9 +7,10 @@
 //! all upstream state, so editing a late feature does not recompute early ones, and editing an
 //! early one recomputes everything after it.
 
-use crate::body::{new_body, Body};
+use crate::body::{new_body_with, Body, BodyKind};
 use crate::frame::{add, cross, dist, dot, normalize, scale, sub, Frame, V3};
-use crate::occ::{KResult, Seg3, Shape, SOLID};
+use crate::naming::{self, Named, NamedSeg};
+use crate::occ::{KResult, Seg3, Shape};
 use crate::refs;
 use cad_core::{
     sketch::{self, EntityKind, Profile, Segment, SolveReport, SolveStatus},
@@ -19,6 +20,17 @@ use std::collections::hash_map::DefaultHasher;
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
+
+/// Shell, Combine, Mirror, patterns and Move/Copy (body-level features).
+#[path = "recompute_more.rs"]
+mod more;
+
+/// Assembly joints.
+#[path = "recompute_assembly.rs"]
+mod assembly;
+#[path = "recompute_surface.rs"]
+mod surface;
+pub use assembly::{edge_joint_frame, face_joint_frame, joint_frame, joint_moves_b, mate_transform, OVER_CONSTRAINED};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Health {
@@ -47,6 +59,11 @@ pub struct SketchResult {
     pub solved: sketch::Sketch,
     pub report: SolveReport,
     pub profiles: Vec<Profile>,
+    /// Boundary of the sketch face projected into the sketch (sketch coordinates). Fusion
+    /// projects the face edges when a sketch is created on a face (probe: a face sketch with one
+    /// circle had 9 curves and 2 profiles). Re-derived from the current face on every recompute
+    /// (associative); used for profiles and drawn as projected geometry, never stored.
+    pub projected: Vec<Vec<[f64; 2]>>,
 }
 
 #[derive(Clone, Default)]
@@ -54,6 +71,8 @@ struct State {
     bodies: Vec<Body>,
     planes: HashMap<FeatureId, Frame>,
     sketches: HashMap<FeatureId, Arc<SketchResult>>,
+    /// Assembly: component placements and accepted joints (see recompute_assembly.rs).
+    asm: assembly::Assembly,
 }
 
 #[derive(Clone)]
@@ -82,6 +101,15 @@ impl Model {
     pub fn health_of(&self, id: &str) -> Health {
         self.health.get(id).cloned().unwrap_or(Health::Healthy)
     }
+    /// Component a body belongs to (the component of the feature that created it; `None` =
+    /// root).
+    pub fn component_of<'d>(&self, doc: &'d Document, body: &str) -> Option<&'d str> {
+        doc.body_component(body, self.body(body).map(|b| b.created_by.as_str()))
+    }
+    /// Bodies of a component (`None` = root), in body-list order.
+    pub fn bodies_of_component(&self, doc: &Document, component: Option<&str>) -> Vec<&Body> {
+        self.bodies.iter().filter(|b| doc.body_component(&b.id, Some(&b.created_by)) == component).collect()
+    }
 }
 
 #[derive(Default)]
@@ -105,6 +133,12 @@ fn sketch_fingerprint(h: &mut DefaultHasher, s: &sketch::Sketch) {
             EntityKind::Arc { c, start, end, r } => (c, start, end, (r * 1e7).round() as i64).hash(h),
         }
     }
+    // constraints are part of the sketch's identity: a constraint-only edit (delete, fix, driven
+    // flag, label move) must not be served from the cache, or `store_solved_sketches` would
+    // write the stale constraint list back into the document
+    for c in &s.constraints {
+        serde_json::to_string(c).unwrap_or_default().hash(h);
+    }
 }
 
 impl Kernel {
@@ -122,13 +156,21 @@ impl Kernel {
         let pv = doc.parameter_values();
         let mut model = Model { parameter_errors: pv.errors.clone(), ..Default::default() };
         let mut state = State::default();
-        let mut prev_key: u64 = 0;
         let mut cache_valid = true;
+        let comps = assembly::component_map(doc);
+        let mut prev_key: u64 = 0;
+        // assembly: component order / grounded flags are not part of any feature (joint keys)
+        let asm_key = assembly::graph_key(&comps);
 
         for (i, f) in doc.features.iter().enumerate() {
             let mut h = DefaultHasher::new();
             prev_key.hash(&mut h);
+            if matches!(f.kind, FeatureKind::Joint { .. }) {
+                asm_key.hash(&mut h);
+            }
             let active = i < doc.marker && !f.suppressed;
+            // assembly: origin planes of this feature are its component's placed origin planes
+            assembly::enter(&mut state, f);
             (i < doc.marker, f.suppressed).hash(&mut h);
             if let FeatureKind::Sketch { plane, .. } = &f.kind {
                 hash_str(&mut h, &serde_json::to_string(plane).unwrap_or_default());
@@ -184,7 +226,7 @@ impl Kernel {
                 Health::Error(format!("Parameter {bad}: {}", pv.errors.get(*bad).map(String::as_str).unwrap_or("missing")))
             } else {
                 let vals = |name: &str| pv.values.get(name).copied().unwrap_or(0.0);
-                match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| evaluate(f, &mut state, &vals))) {
+                match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| evaluate(f, &mut state, &vals, &comps))) {
                     Ok(h) => h,
                     Err(_) => Health::Error("Internal error while computing this feature".into()),
                 }
@@ -206,6 +248,7 @@ impl Kernel {
             Ok(fr) => fr,
             Err(e) => return (Health::Error(format!("Sketch plane reference lost: {e}")), None),
         };
+        let plane_fallback = plane_fell_back(plane, state);
         let mut dims = sketch::DimensionValues::new();
         for c in &sk.constraints {
             if let Some(p) = &c.param {
@@ -223,20 +266,77 @@ impl Kernel {
         let mut solved = sk.clone();
         let report = sketch::solve(&mut solved, &dims, &[]);
         let health = match &report.status {
+            SolveStatus::Solved if plane_fallback => Health::Warning(refs::fallback_warning(1)),
             SolveStatus::Solved => Health::Healthy,
             SolveStatus::Failed { unsatisfied } => Health::Error(format!(
                 "Sketch could not be solved: {} constraint(s) cannot be satisfied with the current dimensions",
                 unsatisfied.len()
             )),
         };
-        let profiles = sketch::find_profiles(&solved);
-        (health, Some(Arc::new(SketchResult { frame, solved, report, profiles })))
+        let (projected, with_projection) = project_face_boundary(plane, state, &frame, &solved);
+        let profiles = sketch::find_profiles(with_projection.as_ref().unwrap_or(&solved));
+        (health, Some(Arc::new(SketchResult { frame, solved, report, profiles, projected })))
     }
+}
+
+/// Projects the boundary edges of a face sketch's face into sketch coordinates. Returns the
+/// display polylines and a copy of the sketch with the boundary added as curves (ids "proj-N")
+/// for profile detection.
+fn project_face_boundary(plane: &PlaneRef, state: &State, frame: &Frame, solved: &sketch::Sketch) -> (Vec<Vec<[f64; 2]>>, Option<sketch::Sketch>) {
+    let PlaneRef::Face { face } = plane else { return (Vec::new(), None) };
+    let Some(body) = state.bodies.iter().find(|b| b.id == face.body) else { return (Vec::new(), None) };
+    let Ok(fi) = refs::resolve_face(body, face) else { return (Vec::new(), None) };
+    let topo = body.topology();
+    let mesh = body.mesh();
+    let mut polys = Vec::new();
+    let mut sk = solved.clone();
+    let local = |p: V3| frame.to_local(p);
+    for (ei, e) in topo.edge_info.iter().enumerate() {
+        if !e.faces.contains(&(fi as i32)) {
+            continue;
+        }
+        match e.curve {
+            cad_core::CurveKind::Line => {
+                sk.add_line(local(e.start), local(e.end));
+            }
+            cad_core::CurveKind::Circle if e.closed => {
+                sk.add_circle(local(e.center), e.radius);
+            }
+            cad_core::CurveKind::Circle => {
+                let _ = sk.add_arc_3pt(local(e.start), local(e.mid), local(e.end));
+            }
+            cad_core::CurveKind::Other => {
+                if let Some(pl) = mesh.edge_lines.get(ei) {
+                    for w in pl.windows(2) {
+                        sk.add_line(local([w[0][0] as f64, w[0][1] as f64, w[0][2] as f64]), local([w[1][0] as f64, w[1][1] as f64, w[1][2] as f64]));
+                    }
+                }
+            }
+        }
+        if let Some(pl) = mesh.edge_lines.get(ei) {
+            polys.push(pl.iter().map(|p| local([p[0] as f64, p[1] as f64, p[2] as f64])).collect());
+        }
+    }
+    // tag the projected curves (they are only referenced by their own points)
+    let n0 = solved.entities.len();
+    for (k, e) in sk.entities.iter_mut().enumerate().skip(n0) {
+        if e.is_curve() {
+            e.id = format!("proj-{k}");
+        }
+    }
+    (polys, Some(sk))
+}
+
+/// The plane is a face whose generative name no longer exists (re-resolved geometrically).
+fn plane_fell_back(p: &PlaneRef, state: &State) -> bool {
+    let PlaneRef::Face { face } = p else { return false };
+    state.bodies.iter().find(|b| b.id == face.body).and_then(|b| refs::resolve_face_ex(b, face).ok()).is_some_and(|r| r.fell_back())
 }
 
 fn resolve_plane(p: &PlaneRef, state: &State) -> Result<Frame, String> {
     match p {
-        PlaneRef::Origin { plane } => Ok(Frame::origin_plane(*plane)),
+        // assembly: a moved component's origin planes move with it
+        PlaneRef::Origin { plane } => Ok(assembly::place_origin(state, Frame::origin_plane(*plane))),
         PlaneRef::Construction { feature } => state.planes.get(feature).copied().ok_or_else(|| "the construction plane is not available".to_string()),
         PlaneRef::Face { face } => {
             let body = state.bodies.iter().find(|b| b.id == face.body).ok_or_else(|| format!("body {} no longer exists", face.body))?;
@@ -250,21 +350,36 @@ fn resolve_plane(p: &PlaneRef, state: &State) -> Result<Frame, String> {
     }
 }
 
-fn evaluate(f: &Feature, state: &mut State, vals: &dyn Fn(&str) -> f64) -> Health {
+fn evaluate(f: &Feature, state: &mut State, vals: &dyn Fn(&str) -> f64, comps: &assembly::ComponentMap) -> Health {
     let r: Result<Health, String> = match &f.kind {
         FeatureKind::Sketch { .. } => Ok(Health::Healthy),
         FeatureKind::Extrude { sketch, profiles, distance, direction, through_all, operation } => {
             extrude(f, state, sketch, profiles, vals(distance), *direction, *through_all, *operation)
         }
         FeatureKind::Revolve { sketch, profiles, axis, angle, operation } => revolve(f, state, sketch, profiles, axis, vals(angle), *operation),
-        FeatureKind::Fillet { edges, radius } => edge_feature(state, edges, vals(radius), true),
-        FeatureKind::Chamfer { edges, distance } => edge_feature(state, edges, vals(distance), false),
-        FeatureKind::Hole { face, center, diameter, depth, through_all } => hole(state, face, *center, vals(diameter), vals(depth), *through_all),
+        FeatureKind::Fillet { edges, radius } => edge_feature(state, &f.id, edges, vals(radius), true),
+        FeatureKind::Chamfer { edges, distance } => edge_feature(state, &f.id, edges, vals(distance), false),
+        FeatureKind::Hole { face, center, diameter, depth, through_all } => hole(state, &f.id, face, *center, vals(diameter), vals(depth), *through_all),
         FeatureKind::Plane { base, offset, .. } => resolve_plane(base, state).map(|fr| {
+            let fell_back = plane_fell_back(base, state);
             state.planes.insert(f.id.clone(), fr.offset(vals(offset)));
-            Health::Healthy
+            if fell_back { Health::Warning(refs::fallback_warning(1)) } else { Health::Healthy }
         }),
         FeatureKind::Import { step, .. } => import(f, state, step),
+        FeatureKind::Shell { .. }
+        | FeatureKind::Combine { .. }
+        | FeatureKind::MirrorBodies { .. }
+        | FeatureKind::RectangularPattern { .. }
+        | FeatureKind::CircularPattern { .. }
+        | FeatureKind::MoveBodies { .. } => more::evaluate(f, state, vals),
+        FeatureKind::Joint { .. } => assembly::evaluate(f, state, vals, comps),
+        FeatureKind::SurfaceExtrude { .. }
+        | FeatureKind::SurfaceRevolve { .. }
+        | FeatureKind::Patch { .. }
+        | FeatureKind::Stitch { .. }
+        | FeatureKind::OffsetSurface { .. }
+        | FeatureKind::Thicken { .. }
+        | FeatureKind::InsertMesh { .. } => surface::evaluate(f, state, vals),
     };
     r.unwrap_or_else(Health::Error)
 }
@@ -304,6 +419,35 @@ fn profile_face(frame: &Frame, p: &Profile) -> KResult<Shape> {
     Shape::face_from_loops(&loops)
 }
 
+/// Profile face whose edges know the sketch curve they came from (`{curve}#{k}`, k = rank of the
+/// segment among the curve's segments by 2D midpoint, which does not depend on where the loop
+/// traversal starts).
+fn profile_face_named(frame: &Frame, p: &Profile) -> KResult<naming::ProfileFace> {
+    let key = |m: [f64; 2]| ((m[0] * 1e6).round() as i64, (m[1] * 1e6).round() as i64);
+    let all_loops: Vec<&Vec<(Segment, String)>> = std::iter::once(&p.outer.segments).chain(p.holes.iter().map(|h| &h.segments)).collect();
+    let mut mids: HashMap<&str, Vec<(i64, i64)>> = HashMap::new();
+    for l in &all_loops {
+        for (s, c) in l.iter() {
+            mids.entry(c.as_str()).or_default().push(key(s.mid()));
+        }
+    }
+    for v in mids.values_mut() {
+        v.sort();
+    }
+    let loops: Vec<Vec<NamedSeg>> = all_loops
+        .iter()
+        .map(|l| {
+            l.iter()
+                .map(|(s, c)| {
+                    let k = mids.get(c.as_str()).and_then(|v| v.iter().position(|m| *m == key(s.mid()))).unwrap_or(0);
+                    NamedSeg { seg: seg3(frame, s), name: format!("{c}#{k}") }
+                })
+                .collect()
+        })
+        .collect();
+    naming::profile_face(&loops)
+}
+
 fn union_bbox(bodies: &[Body]) -> Option<[f64; 6]> {
     let mut acc: Option<[f64; 6]> = None;
     for b in bodies {
@@ -316,10 +460,10 @@ fn union_bbox(bodies: &[Body]) -> Option<[f64; 6]> {
     acc
 }
 
-fn fuse_all(mut shapes: Vec<Shape>) -> KResult<Shape> {
+fn fuse_all_named(mut shapes: Vec<Named>, fid: &str) -> KResult<Named> {
     let mut acc = shapes.remove(0);
     for s in shapes {
-        acc = acc.fuse(&s)?;
+        acc = acc.fuse(&s, fid)?;
     }
     Ok(acc)
 }
@@ -349,10 +493,10 @@ fn extrude(f: &Feature, state: &mut State, sketch: &str, prefs: &[ProfileRef], d
     let frame = sr.frame.offset(start);
     let mut tools = Vec::new();
     for p in profiles {
-        let face = profile_face(&frame, p).map_err(|e| e.0)?;
-        tools.push(face.prism(scale(frame.n, length)).map_err(|e| e.0)?);
+        let pf = profile_face_named(&frame, p).map_err(|e| e.0)?;
+        tools.push(naming::prism(&f.id, &pf, scale(frame.n, length)).map_err(|e| e.0)?);
     }
-    let tool = fuse_all(tools).map_err(|e| e.0)?;
+    let tool = fuse_all_named(tools, &f.id).map_err(|e| e.0)?;
     apply_operation(state, &f.id, tool, op)
 }
 
@@ -368,7 +512,9 @@ fn revolve(f: &Feature, state: &mut State, sketch: &str, prefs: &[ProfileRef], a
             let (p3, q3) = (sr.frame.to_world(p), sr.frame.to_world(q));
             (p3, normalize(sub(q3, p3)))
         }
-        RevolveAxis::Origin { axis } => (
+        // assembly: a moved component's origin axes move with it
+        RevolveAxis::Origin { axis } => assembly::place_axis(
+            state,
             [0.0; 3],
             match axis {
                 OriginAxis::X => [1.0, 0.0, 0.0],
@@ -393,10 +539,10 @@ fn revolve(f: &Feature, state: &mut State, sketch: &str, prefs: &[ProfileRef], a
     }
     let mut tools = Vec::new();
     for p in profiles {
-        let face = profile_face(&sr.frame, p).map_err(|e| e.0)?;
-        tools.push(face.revolve(o, a, angle_deg.to_radians().clamp(-std::f64::consts::TAU, std::f64::consts::TAU)).map_err(|e| e.0)?);
+        let pf = profile_face_named(&sr.frame, p).map_err(|e| e.0)?;
+        tools.push(naming::revolve(&f.id, &pf, o, a, angle_deg.to_radians().clamp(-std::f64::consts::TAU, std::f64::consts::TAU)).map_err(|e| e.0)?);
     }
-    let tool = fuse_all(tools).map_err(|e| e.0)?;
+    let tool = fuse_all_named(tools, &f.id).map_err(|e| e.0)?;
     apply_operation(state, &f.id, tool, op)
 }
 
@@ -405,41 +551,49 @@ fn bbox_overlap(a: [f64; 6], b: [f64; 6]) -> bool {
     (0..3).all(|k| a[k] <= b[k + 3] + t && b[k] <= a[k + 3] + t)
 }
 
-/// Splits a result into its solids; the first keeps `id`, the rest get `id~k`.
+/// Splits a result into its solids; the first keeps `id`, the rest get `id~k`. Faces are named by
+/// ordinal (`{created_by}/face{i}`); kernel features use [`bodies_from_named`].
+#[allow(dead_code)]
 fn bodies_from(id: &str, created_by: &str, shape: Shape) -> Vec<Body> {
-    let solids = shape.subshapes(SOLID);
-    match solids.len() {
-        0 => Vec::new(),
-        1 => vec![new_body(id.into(), created_by.into(), solids.into_iter().next().unwrap())],
-        _ => solids.into_iter().enumerate().map(|(k, s)| new_body(if k == 0 { id.into() } else { format!("{id}~{k}") }, created_by.into(), s)).collect(),
-    }
+    bodies_from_named(id, created_by, Named::by_ordinal(shape, &format!("{created_by}/face")))
 }
 
-fn apply_operation(state: &mut State, fid: &str, tool: Shape, op: Operation) -> Result<Health, String> {
-    if tool.volume().abs() < 1e-9 {
+/// Splits a named result into its solids (each keeps the generative names of its faces); the
+/// first keeps `id`, the rest get `id~k`.
+fn bodies_from_named(id: &str, created_by: &str, named: Named) -> Vec<Body> {
+    named
+        .solids()
+        .into_iter()
+        .enumerate()
+        .map(|(k, s)| new_body_with(if k == 0 { id.into() } else { format!("{id}~{k}") }, created_by.into(), s.shape, BodyKind::Solid, s.names))
+        .collect()
+}
+
+fn apply_operation(state: &mut State, fid: &str, tool: Named, op: Operation) -> Result<Health, String> {
+    if tool.shape.volume().abs() < 1e-9 {
         return Err("The operation produced no volume.".into());
     }
-    let tool_bb = tool.bbox().unwrap_or([0.0; 6]);
-    let targets: Vec<usize> = state.bodies.iter().enumerate().filter(|(_, b)| bbox_overlap(b.topology().bbox, tool_bb)).map(|(i, _)| i).collect();
+    let tool_bb = tool.shape.bbox().unwrap_or([0.0; 6]);
+    let targets: Vec<usize> = state.bodies.iter().enumerate().filter(|(_, b)| b.kind == crate::body::BodyKind::Solid && bbox_overlap(b.topology().bbox, tool_bb)).map(|(i, _)| i).collect();
     let mut warn = None;
     match op {
         Operation::New => {
-            state.bodies.extend(bodies_from(fid, fid, tool));
+            state.bodies.extend(bodies_from_named(fid, fid, tool));
         }
         Operation::Join => {
             if targets.is_empty() {
-                state.bodies.extend(bodies_from(fid, fid, tool));
+                state.bodies.extend(bodies_from_named(fid, fid, tool));
                 warn = Some("No target body to join; a new body was created.".to_string());
             } else {
                 let first = state.bodies[targets[0]].clone();
-                let mut acc = first.shape.fuse(&tool).map_err(|e| e.0)?;
+                let mut acc = Named::of_body(&first).fuse(&tool, fid).map_err(|e| e.0)?;
                 for &t in &targets[1..] {
-                    acc = acc.fuse(&state.bodies[t].shape).map_err(|e| e.0)?;
+                    acc = acc.fuse(&Named::of_body(&state.bodies[t]), fid).map_err(|e| e.0)?;
                 }
-                if !acc.is_valid() {
+                if !acc.shape.is_valid() {
                     warn = Some("The joined geometry is not valid.".into());
                 }
-                let replacement = bodies_from(&first.id, &first.created_by, acc);
+                let replacement = bodies_from_named(&first.id, &first.created_by, acc);
                 let mut next: Vec<Body> = Vec::new();
                 for (i, b) in state.bodies.iter().enumerate() {
                     if i == targets[0] {
@@ -459,19 +613,20 @@ fn apply_operation(state: &mut State, fid: &str, tool: Shape, op: Operation) -> 
                     next.push(b.clone());
                     continue;
                 }
-                let r = if op == Operation::Cut { b.shape.cut(&tool) } else { b.shape.common(&tool) }.map_err(|e| e.0)?;
+                let nb = Named::of_body(b);
+                let r = if op == Operation::Cut { nb.cut(&tool, fid) } else { nb.common(&tool, fid) }.map_err(|e| e.0)?;
                 let v0 = b.volume();
-                let v1 = r.volume();
+                let v1 = r.shape.volume();
                 if (v1 - v0).abs() <= 1e-9 * v0.abs().max(1.0) {
                     next.push(b.clone());
                     continue;
                 }
                 changed += 1;
-                if !r.is_valid() {
+                if !r.shape.is_valid() {
                     warn = Some("The resulting geometry is not valid.".into());
                 }
                 if v1.abs() > 1e-9 {
-                    next.extend(bodies_from(&b.id, &b.created_by, r));
+                    next.extend(bodies_from_named(&b.id, &b.created_by, r));
                 }
             }
             state.bodies = next;
@@ -484,7 +639,7 @@ fn apply_operation(state: &mut State, fid: &str, tool: Shape, op: Operation) -> 
     Ok(warn.map(Health::Warning).unwrap_or(Health::Healthy))
 }
 
-fn edge_feature(state: &mut State, edges: &[cad_core::EdgeRef], value: f64, fillet: bool) -> Result<Health, String> {
+fn edge_feature(state: &mut State, fid: &str, edges: &[cad_core::EdgeRef], value: f64, fillet: bool) -> Result<Health, String> {
     let what = if fillet { "Radius" } else { "Distance" };
     if value <= 0.0 {
         return Err(format!("{what} must be greater than zero."));
@@ -500,6 +655,7 @@ fn edge_feature(state: &mut State, edges: &[cad_core::EdgeRef], value: f64, fill
         }
     }
     let mut lost = 0;
+    let mut fallback = 0;
     for (bid, refs_) in by_body {
         let Some(pos) = state.bodies.iter().position(|b| b.id == bid) else {
             lost += refs_.len();
@@ -509,10 +665,11 @@ fn edge_feature(state: &mut State, edges: &[cad_core::EdgeRef], value: f64, fill
         let topo = body.topology();
         let mut sel: Vec<&Shape> = Vec::new();
         for r in refs_ {
-            match refs::resolve_edge(&body, r) {
-                Ok(i) => {
-                    if !sel.iter().any(|s| std::ptr::eq(*s, &topo.edges[i])) {
-                        sel.push(&topo.edges[i]);
+            match refs::resolve_edge_ex(&body, r) {
+                Ok(res) => {
+                    fallback += res.fell_back() as usize;
+                    if !sel.iter().any(|s| std::ptr::eq(*s, &topo.edges[res.index])) {
+                        sel.push(&topo.edges[res.index]);
                     }
                 }
                 Err(_) => lost += 1,
@@ -521,20 +678,26 @@ fn edge_feature(state: &mut State, edges: &[cad_core::EdgeRef], value: f64, fill
         if sel.is_empty() {
             continue;
         }
-        let r = if fillet { body.shape.fillet(&sel, value) } else { body.shape.chamfer(&sel, value) }.map_err(|e| e.0)?;
-        if !r.is_valid() {
+        let r = Named::of_body(&body).blend(&sel, value, fillet, fid).map_err(|e| e.0)?;
+        if !r.shape.is_valid() {
             return Err(format!("{} produced invalid geometry with this {}.", if fillet { "Fillet" } else { "Chamfer" }, what.to_lowercase()));
         }
-        let replacement = bodies_from(&body.id, &body.created_by, r);
+        let replacement = bodies_from_named(&body.id, &body.created_by, r);
         state.bodies.splice(pos..pos + 1, replacement);
     }
     if lost == edges.len() {
         return Err(format!("{lost} reference failure(s): the selected edges no longer exist. Edit this feature and reselect the edges."));
     }
-    Ok(if lost > 0 { Health::Warning(format!("{lost} reference failure(s): some selected edges no longer exist.")) } else { Health::Healthy })
+    Ok(if lost > 0 {
+        Health::Warning(format!("{lost} reference failure(s): some selected edges no longer exist."))
+    } else if fallback > 0 {
+        Health::Warning(refs::fallback_warning(fallback))
+    } else {
+        Health::Healthy
+    })
 }
 
-fn hole(state: &mut State, face: &cad_core::FaceRef, center: [f64; 2], diameter: f64, depth: f64, through_all: bool) -> Result<Health, String> {
+fn hole(state: &mut State, fid: &str, face: &cad_core::FaceRef, center: [f64; 2], diameter: f64, depth: f64, through_all: bool) -> Result<Health, String> {
     if diameter <= 0.0 {
         return Err("Diameter must be greater than zero.".into());
     }
@@ -543,8 +706,8 @@ fn hole(state: &mut State, face: &cad_core::FaceRef, center: [f64; 2], diameter:
     }
     let pos = state.bodies.iter().position(|b| b.id == face.body).ok_or("The face reference is lost: the body no longer exists.")?;
     let body = state.bodies[pos].clone();
-    let fi = refs::resolve_face(&body, face).map_err(|e| format!("The face reference is lost: {e}"))?;
-    let info = body.topology().face_info[fi].clone();
+    let res = refs::resolve_face_ex(&body, face).map_err(|e| format!("The face reference is lost: {e}"))?;
+    let info = body.topology().face_info[res.index].clone();
     if info.surface != cad_core::SurfaceKind::Plane {
         return Err("Holes must be placed on a planar face.".into());
     }
@@ -553,12 +716,19 @@ fn hole(state: &mut State, face: &cad_core::FaceRef, center: [f64; 2], diameter:
     let bb = body.topology().bbox;
     let h = if through_all { dist([bb[0], bb[1], bb[2]], [bb[3], bb[4], bb[5]]) + 2.0 } else { depth };
     let tool = Shape::cylinder(add(c, scale(frame.n, 0.01)), scale(frame.n, -1.0), diameter / 2.0, h + 0.01).map_err(|e| e.0)?;
-    let r = body.shape.cut(&tool).map_err(|e| e.0)?;
-    if (r.volume() - body.volume()).abs() < 1e-9 {
+    // the cylinder's base (at the face) has the face's normal; its far cap faces the other way
+    let n = frame.n;
+    let tool = naming::by_geometry(tool, |fi| match fi[0] as i32 {
+        0 if dot([fi[5], fi[6], fi[7]], n) > 0.0 => format!("{fid}/hole:top"),
+        0 => format!("{fid}/hole:floor"),
+        _ => format!("{fid}/hole:wall"),
+    });
+    let r = Named::of_body(&body).cut(&tool, fid).map_err(|e| e.0)?;
+    if (r.shape.volume() - body.volume()).abs() < 1e-9 {
         return Ok(Health::Warning("The hole does not intersect the body.".into()));
     }
-    state.bodies.splice(pos..pos + 1, bodies_from(&body.id, &body.created_by, r));
-    Ok(Health::Healthy)
+    state.bodies.splice(pos..pos + 1, bodies_from_named(&body.id, &body.created_by, r));
+    Ok(if res.fell_back() { Health::Warning(refs::fallback_warning(1)) } else { Health::Healthy })
 }
 
 fn import(f: &Feature, state: &mut State, step: &str) -> Result<Health, String> {
@@ -568,7 +738,8 @@ fn import(f: &Feature, state: &mut State, step: &str) -> Result<Health, String> 
     std::fs::write(&path, step).map_err(|e| format!("Could not stage the imported STEP data: {e}"))?;
     let shape = Shape::read_step(&path.to_string_lossy()).map_err(|e| e.0)?;
     let _ = std::fs::remove_file(&path);
-    let bodies = bodies_from(&f.id, &f.id, shape);
+    // STEP data has no modelling history: faces are named by their (deterministic) ordinal
+    let bodies = bodies_from_named(&f.id, &f.id, Named::by_ordinal(shape, &format!("{}/face", f.id)));
     if bodies.is_empty() {
         return Err("The STEP data contains no solid bodies.".into());
     }
