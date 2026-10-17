@@ -69,18 +69,18 @@ warning: method `resolve_texture` is never used
 
 warning: `cad-app` (bin "cad360" test) generated 7 warnings (run `cargo fix --bin "cad360" -p cad-app --tests` to apply 1 suggestion)
    Compiling cad-diff v0.1.0 (C:\Mudrock's Headquarters\Project\CAD360\crates\cad-diff)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 48.29s
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 51.29s
      Running unittests src\main.rs (C:/c360t\debug\deps\cad360-fd4e40475910f46e.exe)
 
 running 147 tests
 test state::command::tests::registry_is_unique ... ok
 test state::features::assembly_tests::assemble_commands_are_supported_and_gated_by_sketch_mode ... ok
 test branding::tests::icon_decodes_to_256_rgba ... ok
+test state::features::assembly_tests::joint_dialog_refuses_two_origins_on_one_component ... ok
 test state::features::assembly_tests::joint_dialog_refuses_an_over_constraining_second_joint ... ok
 test state::features::assembly_tests::hiding_a_component_hides_its_bodies ... ok
-test state::features::assembly_tests::joint_dialog_refuses_two_origins_on_one_component ... ok
-test state::features::assembly_tests::joint_dialog_preview_ok_cancel_and_edit ... ok
 test state::features::assembly_tests::joint_preview_guards_repicks_and_keeps_user_suppression ... ok
+test state::features::assembly_tests::joint_dialog_preview_ok_cancel_and_edit ... ok
 test state::features::inspect_tests::inspect_commands_are_registered_and_enabled ... ok
 test state::features::assembly_tests::root_geometry_can_be_either_origin_and_grounding_decides_the_mover ... ok
 test state::features::assembly_tests::new_component_activates_and_owns_new_features ... ok
@@ -88,26 +88,26 @@ test state::features::inspect_tests::center_of_mass_dialog_follows_the_selection
 test state::features::manip::tests::centroid_of_rectangle ... ok
 test state::features::inspect_tests::interference_dialog_reports_overlapping_pairs ... ok
 test state::features::more_tests::circular_pattern_dialog_ok_and_cancel ... ok
-test state::features::more_tests::mirror_dialog_objects_then_plane ... ok
 test state::features::inspect_tests::measure_minimum_distance_angle_and_markers ... ok
-test state::features::more_tests::new_commands_are_registered_and_supported ... ok
 test state::features::more_tests::move_dialog_translate_rotate_copy ... ok
+test state::features::more_tests::new_commands_are_registered_and_supported ... ok
+test state::features::more_tests::mirror_dialog_objects_then_plane ... ok
 test state::features::inspect_tests::interference_result_is_dropped_when_the_model_changes ... ok
 test state::features::more_tests::rectangular_pattern_dialog_defaults_errors_and_edit ... ok
 test state::features::more_tests::combine_dialog_target_then_tools ... ok
 test state::features::surface_tests::insert_mesh_file_previews_a_mesh_body_and_converts_it ... ok
-test state::features::surface_tests::profile_click_selects_its_chain_and_the_chain_list_toggles_others ... ok
-test state::features::more_tests::shell_cancel_restores_and_face_clicks_toggle ... ok
-test state::features::surface_tests::surface_commands_wait_for_the_sketch_to_finish ... ok
 test state::features::surface_tests::patch_then_thicken_and_offset_through_the_dialogs ... ok
-test state::features::surface_tests::surface_extrude_dialog_previews_commits_cancels_and_edits ... ok
+test state::features::surface_tests::profile_click_selects_its_chain_and_the_chain_list_toggles_others ... ok
+test state::features::surface_tests::surface_commands_wait_for_the_sketch_to_finish ... ok
+test state::features::more_tests::shell_cancel_restores_and_face_clicks_toggle ... ok
 test state::features::surface_tests::surface_revolve_dialog_uses_the_default_axis ... ok
+test state::features::surface_tests::surface_extrude_dialog_previews_commits_cancels_and_edits ... ok
 test state::features::surface_tests::stitch_dialog_accepts_surfaces_only ... ok
 test state::features::tests::appearance_colours_selected_bodies ... ok
 test state::features::tests::change_parameters_drives_the_body ... ok
 test state::features::surface_tests::three_d_print_requests_an_stl_export_with_its_refinement ... ok
-test state::features::tests::edit_extrude_distance_via_edit_feature ... ok
 test state::features::more_tests::shell_dialog_preview_ok_undo_and_edit ... ok
+test state::features::tests::edit_extrude_distance_via_edit_feature ... ok
 test state::features::tests::extrude_cancel_leaves_no_feature ... ok
 test state::features::tests::extrude_dialog_creates_one_undo_step_and_fusion_volume ... ok
 test state::features::tests::chamfer_dialog ... ok
@@ -117,46 +117,46 @@ test state::features::tests::measure_reports_volume_area_length_and_distance ...
 test state::features::tests::offset_plane_from_origin_plane ... ok
 test state::features::tests::profiles_toggle_by_clicking_while_open ... ok
 test state::features::tests::revolve_rectangle_about_x_axis ... ok
-test state::features::tests::edit_rolls_back_downstream_features_and_restores_marker ... ok
+test state::features::tests::fillet_four_vertical_edges_matches_fusion ... ok
 test state::features::tests::tool_dialogs_do_not_touch_a_sketch_transaction ... ok
-test state::features::tests::zero_distance_reports_kernel_error ... ok
+test state::features::tests::fillet_too_large_shows_kernel_error ... ok
 test state::sketch::tests::advanced_tools_are_enabled_only_while_sketching ... ok
+test state::features::tests::zero_distance_reports_kernel_error ... ok
 test state::sketch::tests::cancel_restores_constraint_only_edits ... ok
 test state::sketch::tests::cancel_restores_the_sketch ... ok
 test state::sketch::tests::center_rectangle_on_origin_is_centred ... ok
 test state::sketch::tests::circle_radius_point_on_origin_adds_coincident ... ok
-test state::features::tests::fillet_four_vertical_edges_matches_fusion ... ok
 test state::sketch::tests::constraint_tools_pick_entities_and_use_preselection ... ok
-test state::features::tests::fillet_too_large_shows_kernel_error ... ok
 test state::sketch::tests::delete_removes_entity_and_its_dimension_parameter ... ok
-test state::sketch::tests::dimension_types_follow_the_selection ... ok
+test state::features::tests::edit_rolls_back_downstream_features_and_restores_marker ... ok
 test state::sketch::tests::dimension_value_box_accepts_expressions_and_rejects_invalid ... ok
 test state::sketch::tests::double_click_ends_line_chain_without_extra_segment ... ok
 test state::sketch::tests::dimensions_fully_constrain_rectangle_and_conflict_is_offered_as_driven ... ok
-test state::sketch::tests::dragging_partially_constrained_rectangle_keeps_it_rectangular ... ok
-test state::sketch::tests::dragging_free_point_moves_it_but_constrained_point_stays ... ok
+test state::sketch::tests::dimension_types_follow_the_selection ... ok
 test state::sketch::tests::dragging_dimension_label_moves_it ... ok
 test state::sketch::tests::escape_with_select_tool_finishes_sketch ... ok
+test state::sketch::tests::dragging_free_point_moves_it_but_constrained_point_stays ... ok
+test state::sketch::tests::dragging_partially_constrained_rectangle_keeps_it_rectangular ... ok
 test state::sketch::tests::extend_line_to_rectangle_edges ... ok
 test state::sketch::tests::finish_sketch_is_one_undo_step_and_undo_removes_it ... ok
-test state::features::tests::second_extrude_defaults_to_join_and_cut_through_all ... ok
 test state::sketch::tests::glyph_selection_deletes_constraint ... ok
-test state::sketch::tests::fillet_line_and_arc_in_the_sketch ... ok
 test state::sketch::tests::line_chain_shares_points_and_closes_loop ... ok
 test state::sketch::tests::line_inference_adds_horizontal ... ok
 test state::sketch::tests::mirror_line_is_clicked_without_enter ... ok
-test state::sketch::tests::overlay_shows_previews_hover_and_selection ... ok
-test state::sketch::tests::perpendicular_tangent_and_symmetry_tools ... ok
+test state::sketch::tests::fillet_line_and_arc_in_the_sketch ... ok
 test state::sketch::tests::mirror_produces_symmetric_copies ... ok
-test state::sketch::tests::rectangle_tool_adds_two_horizontal_and_two_vertical ... ok
+test state::sketch::tests::overlay_shows_previews_hover_and_selection ... ok
 test state::sketch::tests::offset_rectangle_gives_two_profile_ring ... ok
+test state::sketch::tests::perpendicular_tangent_and_symmetry_tools ... ok
+test state::sketch::tests::rectangle_tool_adds_two_horizontal_and_two_vertical ... ok
+test state::features::tests::second_extrude_defaults_to_join_and_cut_through_all ... ok
 test state::sketch::tests::snapping_onto_existing_endpoint_shares_it_and_origin_is_coincident ... ok
 test state::sketch::tests::toggle_construction_switches_linetype ... ok
 test state::sketch::tests::slot_area ... ok
 test state::sketch::tests::trim_rectangle_crossed_by_line ... ok
 test state::sketch::tests::two_point_circle_three_point_rectangle_and_center_arc ... ok
-test state::workflow_tests::errors_are_reported_not_crashing ... ok
 test state::sketch::tests::fillet_corner_of_constrained_rectangle ... ok
+test state::workflow_tests::errors_are_reported_not_crashing ... ok
 test state::workflow_tests::timeline_marker_suppress_and_delete ... ok
 test ui::appbar::tests::shortcuts_come_from_the_registry ... ok
 test ui::browser::interaction_tests::origin_eye_and_plane_rows ... ok
@@ -165,7 +165,7 @@ test ui::browser::tests::component_actions ... ok
 test ui::browser::tests::health_badges ... ok
 test ui::browser::tests::origin_eye_toggles_document_flag ... ok
 test ui::browser::tests::plane_rows_select_origin_planes ... ok
-test ui::context_menu::interaction_tests::right_click_opens_marking_menu_and_fit_runs ... ok
+test state::sketch::tests::polygon_hexagon_area ... ok
 test ui::context_menu::tests::hide_offered_for_selected_bodies ... ok
 test ui::context_menu::tests::model_ring_has_fusion_commands ... ok
 test ui::context_menu::tests::repeat_is_disabled_without_history ... ok
@@ -174,7 +174,7 @@ test ui::icons::tests::disabled_colours_are_grey ... ok
 test ui::icons::tests::every_registered_command_has_a_dedicated_icon ... ok
 test ui::icons::tests::feature_icons_follow_type_labels ... ok
 test ui::navbar::tests::nav_modes_highlight_and_toggle ... ok
-test state::sketch::tests::polygon_hexagon_area ... ok
+test ui::context_menu::interaction_tests::right_click_opens_marking_menu_and_fit_runs ... ok
 test ui::ribbon::interaction_tests::clicking_create_sketch_icon_runs_the_command ... ok
 test ui::ribbon::interaction_tests::surface_tab_extrude_icon_opens_the_surface_extrude_dialog ... ok
 test ui::ribbon::interaction_tests::unsupported_tab_shows_placeholder_and_keeps_state ... ok
@@ -192,16 +192,16 @@ test ui::statusbar::tests::fade_curve ... ok
 test ui::statusbar::tests::last_message_hash_changes_with_text ... ok
 test ui::theme::tests::theme_applies_dark_fusion_palette ... ok
 test ui::timeline::interaction_tests::click_selects_and_drag_reorders ... ok
-test ui::timeline::interaction_tests::playback_buttons_and_marker_drag ... ok
 test ui::ribbon::tests::chrome_smoke_frames ... ok
+test ui::timeline::interaction_tests::playback_buttons_and_marker_drag ... ok
 test ui::timeline::rename_tests::double_click_edits_the_sketch ... ok
 test ui::timeline::rename_tests::inline_rename_cancels_on_escape ... ok
+test ui::timeline::rename_tests::inline_rename_commits_on_enter ... ok
 test ui::timeline::tests::invalid_reorder_is_rejected_with_message ... ok
-test ui::timeline::tests::marker_gap_from_pointer ... ok
 test ui::timeline::tests::reorder_target_accounts_for_removal ... ok
+test ui::timeline::tests::marker_gap_from_pointer ... ok
 test ui::timeline::tests::step_buttons_clamp ... ok
 test ui::timeline::tests::tooltip_shows_health_message ... ok
-test ui::timeline::rename_tests::inline_rename_commits_on_enter ... ok
 test ui::viewcube::tests::centre_of_top_view_picks_top_face ... ok
 test ui::viewcube::tests::clicking_targets_orients_camera ... ok
 test ui::viewcube::tests::front_view_regions ... ok
@@ -213,15 +213,15 @@ test viewport::camera::tests::zoom_keeps_point_under_cursor ... ok
 test ui::viewcube::interaction_tests::clicking_front_face_animates_to_front_view ... ok
 test viewport::manipulator::tests::dragging_the_offset_plane_arrow_moves_the_plane ... ok
 test viewport::manipulator::tests::manipulator_ignores_the_pointer_away_from_the_arrow ... ok
-test viewport::manipulator::tests::dragging_the_extrude_arrow_sets_the_distance ... ok
 test viewport::manipulator::tests::ray_to_axis_closest_point ... ok
 test viewport::manipulator::tests::snapping_steps_and_formatting ... ok
 test viewport::picking::tests::ray_triangle ... ok
 test viewport::renderer::tests::cap_quad_spans_the_box_on_the_plane ... ok
-test state::workflow_tests::phase7_workflow_through_tools_and_dialogs ... ok
+test viewport::manipulator::tests::dragging_the_extrude_arrow_sets_the_distance ... ok
 test state::workflow_tests::phase7_workflow_headless ... ok
+test state::workflow_tests::phase7_workflow_through_tools_and_dialogs ... ok
 
-test result: ok. 147 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.86s
+test result: ok. 147 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.31s
 
      Running unittests src\lib.rs (C:/c360t\debug\deps\cad_core-75e5763fea2e56e3.exe)
 
@@ -231,13 +231,13 @@ test document::tests::sequential_parameter_names_like_fusion ... ok
 test document::tests::cycles_are_detected ... ok
 test document::tests::set_expression_validates_and_propagates ... ok
 test document::tests::user_parameters ... ok
-test expr::tests::angles ... ok
 test document::tests::json_round_trip_and_format_errors ... ok
+test expr::tests::angles ... ok
 test expr::tests::display ... ok
 test expr::tests::parameter_references_like_fusion ... ok
 test expr::tests::referenced_names_skips_units_and_functions ... ok
-test expr::tests::units_and_bare_numbers ... ok
 test expr::tests::rejects_invalid_expressions_like_fusion ... ok
+test expr::tests::units_and_bare_numbers ... ok
 test history::tests::undo_redo_round_trip ... ok
 test ops::surface_tests::base64_round_trip ... ok
 test ops::surface_tests::surface_constructors_create_parameters ... ok
@@ -267,42 +267,49 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
      Running tests\diff.rs (C:/c360t\debug\deps\diff-373db997590ae4b6.exe)
 
-running 12 tests
+running 15 tests
 test asm_loader_parses_minimal_sample ... ok
 test catalogue_parses ... ok
 test comparator_failure_classes ... ok
 test comparator_match ... ok
 test comparator_mismatch_lists_field_and_values ... ok
 test comparator_topology_convention_when_mass_agrees ... ok
+test feature_catalogue_loads_and_resolves_bases ... ok
 test occt_box_topology_is_six_twelve_eight ... ok
+test occt_feature_volumes_equal_closed_form ... ok
+test occt_primitive_volumes_equal_closed_form ... ok
 test step_bridge_preserves_box_and_cylinder ... ok
 test utc_formatting ... ok
-test occt_primitive_volumes_equal_closed_form ... ok
+test cad_geom_extrude_matches_occt ... ok
 test cad_geom_volumes_agree_with_occt ... ok
 test cad_geom_booleans_match_asm ... ok
 
-test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.27s
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.95s
 
      Running unittests src\lib.rs (C:/c360t\debug\deps\cad_geom-36ecd8c6200a57f3.exe)
 
-running 15 tests
-test intersect::tests::cluster_merges_roots_within_tolerance ... ok
+running 19 tests
 test boolean_quadric::tests::charts_preserve_orientation_and_invert ... ok
+test intersect::tests::cluster_merges_roots_within_tolerance ... ok
 test boolean_quadric::tests::arc_area_and_winding ... ok
 test intersect::tests::golden_finds_extrema ... ok
 test nurbs::tests::binomials ... ok
 test nurbs::tests::unit_arc_segments_and_weights ... ok
-test predicates::tests::fallback_decides_when_naive_rounding_cancels ... ok
 test predicates::tests::antisymmetric_and_translation_consistent ... ok
+test predicates::tests::fallback_decides_when_naive_rounding_cancels ... ok
 test predicates::tests::three_way_with_band ... ok
+test profile::tests::arc_area_terms ... ok
+test profile::tests::merges_collinear_and_cocircular_segments ... ok
+test profile::tests::orients_outer_ccw_and_holes_cw ... ok
 test project::tests::eberly_on_axis_inside_evolute ... ok
 test project::tests::eberly_reduces_to_polar_angle_on_a_circle ... ok
 test triangulate::tests::orient_exact_sign ... ok
 test triangulate::tests::square_with_hole ... ok
 test triangulate::tests::collinear_runs_and_steiner ... ok
+test profile::tests::rejects_bad_loops ... ok
 test boolean_quadric::tests::polyhedra_through_the_quadric_pipeline ... ok
 
-test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
 
      Running tests\asm_booleans.rs (C:/c360t\debug\deps\asm_booleans-64bfce899f0e61ba.exe)
 
@@ -312,14 +319,36 @@ test repeated_union_steps_match_asm ... ok
 test box_booleans_match_asm ... ok
 test curved_booleans_match_asm ... ok
 
-test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.13s
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.40s
 
      Running tests\asm_reference.rs (C:/c360t\debug\deps\asm_reference-03248879b65c16f5.exe)
 
 running 1 test
 test primitives_match_asm ... ok
 
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+     Running tests\blend.rs (C:/c360t\debug\deps\blend-8da8f8f08b4ab134.exe)
+
+running 16 tests
+test capsule_tessellates_watertight ... ok
+test chamfer_edge ... ok
+test blends_reject_bad_input ... ok
+test chamfer_vertical4_equals_octagon_extrude ... ok
+test chamfer_with_oblique_end_faces ... ok
+test chamfer_cylinder_top_by_pappus ... ok
+test edges_are_picked_by_world_points ... ok
+test concave_edge_blends_equal_extrudes ... ok
+test fillet_corner3_rolling_ball_corner ... ok
+test fillet_edge ... ok
+test blend_cases_match_asm_record ... ok
+test fillet_of_an_acute_edge_equals_rounded_trapezoid ... ok
+test fillet_cylinder_top_by_pappus ... ok
+test fillet_vertical4_equals_rounded_rectangle_extrude ... ok
+test chamfer_hole_rim_and_fillet_bottom_rim ... ok
+test fillet_hole_rim_by_pappus ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.52s
 
      Running tests\booleans.rs (C:/c360t\debug\deps\booleans-9e507c763b3ea1da.exe)
 
@@ -338,7 +367,7 @@ test touching_vertex_only ... ok
 test rotated_boxes_satisfy_set_identities ... ok
 test non_convex_and_holed_operands ... ok
 
-test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.49s
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.68s
 
      Running tests\curved_booleans.rs (C:/c360t\debug\deps\curved_booleans-5363d08c0ecff9ca.exe)
 
@@ -356,7 +385,21 @@ test rigid_motion_and_scale ... ok
 test sphere_cut_by_box_corner ... ok
 test tangent_contact_tolerance_boundary ... ok
 
-test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.83s
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.66s
+
+     Running tests\extrude.rs (C:/c360t\debug\deps\extrude-185614477fb00082.exe)
+
+running 8 tests
+test extrude_rejects_bad_input ... ok
+test extrude_is_independent_of_input_loop_orientation_and_order ... ok
+test extrude_scale_range ... ok
+test extruded_plate_with_hole_matches_asm_boolean_record ... ok
+test extruded_rectangle_and_circle_equal_the_primitives ... ok
+test extrude_matches_asm_feature_reference ... ok
+test extrude_tessellates_watertight_with_exact_planar_volume ... ok
+test extrude_cases_match_closed_forms ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.44s
 
      Running tests\geometry.rs (C:/c360t\debug\deps\geometry-0ebbedfa1e2c7460.exe)
 
@@ -375,14 +418,14 @@ test curve_projection_round_trips ... ok
 test plane_plane_cases ... ok
 test plane_quadric_cases ... ok
 test polynomial_roots_isolation ... ok
-test curve_against_nurbs_surface_matches_analytic ... ok
 test line_torus_cases ... ok
 test surface_projection_round_trips ... ok
+test curve_against_nurbs_surface_matches_analytic ... ok
 test surface_projection_degeneracies ... ok
 test nurbs_surface_projection_round_trips ... ok
 test to_nurbs_is_the_same_point_set ... ok
 
-test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.65s
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.74s
 
      Running tests\mass.rs (C:/c360t\debug\deps\mass-0ad46647ec1b8108.exe)
 
@@ -391,8 +434,8 @@ test boxes_exact ... ok
 test face_areas ... ok
 test inertia_is_symmetric_with_negative_products ... ok
 test mesh_normals_outward ... ok
-test hemisphere_pole_residual ... ok
 test cylinders_exact ... ok
+test hemisphere_pole_residual ... ok
 test cones_exact ... ok
 test rigid_motion_rotates_inertia ... ok
 test oblique_cut_cylinder_exact ... ok
@@ -401,10 +444,10 @@ test seamless_band_area ... ok
 test sphere_mesh_volume_spec ... ok
 test sphere_exact ... ok
 test sphere_face_outside_a_non_winding_loop ... ok
-test mesh_volume_converges ... ok
 test torus_exact ... ok
+test mesh_volume_converges ... ok
 
-test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.43s
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.97s
 
      Running tests\nurbs.rs (C:/c360t\debug\deps\nurbs-5549a5c88b25c4e6.exe)
 
@@ -412,16 +455,16 @@ running 14 tests
 test basis_derivatives_match_finite_differences ... ok
 test constructor_validation ... ok
 test find_span_brackets_parameter ... ok
-test circle_arc_length_and_tangent ... ok
 test basis_partition_of_unity_and_derivative_sums ... ok
+test circle_arc_length_and_tangent ... ok
 test degree_elevation_preserves_geometry ... ok
 test periodic_curve_wraps_and_is_smooth_at_seam ... ok
 test rational_curve_derivatives_match_finite_differences ... ok
 test surface_derivatives_match_finite_differences ... ok
-test surface_extract_and_bezier_patches_reproduce ... ok
-test surface_validation ... ok
 test split_and_extract_reproduce_curve ... ok
+test surface_validation ... ok
 test nurbs_circle_points_lie_on_circle ... ok
+test surface_extract_and_bezier_patches_reproduce ... ok
 test knot_insertion_leaves_curve_unchanged ... ok
 
 test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
@@ -429,15 +472,52 @@ test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fin
      Running tests\primitives.rs (C:/c360t\debug\deps\primitives-a7ea366916023911.exe)
 
 running 7 tests
-test bottom_cap_is_reversed_plane ... ok
 test invalid_inputs_rejected ... ok
+test bottom_cap_is_reversed_plane ... ok
 test queries ... ok
 test inverted_cone_valid ... ok
 test outward_orientation ... ok
 test counts_and_validity ... ok
 test transformed_primitives_stay_valid ... ok
 
-test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.24s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.63s
+
+     Running tests\revolve.rs (C:/c360t\debug\deps\revolve-f25bef2495ba92b9.exe)
+
+running 14 tests
+test arcs_reaching_the_axis_off_centre_are_unsupported ... ok
+test partial_revolutions_are_fractions_of_the_full_solid ... ok
+test inertia_matches_textbook_formulas ... ok
+test full_revolutions_equal_the_primitives ... ok
+test revolve_is_independent_of_input_loop_orientation_and_order ... ok
+test revolve_matches_asm_feature_records ... ok
+test revolve_rejects_bad_input ... ok
+test revolve_cases_match_closed_forms ... ok
+test revolve_scale_range ... ok
+test revolve_tessellates_watertight ... ok
+test voids_are_inward_shells_of_the_same_solid ... ok
+test partial_sweeps_holes_and_pockets ... ok
+test negative_angle_is_the_mirror_image ... ok
+test tilted_axis_rotates_mass_properties ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 47.85s
+
+     Running tests\shell.rs (C:/c360t\debug\deps\shell-c05cf1c655b0b3df.exe)
+
+running 11 tests
+test curved_base_is_unsupported ... ok
+test closed_hollow_without_removed_faces ... ok
+test box_open_on_two_sides ... ok
+test invalid_thickness_is_rejected ... ok
+test oblique_pyramid_apex_is_unsupported ... ok
+test lshape_thickness_limit ... ok
+test right_pyramid_four_faces_at_apex ... ok
+test lshape_top_removed ... ok
+test removed_face_next_to_reflex_edge ... ok
+test shell_top_matches_reference_and_closed_forms ... ok
+test rotated_box_shell_rotates_mass_properties ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.50s
 
      Running tests\tess.rs (C:/c360t\debug\deps\tess-82024b45a460136f.exe)
 
@@ -459,7 +539,7 @@ test tilted_sphere_caps_closed_by_a_pole ... ok
 test torus_patch ... ok
 test oblique_cylinder_band ... ok
 
-test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 18.89s
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.94s
 
      Running tests\validate.rs (C:/c360t\debug\deps\validate-4a65edb769740277.exe)
 
@@ -478,15 +558,15 @@ test loopless_periodic_faces ... ok
 test every_primitive_validates_clean ... ok
 test seamed_convention_validates_clean ... ok
 
-test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.83s
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.43s
 
      Running unittests src\lib.rs (C:/c360t\debug\deps\cad_kernel-9bcb4fa82571da51.exe)
 
 running 6 tests
 test frame::tests::origin_frames_match_fusion ... ok
-test naming::tests::history_decoding ... ok
-test frame::tests::plane_rule_reproduces_origin_frames_and_face_frame ... ok
 test frame::tests::ray_intersection ... ok
+test frame::tests::plane_rule_reproduces_origin_frames_and_face_frame ... ok
+test naming::tests::history_decoding ... ok
 test recompute::assembly::tests::mate_aligns_z_axes_like_fusion ... ok
 test recompute::more::tests::rigid_algebra ... ok
 
@@ -497,19 +577,19 @@ test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 running 13 tests
 test documents_without_components_still_load ... ok
 test fusion_probe_revolute_and_rigid_numbers ... ok
-test features_and_bodies_belong_to_the_active_component ... ok
 test chained_joints_move_whole_subassemblies ... ok
+test features_and_bodies_belong_to_the_active_component ... ok
 test joint_errors_same_component_grounding_and_lost_references ... ok
+test revolute_joint_on_circular_edges_rotates_b ... ok
 test merging_clusters_keeps_the_earliest_component_and_fixed_components_transitively ... ok
 test features_after_a_joint_follow_the_component_placement ... ok
-test revolute_joint_on_circular_edges_rotates_b ... ok
-test rigid_joint_aligns_the_joint_axes ... ok
 test root_component_never_moves_in_either_pick_order ... ok
+test rigid_joint_aligns_the_joint_axes ... ok
 test slider_offset_translates_along_the_joint_axis ... ok
-test persistence_round_trip_with_components_and_joints ... ok
 test second_joint_between_the_same_pair_is_over_constrained ... ok
+test persistence_round_trip_with_components_and_joints ... ok
 
-test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
 
      Running tests\fusion_workflow.rs (C:/c360t\debug\deps\fusion_workflow-08f03263b0917f67.exe)
 
@@ -520,7 +600,7 @@ test revolve_chamfer_hole_plane_and_exchange ... ok
 test invalid_operations_report_errors_instead_of_crashing ... ok
 test sketch_extrude_edit_fillet_cut_like_fusion ... ok
 
-test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.17s
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
 
      Running tests\inspect.rs (C:/c360t\debug\deps\inspect-be2acc40630152a7.exe)
 
@@ -532,7 +612,7 @@ test min_distance_between_boxes_10mm_apart ... ok
 test touching_and_nested_solids_have_zero_distance ... ok
 test interference_volume_of_overlapping_boxes_is_exact ... ok
 
-test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
 
      Running tests\more_features.rs (C:/c360t\debug\deps\more_features-df7b85eba39f4caf.exe)
 
@@ -541,14 +621,14 @@ test circular_pattern_of_an_off_axis_box ... ok
 test mirror_bodies_across_origin_face_and_construction_planes ... ok
 test dependencies_follow_numbered_bodies ... ok
 test modified_bodies_never_reuse_existing_ids ... ok
-test move_and_copy_bodies ... ok
 test rectangular_pattern_one_and_two_directions_and_join ... ok
+test move_and_copy_bodies ... ok
 test combine_join_cut_intersect_and_keep_tools ... ok
 test shell_thickness_just_past_the_limit_fails ... ok
-test shell_box_removing_top_face ... ok
 test new_kinds_persist_and_recompute_identically ... ok
+test shell_box_removing_top_face ... ok
 
-test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
 
      Running tests\naming.rs (C:/c360t\debug\deps\naming-3f62f3d29949b8fa.exe)
 
@@ -556,13 +636,13 @@ running 8 tests
 test hole_stays_on_original_top_face_after_upstream_boss ... ok
 test fillet_survives_upstream_join_that_grows_the_bbox ... ok
 test lost_name_falls_back_to_geometry_with_warning ... ok
-test chamfer_keeps_its_edge_after_upstream_joined_pattern ... ok
 test revolve_faces_are_named ... ok
+test chamfer_keeps_its_edge_after_upstream_joined_pattern ... ok
 test unnamed_references_still_resolve ... ok
 test fillet_survives_large_width_change ... ok
 test kernel_bodies_carry_face_names ... ok
 
-test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.37s
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s
 
      Running tests\surface.rs (C:/c360t\debug\deps\surface-a919f9f0a2896bbd.exe)
 
@@ -574,53 +654,53 @@ test refined_stl_export_changes_the_triangle_count ... ok
 test inserted_stl_is_a_mesh_body_and_converts_to_a_solid ... ok
 test surface_extrude_of_an_open_chain_gives_one_face_per_curve ... ok
 test stl_export_of_solids_and_mesh_bodies_together ... ok
-test surface_revolve_of_a_line_gives_a_cylinder_surface ... ok
 test stitching_six_patches_gives_a_solid_box ... ok
+test surface_revolve_of_a_line_gives_a_cylinder_surface ... ok
 test thicken_a_plate_into_a_solid ... ok
 test non_planar_edge_loop_is_filled ... ok
 test surface_features_survive_save_and_load ... ok
 
-test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.30s
 
      Running unittests src\lib.rs (C:/c360t\debug\deps\cad_sketch-e35a1f447bce8248.exe)
 
 running 44 tests
-test interact::tests::infers_horizontal_and_vertical_within_tolerance ... ok
 test interact::tests::arc_hit_respects_sweep ... ok
-test interact::tests::dimension_lines_for_each_kind ... ok
+test interact::tests::infers_horizontal_and_vertical_within_tolerance ... ok
 test interact::tests::arc_preview_passes_through_points ... ok
+test interact::tests::dimension_lines_for_each_kind ... ok
 test interact::tests::nice_steps ... ok
 test interact::tests::orientation_follows_label_placement ... ok
 test interact::tests::point_and_curve_hits ... ok
 test modify::tests::fillet_lines_drawn_from_the_same_point ... ok
 test modify::tests::extend_line_to_edge ... ok
-test modify::tests::fillet_line_and_arc ... ok
 test modify::tests::fillet_at_the_clicked_corner_of_a_d_shape ... ok
 test modify::tests::fillet_stays_at_the_corner_when_the_curves_cross_again ... ok
 test modify::tests::mirror_triangle ... ok
+test modify::tests::fillet_line_and_arc ... ok
 test modify::tests::fillet_rectangle_corner ... ok
 test modify::tests::trim_circle_leaves_arc ... ok
+test modify::tests::fillet_two_arcs ... ok
 test modify::tests::offset_closed_and_open_chains ... ok
 test profiles::tests::circle_inside_rectangle_gives_ring_and_disc ... ok
 test profiles::tests::construction_geometry_is_ignored ... ok
-test modify::tests::fillet_two_arcs ... ok
 test profiles::tests::line_across_circle_splits_it ... ok
 test profiles::tests::open_chain_has_no_profile ... ok
-test profiles::tests::overlapping_rectangles_split_into_three_regions ... ok
 test profiles::tests::rectangle_is_one_profile ... ok
+test profiles::tests::overlapping_rectangles_split_into_three_regions ... ok
 test shapes::tests::center_arc_direction ... ok
 test profiles::tests::slot_with_arcs ... ok
 test modify::tests::trim_line_crossing_rectangle ... ok
 test shapes::tests::circumscribed_square_has_apothem_at_click ... ok
 test shapes::tests::three_point_rectangle ... ok
 test solver::tests::arc_endpoints_stay_on_circle_when_radius_changes ... ok
-test modify::tests::offset_slot_concentric_arcs ... ok
 test solver::tests::circle_tangent_and_radius ... ok
-test shapes::tests::slot_area_and_dof ... ok
 test solver::tests::conflicting_values_fail_and_keep_geometry ... ok
-test solver::tests::dimensioned_rectangle_is_fully_constrained ... ok
+test shapes::tests::slot_area_and_dof ... ok
 test solver::tests::dragging_a_held_point ... ok
+test modify::tests::offset_slot_concentric_arcs ... ok
 test shapes::tests::hexagon_area_and_dof ... ok
+test solver::tests::dimensioned_rectangle_is_fully_constrained ... ok
 test solver::tests::measure_values ... ok
 test solver::tests::partially_constrained_reports_dof_and_free_entities ... ok
 test solver::tests::perpendicular_parallel_equal_midpoint_symmetric ... ok
@@ -630,7 +710,7 @@ test solver::tests::third_dimension_is_over_constraining_but_driven_is_allowed .
 test solver::tests::filleted_corner_of_constrained_rectangle_is_fully_constrained ... ok
 test solver::tests::endpoint_tangency_is_independent ... ok
 
-test result: ok. 44 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+test result: ok. 44 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
 
      Running unittests src\main.rs (C:/c360t\debug\deps\occt_spike-c8f43062c297fab1.exe)
 
@@ -649,7 +729,7 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 running 1 test
 test it_can_access_mesh_triangulation ... ok
 
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
 
    Doc-tests cad_core
 

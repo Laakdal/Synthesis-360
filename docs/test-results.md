@@ -1,9 +1,9 @@
 # Test results
 
-Run: 2026-10-17 (after adding the own kernel `cad-geom` and the differential harness `cad-diff`; the release build `C:\c360t\release\cad360.exe`
+Run: 2026-10-17 (after adding extrude, revolve, chamfer/fillet and shell to the own kernel `cad-geom` and the feature cases to `cad-diff`; the release build `C:\c360t\release\cad360.exe`
 also completed the workflow scenario), Windows 11 Pro 22631, rustc 1.95.0 (MSVC), GPU NVIDIA GeForce
 MX450 (Vulkan) over RDP. Command: `cargo test --workspace --no-fail-fast -- --test-threads=4` —
-**413 passed, 0 failed, 0 ignored** (raw log: `docs/test-run-raw.txt`). Scripted UI scenarios (real window, real
+**469 passed, 0 failed, 0 ignored** (raw log: `docs/test-run-raw.txt`). Scripted UI scenarios (real window, real
 GPU) were run with `cad360 --scenario docs/scenarios/{workflow,modify,assembly,viewport}.json
 --screenshot-dir docs/screenshots/cad360` and completed without errors.
 
@@ -20,7 +20,7 @@ GPU) were run with `cad360 --scenario docs/scenarios/{workflow,modify,assembly,v
 | `cad-kernel/tests/surface.rs` (surface and mesh features) | 12 | ✅ |
 | `cad-kernel/tests/inspect.rs` (minimum distance, angles, interference, centre of mass) | 6 | ✅ |
 | `cad-sketch` unit (solver, profiles, interaction, shapes, modify incl. fillet corner/arc cases) | 44 | ✅ |
-| `cad-geom` unit (NURBS basis, projection, intersection helpers, predicates, boolean and triangulation internals) | 15 | ✅ |
+| `cad-geom` unit (NURBS basis, projection, intersection helpers, predicates, boolean and triangulation internals, profile checks) | 19 | ✅ |
 | `cad-geom/tests/geometry.rs` (analytic curves/surfaces, projection, intersections incl. tangent and near-tangent) | 20 | ✅ |
 | `cad-geom/tests/nurbs.rs` (basis, derivatives, knot insertion, split, exact conics, analytic → NURBS) | 14 | ✅ |
 | `cad-geom/tests/primitives.rs` (ASM-convention topology, both conventions) | 7 | ✅ |
@@ -31,7 +31,11 @@ GPU) were run with `cad360 --scenario docs/scenarios/{workflow,modify,assembly,v
 | `cad-geom/tests/curved_booleans.rs` (plane/cylinder/sphere booleans vs circle-segment, spherical-cap and octant formulas; tangency at 5e-6/1e-5/2e-5 mm; repeated holes) | 12 | ✅ |
 | `cad-geom/tests/tess.rs` (planar faces with holes and trimmed curved faces: watertight, outward, exact planar volume, chord bound, convergence) | 16 | ✅ |
 | `cad-geom/tests/asm_booleans.rs` (all 10 recorded boolean cases vs the ASM reference) | 4 | ✅ |
-| `cad-diff/tests/diff.rs` (OCCT closed forms, comparator classification, ASM loader, cad-geom vs OCCT, all 10 booleans MATCH ASM) | 12 | ✅ |
+| `cad-geom/tests/extrude.rs` (closed forms, = box/cylinder primitives, = ASM `bool.cut.hole`, all 9 ASM v6 extrude records, watertight mesh, orientation, scale) | 8 | ✅ |
+| `cad-geom/tests/revolve.rs` (Pappus closed forms incl. inertia, = primitives, ASM v6 records, partial sweeps, holes/pockets, mirror/tilt/scale, mesh, invalid input) | 14 | ✅ |
+| `cad-geom/tests/blend.rs` (chamfer/fillet closed forms, = rounded extrudes, vertex blend, rim torus/cone, ASM v6 records, edge picking, invalid input, tess regression) | 16 | ✅ |
+| `cad-geom/tests/shell.rs` (shell.top vs OCCT/ASM, L shape, two openings, closed hollow, pyramid apex, rotation, thickness limits) | 11 | ✅ |
+| `cad-diff/tests/diff.rs` (OCCT closed forms incl. 24 feature cases, comparator classification, ASM loader, cad-geom vs OCCT, all 10 booleans MATCH ASM, feature catalogue, extrude vs OCCT) | 15 | ✅ |
 | vendored `opencascade` triangulation test | 1 | ✅ |
 
 **Not tested with REA**: REA's native-UI observation is macOS-only on this host, so UI behaviour was
