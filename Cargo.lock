@@ -519,6 +519,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "cad-diff"
+version = "0.1.0"
+dependencies = [
+ "cad-geom",
+ "cad-kernel",
+ "glam 0.24.2",
+ "opencascade",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "cad-geom"
+version = "0.1.0"
+dependencies = [
+ "nalgebra",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "cad-kernel"
 version = "0.1.0"
 dependencies = [
@@ -1869,6 +1891,7 @@ dependencies = [
  "num-complex",
  "num-rational",
  "num-traits",
+ "serde",
  "simba",
  "typenum",
 ]
@@ -1937,6 +1960,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73f88a1307638156682bada9d7604135552957b7818057dcef22705b4d509495"
 dependencies = [
  "num-traits",
+ "serde",
 ]
 
 [[package]]

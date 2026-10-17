@@ -46,3 +46,16 @@ fn lower_layers_do_not_depend_on_higher_layers() {
         }
     }
 }
+
+/// `cad-geom` is the independently implemented kernel: it must stay pure Rust, with no OCCT
+/// binding, no C++ bridge and no dependency on the rest of the workspace, so that differential
+/// tests against OCCT (`cad-diff`) compare two genuinely separate implementations.
+#[test]
+fn own_kernel_is_independent_of_occt_and_the_workspace() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
+    let text = std::fs::read_to_string(root.join("cad-geom").join("Cargo.toml")).unwrap();
+    for d in deps(&text) {
+        let banned = d.starts_with("opencascade") || d.starts_with("occt") || d == "cxx" || d.starts_with("cad-") || FORBIDDEN.contains(&d.as_str());
+        assert!(!banned, "cad-geom must not depend on {d}");
+    }
+}

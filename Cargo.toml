@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/cad-core", "crates/cad-sketch", "crates/cad-kernel", "crates/cad-app", "spikes/occt-spike"]
+members = ["crates/cad-core", "crates/cad-sketch", "crates/cad-geom", "crates/cad-diff", "crates/cad-kernel", "crates/cad-app", "spikes/occt-spike"]
 
 [workspace.package]
 edition = "2024"
