@@ -7,7 +7,7 @@
 //! (cone, torus) stay `NOT_IMPLEMENTED`. Boolean results are validated at 1e-7 mm first and, if
 //! that fails, at the boolean tolerance, with a note saying so.
 
-use crate::cases::{BoolOp, Case, Spec};
+use crate::cases::{BoolOp, Case, ProfileSpec, SegSpec, Spec};
 use crate::result::{KERNEL_RUST, KernelResult, NOT_IMPLEMENTED, normalize_curve_type};
 use cad_geom::topology::Brep;
 use cad_geom::{Curve, Frame, GResult, P3, SolidId, Tolerance, V3};
@@ -76,7 +76,7 @@ fn build_primitive(spec: &Spec) -> GResult<Brep> {
             major,
             minor,
         } => make_torus(Frame::from_origin_z(p3(center), v3(axis)), major, minor),
-        Spec::Boolean { .. } => unreachable!("booleans are filtered out before"),
+        _ => unreachable!("booleans and features are dispatched before"),
     }
 }
 
@@ -255,8 +255,167 @@ fn build_boolean(spec: &Spec) -> Option<GResult<Brep>> {
     Some(fold())
 }
 
+
+/// A catalogue profile as a cad-geom [`cad_geom::Profile`] (degrees → radians).
+pub fn to_profile(p: &ProfileSpec) -> cad_geom::Profile {
+    let (x, y) = (v3(p.plane.x).normalize(), v3(p.plane.y).normalize());
+    let plane = Frame {
+        origin: p3(p.plane.origin),
+        x,
+        y,
+        z: x.cross(&y),
+    };
+    let pt = |a: [f64; 2]| cad_geom::P2::new(a[0], a[1]);
+    let loops = p
+        .loops
+        .iter()
+        .map(|l| {
+            l.iter()
+                .map(|s| match *s {
+                    SegSpec::Line { a, b } => cad_geom::Seg::Line { a: pt(a), b: pt(b) },
+                    SegSpec::Arc { c, r, a0, sweep } => cad_geom::Seg::Arc {
+                        c: pt(c),
+                        r,
+                        a0: a0.to_radians(),
+                        sweep: sweep.to_radians(),
+                    },
+                    SegSpec::Circle { c, r } => cad_geom::Seg::circle(pt(c), r),
+                })
+                .collect()
+        })
+        .collect();
+    cad_geom::Profile { plane, loops }
+}
+
+/// Edges passing within 1e-6 mm of each point (exactly one per point, else `InvalidInput`).
+pub fn edges_at(b: &Brep, points: &[[f64; 3]]) -> GResult<Vec<cad_geom::EdgeId>> {
+    points
+        .iter()
+        .map(|p| {
+            let q = p3(*p);
+            let hits: Vec<_> = b
+                .edge_ids()
+                .filter(|&e| {
+                    let edge = b.edge(e);
+                    edge.curve
+                        .as_ref()
+                        .is_some_and(|c| c.project_in(&q, edge.t0, edge.t1).2 <= 1e-6)
+                })
+                .collect();
+            match hits.as_slice() {
+                [e] => Ok(*e),
+                _ => Err(cad_geom::GeomError::InvalidInput(format!(
+                    "{} edges pass through {p:?} (exactly one expected)",
+                    hits.len()
+                ))),
+            }
+        })
+        .collect()
+}
+
+
+/// Faces whose surface passes within 1e-6 mm of each point (exactly one per point, else
+/// `InvalidInput`; adequate for the catalogue's points, which lie on one face's surface only).
+pub fn faces_at(b: &Brep, points: &[[f64; 3]]) -> GResult<Vec<cad_geom::FaceId>> {
+    points
+        .iter()
+        .map(|p| {
+            let q = p3(*p);
+            let hits: Vec<_> = b
+                .face_ids()
+                .filter(|&f| {
+                    cad_geom::param::surface_distance(&b.face(f).surface, &q)
+                        .is_some_and(|d| d <= 1e-6)
+                })
+                .collect();
+            match hits.as_slice() {
+                [f] => Ok(*f),
+                _ => Err(cad_geom::GeomError::InvalidInput(format!(
+                    "{} face surfaces pass through {p:?} (exactly one expected)",
+                    hits.len()
+                ))),
+            }
+        })
+        .collect()
+}
+/// Builds any catalogue spec in cad-geom: primitive, boolean or feature.
+pub fn build_any(spec: &Spec) -> GResult<Brep> {
+    if spec.is_feature() {
+        build_feature(spec)
+    } else if spec.is_boolean() {
+        build_boolean(spec).unwrap_or_else(|| {
+            Err(cad_geom::GeomError::Unsupported(
+                "boolean operand other than box, cylinder or sphere".into(),
+            ))
+        })
+    } else {
+        build_primitive(spec)
+    }
+}
+
+/// Feature cases at ASM's tolerance (the parity target).
+fn build_feature(spec: &Spec) -> GResult<Brep> {
+    let tol = Tolerance::asm();
+    let base = || {
+        spec.base()
+            .ok_or_else(|| cad_geom::GeomError::InvalidInput("unresolved base".into()))
+            .and_then(build_any)
+    };
+    match spec {
+        Spec::Extrude { profile, from, to } => cad_geom::extrude(&to_profile(profile), *from, *to, &tol),
+        Spec::Revolve {
+            profile,
+            axis,
+            angle,
+        } => cad_geom::revolve(
+            &to_profile(profile),
+            p3(axis.origin),
+            v3(axis.dir),
+            angle.to_radians(),
+            &tol,
+        ),
+        Spec::Fillet { radius, edges, .. } => {
+            let b = base()?;
+            cad_geom::fillet(&b, &edges_at(&b, edges)?, *radius, &tol)
+        }
+        Spec::Chamfer {
+            distance, edges, ..
+        } => {
+            let b = base()?;
+            cad_geom::chamfer(&b, &edges_at(&b, edges)?, *distance, &tol)
+        }
+        Spec::Shell {
+            thickness, faces, ..
+        } => {
+            let b = base()?;
+            cad_geom::shell(&b, &faces_at(&b, faces)?, *thickness, &tol)
+        }
+        _ => unreachable!("not a feature"),
+    }
+}
 /// Runs one catalogue case through cad-geom.
 pub fn run_case(case: &Case) -> KernelResult {
+    if case.spec.is_feature() {
+        return match guarded(|| build_feature(&case.spec)) {
+            Guarded::Done(Ok(b)) => {
+                let mut r = measure_with(&case.id, &b, Some(Tolerance::asm()));
+                r.notes.push("cad_geom feature (extrude/revolve/blend) at Tolerance::asm()".into());
+                r
+            }
+            Guarded::Done(Err(cad_geom::GeomError::Unsupported(m))) => KernelResult::not_implemented(
+                KERNEL_RUST,
+                &case.id,
+                format!("cad-geom returns Unsupported: {m}"),
+            ),
+            Guarded::Done(Err(e)) => KernelResult::failed(KERNEL_RUST, &case.id, e.to_string()),
+            Guarded::Panicked(m, true) => {
+                KernelResult::not_implemented(KERNEL_RUST, &case.id, format!("feature: {m}"))
+            }
+            Guarded::Panicked(m, false) => {
+                KernelResult::failed(KERNEL_RUST, &case.id, format!("PANIC: {m}"))
+            }
+        };
+    }
     if case.spec.is_boolean() {
         let Some(built) = guarded(|| build_boolean(&case.spec)).into_option() else {
             return KernelResult::failed(KERNEL_RUST, &case.id, "PANIC in cad_geom::boolean");

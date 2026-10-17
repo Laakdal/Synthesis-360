@@ -4,12 +4,15 @@
 //!
 //! Units are millimetres and radians throughout. Layering: `math`/`tolerance` ← `curve`,
 //! `surface`, `nurbs` ← `topology` ← `primitives`, `mass`, `validate`, `tess`; `predicates` ←
-//! `boolean` (polyhedra; `boolean_quadric` for planes, cylinders and spheres).
+//! `boolean` (polyhedra; `boolean_quadric` for planes, cylinders and spheres); `profile` ←
+//! `extrude`, `revolve` (planar profiles swept into solids); `blend` (chamfer, fillet), `shell`.
 
 pub mod bbox;
+pub mod blend;
 pub mod boolean;
 mod boolean_quadric;
 pub mod curve;
+pub mod extrude;
 pub mod intersect;
 pub mod mass;
 pub mod math;
@@ -17,7 +20,10 @@ pub mod nurbs;
 pub mod param;
 pub mod predicates;
 pub mod primitives;
+pub mod profile;
 pub mod project;
+pub mod revolve;
+pub mod shell;
 pub mod surface;
 pub mod tess;
 pub mod tolerance;
@@ -27,8 +33,13 @@ mod triangulate;
 pub mod validate;
 
 pub use bbox::Aabb;
+pub use blend::{chamfer, fillet};
 pub use boolean::{boolean, boolean_default, BoolOp};
 pub use curve::Curve;
+pub use extrude::extrude;
+pub use profile::{Profile, Region, Seg, P2};
+pub use revolve::revolve;
+pub use shell::shell;
 pub use mass::MassProperties;
 pub use math::{Frame, P3, V3};
 pub use nurbs::{NurbsCurve, NurbsSurface};

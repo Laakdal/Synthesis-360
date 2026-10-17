@@ -1,6 +1,6 @@
 //! Differential testing harness for CAD360's kernels.
 //!
-//! Runs the shared case catalogue (`research/cases.json`) through
+//! Runs the shared case catalogues (`research/cases.json`, `research/feature-cases.json`) through
 //! * `cad-geom`, the pure-Rust kernel under development ([`geom`]),
 //! * Open CASCADE 7.8.1 through `cad-kernel` and the vendored `opencascade` crate ([`occt`]).
 //!
@@ -51,51 +51,48 @@ pub struct KernelInfo {
     pub how: String,
 }
 
+/// Recorded ASM experiments, in order: `research/evidence/<name>/reference.json` and `step/`.
+pub const ASM_EXPERIMENTS: [&str; 2] = ["asm-v5", "asm-v6"];
+
 /// Runs every case through cad-geom and OCCT, loads ASM, and compares all pairs.
 pub fn run(root: &Path) -> Result<RunOutput, String> {
-    let cat = Catalogue::load(&root.join("research").join("cases.json"))?;
+    let cat = Catalogue::load_all(root)?;
     let rust: Vec<KernelResult> = cat.cases.iter().map(geom::run_case).collect();
     let occt: Vec<KernelResult> = cat.cases.iter().map(occt::run_case).collect();
 
-    let asm_path = root
-        .join("research")
-        .join("evidence")
-        .join("asm-v5")
-        .join("reference.json");
-    let (asm, asm_status, asm_meta, asm_version) = match asm::AsmReference::load(&asm_path) {
-        Ok(Some(r)) => {
-            let rows = r.results();
-            let status = format!(
-                "loaded {} case rows from research/evidence/asm-v5/reference.json",
-                rows.len()
-            );
-            let meta = serde_json::json!({ "kernel": r.kernel, "source": r.source, "fusion_version": r.fusion_version, "units": r.units, "global": r.global, "extras": r.extras.len() });
-            let ver = r.fusion_version.clone().unwrap_or_else(|| "unknown".into());
-            (rows, status, Some(meta), ver)
+    // v5: primitives and booleans (TemporaryBRepManager); v6: features (design feature API)
+    let evidence = root.join("research").join("evidence");
+    let mut asm = Vec::new();
+    let mut statuses = Vec::new();
+    let mut metas = Vec::new();
+    let mut asm_version = "n/a".to_string();
+    for exp in ASM_EXPERIMENTS {
+        let rel = format!("research/evidence/{exp}/reference.json");
+        match asm::AsmReference::load(&evidence.join(exp).join("reference.json")) {
+            Ok(Some(r)) => {
+                let rows = r.results();
+                statuses.push(format!("loaded {} case rows from {rel}", rows.len()));
+                metas.push(serde_json::json!({ "experiment": exp, "kernel": r.kernel, "source": r.source, "fusion_version": r.fusion_version, "units": r.units, "global": r.global, "extras": r.extras.len() }));
+                if asm_version == "n/a" {
+                    asm_version = r.fusion_version.clone().unwrap_or_else(|| "unknown".into());
+                }
+                asm.extend(rows);
+            }
+            Ok(None) => statuses.push(format!("{rel}: {}", asm::ASM_UNAVAILABLE)),
+            Err(e) => statuses.push(format!("{rel}: {}: {e}", asm::ASM_UNAVAILABLE)),
         }
-        Ok(None) => (
-            Vec::new(),
-            asm::ASM_UNAVAILABLE.to_string(),
-            None,
-            "n/a".into(),
-        ),
-        Err(e) => (
-            Vec::new(),
-            format!("{}: {e}", asm::ASM_UNAVAILABLE),
-            None,
-            "n/a".into(),
-        ),
-    };
+    }
+    let asm_status = statuses.join("; ");
+    let asm_meta = (!metas.is_empty()).then(|| serde_json::Value::Array(metas));
 
-    let step_dir = root
-        .join("research")
-        .join("evidence")
-        .join("asm-v5")
-        .join("step");
     let asm_step: Vec<KernelResult> = cat
         .cases
         .iter()
-        .filter_map(|c| occt::remeasure_asm_step(&step_dir, &c.id))
+        .filter_map(|c| {
+            ASM_EXPERIMENTS
+                .iter()
+                .find_map(|exp| occt::remeasure_asm_step(&evidence.join(exp).join("step"), &c.id))
+        })
         .collect();
 
     let find = |rows: &[KernelResult], id: &str| rows.iter().find(|r| r.case_id == id).cloned();
@@ -135,17 +132,17 @@ pub fn run(root: &Path) -> Result<RunOutput, String> {
     }
 
     let kernels = vec![
-        KernelInfo { name: result::KERNEL_RUST.into(), version: geom::CAD_GEOM_VERSION.into(), how: "crates/cad-geom (pure Rust, in development): primitives, boolean (planar polyhedra; box-only cases), mass::solid_properties, validate".into() },
+        KernelInfo { name: result::KERNEL_RUST.into(), version: geom::CAD_GEOM_VERSION.into(), how: "crates/cad-geom (pure Rust, in development): primitives, boolean (planes, cylinders, spheres), extrude, revolve, chamfer/fillet, shell, mass::solid_properties, validate".into() },
         KernelInfo {
             name: result::KERNEL_OCCT.into(),
             version: occt::OCCT_VERSION.into(),
-            how: "Open CASCADE (occt-sys 7.8.1, static) via vendored opencascade 0.3 primitives + STEP bridge into cad-kernel; booleans and measurements via cad-kernel".into(),
+            how: "Open CASCADE (occt-sys 7.8.1, static) via vendored opencascade 0.3 primitives + STEP bridge into cad-kernel; booleans, features (face_from_loops + prism/revolve, fillet, chamfer, shell) and measurements via cad-kernel".into(),
         },
         KernelInfo { name: result::KERNEL_ASM.into(), version: asm_version, how: "Autodesk ShapeManager through Fusion (recorded reference.json)".into() },
         KernelInfo {
             name: occt::KERNEL_ASM_STEP.into(),
             version: occt::OCCT_VERSION.into(),
-            how: "the ASM probe's STEP exports (research/evidence/asm-v5/step) imported by cad-kernel and measured by OCCT".into(),
+            how: "the ASM probes' STEP exports (research/evidence/asm-v5/step, asm-v6/step) imported by cad-kernel and measured by OCCT".into(),
         },
     ];
     let tolerances = serde_json::json!({

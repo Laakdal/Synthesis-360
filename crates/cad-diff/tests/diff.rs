@@ -402,3 +402,84 @@ fn cad_geom_booleans_match_asm() {
     }
     assert!(problems.is_empty(), "{problems:#?}");
 }
+
+fn feature_catalogue() -> Catalogue {
+    Catalogue::load_all(&repo_root()).expect("both catalogues load")
+}
+
+#[test]
+fn feature_catalogue_loads_and_resolves_bases() {
+    let cat = feature_catalogue();
+    let features: Vec<_> = cat.cases.iter().filter(|c| c.spec.is_feature()).collect();
+    assert_eq!(features.len(), 26, "9 extrude, 8 revolve, 5 fillet, 3 chamfer, 1 shell");
+    for c in features {
+        if matches!(c.spec, Spec::Fillet { .. } | Spec::Chamfer { .. } | Spec::Shell { .. }) {
+            assert!(
+                matches!(c.spec.base(), Some(Spec::Extrude { .. })),
+                "{}: base resolved to an extrude",
+                c.id
+            );
+        }
+    }
+}
+
+/// OCCT (through cad-kernel, as the application builds features) against closed forms: this
+/// checks the harness's profile conversion, extents, axis sign and entity picking as well.
+#[test]
+fn occt_feature_volumes_equal_closed_form() {
+    let cat = feature_catalogue();
+    let washer = PI * (400.0 - 100.0) * 10.0;
+    let torus = 2.0 * PI * PI * 20.0 * 25.0;
+    // removed by a radius-2 fillet / distance-2 chamfer of the top edge of a Ø20 cylinder (Pappus)
+    let corner = 4.0 * (1.0 - PI / 4.0);
+    let corner_x = 10.0 - 2.0 * (10.0 - 3.0 * PI) / (3.0 * (4.0 - PI));
+    let expected = [
+        ("ext.rect", 15000.0),
+        ("ext.rect.negative", 15000.0),
+        ("ext.rect.symmetric", 15000.0),
+        ("ext.circle", 2000.0 * PI),
+        ("ext.rect_hole", (1500.0 - 36.0 * PI) * 10.0),
+        ("ext.slot", (300.0 + 25.0 * PI) * 5.0),
+        ("ext.lshape", 4800.0),
+        ("ext.notch", (800.0 - 50.0 * PI) * 6.0),
+        ("ext.tilted", (200.0 - 9.0 * PI) * 7.0),
+        ("rev.rect.full", washer),
+        ("rev.rect.quarter", washer / 4.0),
+        ("rev.rect.on_axis", 2000.0 * PI),
+        ("rev.triangle.on_axis", PI * 100.0 * 20.0 / 3.0),
+        // Pappus: rectangle r ∈ [10, 15] (area 50, r̄ 12.5) + triangle (15,0),(20,0),(15,10) (25, r̄ 50/3)
+        ("rev.trapezoid", 2.0 * PI * (50.0 * 12.5 + 25.0 * 50.0 / 3.0)),
+        ("rev.semicircle", 4.0 / 3.0 * PI * 1000.0),
+        ("rev.circle.full", torus),
+        ("rev.circle.half", torus / 2.0),
+        ("fillet.edge", 15000.0 - 9.0 * (1.0 - PI / 4.0) * 50.0),
+        ("fillet.vertical4", (1500.0 - 25.0 * (4.0 - PI)) * 10.0),
+        ("fillet.cyl_top", 2000.0 * PI - corner * 2.0 * PI * corner_x),
+        ("chamfer.edge", 15000.0 - 0.5 * 4.0 * 50.0),
+        ("chamfer.vertical4", (1500.0 - 4.0 * 12.5) * 10.0),
+        ("chamfer.cyl_top", 2000.0 * PI - 2.0 * 2.0 * PI * (10.0 - 2.0 / 3.0)),
+        ("shell.top", 15000.0 - 46.0 * 26.0 * 8.0),
+    ];
+    for (id, v) in expected {
+        let c = cat.cases.iter().find(|c| c.id == id).expect("case exists");
+        let got = occt_volume(&c.spec);
+        assert!(((got - v) / v).abs() < 1e-9, "{id}: OCCT {got} vs closed form {v}");
+    }
+}
+
+/// cad-geom's extrude against OCCT's: polygon/arc profiles MATCH; profiles with full circles
+/// differ only by OCCT's seam edge and split circles (TOPOLOGY_CONVENTION, same mass).
+#[test]
+fn cad_geom_extrude_matches_occt() {
+    let cat = feature_catalogue();
+    for c in cat.cases.iter().filter(|c| matches!(c.spec, Spec::Extrude { .. })) {
+        let (r, o) = (geom::run_case(c), occt::run_case(c));
+        let cmp = compare(&r, &o);
+        let want = if matches!(c.id.as_str(), "ext.circle" | "ext.rect_hole" | "ext.tilted") {
+            Outcome::TopologyConvention
+        } else {
+            Outcome::Match
+        };
+        assert_eq!(cmp.outcome, want, "{}: {:?}", c.id, cmp.diffs);
+    }
+}

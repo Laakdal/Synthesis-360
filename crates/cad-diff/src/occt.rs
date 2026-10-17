@@ -17,7 +17,7 @@
 //!   `inspect::mass_props` (BRepGProp). OCCT inertia is not exposed by cad-kernel, so
 //!   `inertia_centroid` is always None.
 
-use crate::cases::{BoolOp, Case, Spec};
+use crate::cases::{BoolOp, Case, ProfileSpec, SegSpec, Spec};
 use crate::result::{KERNEL_OCCT, KernelResult, occt_curve_name, occt_surface_name};
 use cad_kernel::inspect::mass_props;
 use cad_kernel::occ::{Seg3, Shape};
@@ -104,7 +104,7 @@ fn primitive_oc(spec: &Spec) -> Result<opencascade::primitives::Shape, String> {
             .radius_1(major)
             .radius_2(minor)
             .build(),
-        Spec::Boolean { .. } => return Err("not a primitive".into()),
+        _ => return Err("not a primitive".into()),
     })
 }
 
@@ -125,6 +125,153 @@ fn bridge(shape: &opencascade::primitives::Shape) -> Result<Shape, String> {
     read
 }
 
+
+/// A catalogue profile as cad-kernel `Seg3` loops at offset `z` along the plane normal. A full
+/// circle becomes two half arcs (`Seg3` has no closed circle; the application's profiles do the
+/// same), so OCCT bodies show two edges per extruded circle where a circle primitive has one.
+fn seg3_loops(p: &ProfileSpec, z: f64) -> Vec<Vec<Seg3>> {
+    let arc = |c: [f64; 2], r: f64, a0: f64, sweep: f64| {
+        let at = |t: f64| p.world([c[0] + r * t.cos(), c[1] + r * t.sin()], z);
+        Seg3::Arc(at(a0), at(a0 + sweep / 2.0), at(a0 + sweep))
+    };
+    p.loops
+        .iter()
+        .map(|l| {
+            l.iter()
+                .flat_map(|s| match *s {
+                    SegSpec::Line { a, b } => vec![Seg3::Line(p.world(a, z), p.world(b, z))],
+                    SegSpec::Arc { c, r, a0, sweep } => {
+                        vec![arc(c, r, a0.to_radians(), sweep.to_radians())]
+                    }
+                    SegSpec::Circle { c, r } => vec![
+                        arc(c, r, 0.0, std::f64::consts::PI),
+                        arc(c, r, std::f64::consts::PI, std::f64::consts::PI),
+                    ],
+                })
+                .collect()
+        })
+        .collect()
+}
+
+fn dist_point_polyline(p: [f64; 3], pts: &[[f32; 3]]) -> f64 {
+    let d = |a: [f64; 3], b: [f64; 3]| -> f64 {
+        let ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+        let ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
+        let l2 = ab[0] * ab[0] + ab[1] * ab[1] + ab[2] * ab[2];
+        let t = if l2 > 0.0 {
+            ((ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / l2).clamp(0.0, 1.0)
+        } else {
+            0.0
+        };
+        let q = [a[0] + ab[0] * t - p[0], a[1] + ab[1] * t - p[1], a[2] + ab[2] * t - p[2]];
+        (q[0] * q[0] + q[1] * q[1] + q[2] * q[2]).sqrt()
+    };
+    let f = |v: &[f32; 3]| [v[0] as f64, v[1] as f64, v[2] as f64];
+    match pts {
+        [] => f64::INFINITY,
+        [a] => d(f(a), f(a)),
+        _ => pts.windows(2).map(|w| d(f(&w[0]), f(&w[1]))).fold(f64::INFINITY, f64::min),
+    }
+}
+
+/// The edges of `s` through each point (edge polyline within 1e-3 mm). A point on a vertex of
+/// OCCT's representation (where the two half arcs of a circle and a seam line meet) matches
+/// several edges; then only the curved ones are kept (both halves of the circle: the fillet /
+/// chamfer the case means, which OCCT would extend along the tangent chain anyway).
+fn edges_at(s: &Shape, points: &[[f64; 3]]) -> Result<Vec<Shape>, String> {
+    let edges = s.subshapes(EDGE);
+    let polys: Vec<Vec<[f32; 3]>> = edges.iter().map(|e| e.edge_polyline(1e-4)).collect();
+    // GeomAbs_CurveType: 0 = line
+    let curved: Vec<bool> = edges
+        .iter()
+        .map(|e| e.edge_info().is_some_and(|o| o[0] as i32 != 0))
+        .collect();
+    let mut picked = Vec::new();
+    for p in points {
+        let mut hits: Vec<usize> = (0..edges.len())
+            .filter(|&i| dist_point_polyline(*p, &polys[i]) <= 1e-3)
+            .collect();
+        if hits.len() > 1 {
+            hits.retain(|&i| curved[i]);
+        }
+        if hits.is_empty() || (hits.len() > 1 && hits.len() != 2) {
+            return Err(format!(
+                "{} OCCT edges pass through {p:?} (one edge, or the two halves of a circle, expected)",
+                hits.len()
+            ));
+        }
+        picked.extend(hits);
+    }
+    Ok(edges
+        .into_iter()
+        .enumerate()
+        .filter(|(i, _)| picked.contains(i))
+        .map(|(_, e)| e)
+        .collect())
+}
+
+/// The faces of `s` whose bounding box contains each point (exactly one per point).
+fn faces_at(s: &Shape, points: &[[f64; 3]]) -> Result<Vec<Shape>, String> {
+    let mut out = Vec::new();
+    for p in points {
+        let mut hits: Vec<Shape> = s
+            .subshapes(FACE)
+            .into_iter()
+            .filter(|f| {
+                f.bbox().is_some_and(|b| {
+                    (0..3).all(|k| p[k] >= b[k] - 1e-6 && p[k] <= b[k + 3] + 1e-6)
+                })
+            })
+            .collect();
+        if hits.len() != 1 {
+            return Err(format!("{} OCCT faces contain {p:?} in their box (exactly one expected)", hits.len()));
+        }
+        out.push(hits.remove(0));
+    }
+    Ok(out)
+}
+
+/// Feature cases through cad-kernel (`face_from_loops` + `prism` / `revolve`, `fillet`,
+/// `chamfer`, `shell`: the calls the application's recompute uses).
+fn build_feature(spec: &Spec) -> Result<Shape, String> {
+    let base = || spec.base().ok_or_else(|| "unresolved base".to_string()).and_then(build);
+    match spec {
+        Spec::Extrude { profile, from, to } => {
+            let n = profile.normal();
+            let h = to - from;
+            Shape::face_from_loops(&seg3_loops(profile, *from))
+                .and_then(|f| f.prism([n[0] * h, n[1] * h, n[2] * h]))
+                .map_err(|e| e.0)
+        }
+        Spec::Revolve {
+            profile,
+            axis,
+            angle,
+        } => Shape::face_from_loops(&seg3_loops(profile, 0.0))
+            .and_then(|f| f.revolve(axis.origin, axis.dir, angle.to_radians()))
+            .map_err(|e| e.0),
+        Spec::Fillet { radius, edges, .. } => {
+            let b = base()?;
+            let es = edges_at(&b, edges)?;
+            b.fillet(&es.iter().collect::<Vec<_>>(), *radius).map_err(|e| e.0)
+        }
+        Spec::Chamfer {
+            distance, edges, ..
+        } => {
+            let b = base()?;
+            let es = edges_at(&b, edges)?;
+            b.chamfer(&es.iter().collect::<Vec<_>>(), *distance).map_err(|e| e.0)
+        }
+        Spec::Shell {
+            thickness, faces, ..
+        } => {
+            let b = base()?;
+            let fs = faces_at(&b, faces)?;
+            b.shell(&fs.iter().collect::<Vec<_>>(), *thickness).map_err(|e| e.0)
+        }
+        _ => Err("not a feature".into()),
+    }
+}
 /// Builds `spec` in OCCT (primitives via BRepPrimAPI + STEP bridge, booleans via cad-kernel).
 pub fn build(spec: &Spec) -> Result<Shape, String> {
     cad_kernel::occ::quiet();
@@ -142,6 +289,7 @@ pub fn build(spec: &Spec) -> Result<Shape, String> {
             }
             Ok(acc)
         }
+        s if s.is_feature() => build_feature(s),
         _ => bridge(&primitive_oc(spec)?),
     }
 }
@@ -258,6 +406,8 @@ pub fn run_case(case: &Case) -> KernelResult {
             let mut r = measure(&case.id, &s);
             if case.spec.is_boolean() {
                 r.notes.push("operands: BRepPrimAPI primitives via STEP bridge; boolean: cad-kernel fuse/cut/common (BRepAlgoAPI)".into());
+            } else if case.spec.is_feature() {
+                r.notes.push("built natively by cad-kernel: face_from_loops + prism/revolve (BRepPrimAPI_MakePrism/Revol), fillet/chamfer/shell (BRepFilletAPI / BRepOffsetAPI_MakeThickSolid); full circles as two half arcs".into());
             } else {
                 r.notes.push("built by BRepPrimAPI (opencascade crate), handed to cad-kernel through a STEP file".into());
             }

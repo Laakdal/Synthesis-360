@@ -137,7 +137,7 @@ pub fn render(out: &RunOutput, cat: &Catalogue) -> String {
     let _ = writeln!(s, "# Differential validation report\n");
     let _ = writeln!(
         s,
-        "Generated **{}** by `cargo run -p cad-diff` (crate `crates/cad-diff`). Raw data: `research/evidence/diff/results.json`. Case catalogue: `research/cases.json` (version {}, {} cases).\n",
+        "Generated **{}** by `cargo run -p cad-diff` (crate `crates/cad-diff`). Raw data: `research/evidence/diff/results.json`. Case catalogues: `research/cases.json` (version {}) and `research/feature-cases.json`, {} cases in all.\n",
         out.generated_utc,
         out.catalogue_version,
         cat.cases.len()
@@ -224,11 +224,11 @@ pub fn render(out: &RunOutput, cat: &Catalogue) -> String {
     let _ = writeln!(s, "\n## Method\n");
     let _ = writeln!(
         s,
-        "1. Every case in `research/cases.json` is built by each kernel. **cad-geom**: `cad_geom::primitives::make_*`, `mass::solid_properties`, `validate`; every call is wrapped in `catch_unwind`, so bodies that are still `unimplemented!()` become `NOT_IMPLEMENTED` rows. Booleans whose operands are all boxes, cylinders or spheres fold the tools into the target in order with `cad_geom::boolean` (polyhedral pipeline for boxes, quadric pipeline otherwise; ASM tolerance 1e-5 mm / 1e-10 rad); their results are validated at 1e-7 mm, falling back to the boolean tolerance with a note (the near-tangent case). Line contact is one edge with 4 coedges flagged in `Brep::nonmanifold_edges`, as ASM builds it. Booleans with a cone or torus operand are `NOT_IMPLEMENTED` (cad-geom returns `Unsupported`)."
+        "1. Every case in `research/cases.json` is built by each kernel. **cad-geom**: `cad_geom::primitives::make_*`, `mass::solid_properties`, `validate`; every call is wrapped in `catch_unwind`, so bodies that are still `unimplemented!()` become `NOT_IMPLEMENTED` rows. Booleans whose operands are all boxes, cylinders or spheres fold the tools into the target in order with `cad_geom::boolean` (polyhedral pipeline for boxes, quadric pipeline otherwise; ASM tolerance 1e-5 mm / 1e-10 rad); their results are validated at 1e-7 mm, falling back to the boolean tolerance with a note (the near-tangent case). Line contact is one edge with 4 coedges flagged in `Brep::nonmanifold_edges`, as ASM builds it. Booleans with a cone or torus operand are `NOT_IMPLEMENTED` (cad-geom returns `Unsupported`). Feature cases (`research/feature-cases.json`) run `cad_geom::extrude`, `revolve`, `fillet`, `chamfer` and `shell` at `Tolerance::asm()`; edges are picked by exact point-to-curve distance (≤ 1e-6 mm, exactly one edge per point), faces by point-to-surface distance; an operation returning `Unsupported` gives a `NOT_IMPLEMENTED` row."
     );
     let _ = writeln!(
         s,
-        "2. **OCCT**: primitives are true `BRepPrimAPI_Make*` primitives from the vendored `opencascade` crate. Its shape type is private and cad-kernel has no raw-shape constructor, so each primitive is handed to cad-kernel through a temporary STEP file (`write_step` → `cad_kernel::occ::Shape::read_step`, serialised by a mutex). Booleans fold the operands in order with cad-kernel `fuse`/`cut`/`common` (`BRepAlgoAPI_*` behind the exception-safe shim). Cones use the crate's `ConeBuilder`, which only builds +Z cones; every catalogue cone is +Z."
+        "2. **OCCT**: primitives are true `BRepPrimAPI_Make*` primitives from the vendored `opencascade` crate. Its shape type is private and cad-kernel has no raw-shape constructor, so each primitive is handed to cad-kernel through a temporary STEP file (`write_step` → `cad_kernel::occ::Shape::read_step`, serialised by a mutex). Booleans fold the operands in order with cad-kernel `fuse`/`cut`/`common` (`BRepAlgoAPI_*` behind the exception-safe shim). Cones use the crate's `ConeBuilder`, which only builds +Z cones; every catalogue cone is +Z. Feature cases are built natively by cad-kernel, the calls the application's recompute makes: `face_from_loops` + `prism` (BRepPrimAPI_MakePrism) or `revolve` (BRepPrimAPI_MakeRevol), `fillet`/`chamfer` (BRepFilletAPI_MakeFillet/MakeChamfer), `shell` (BRepOffsetAPI_MakeThickSolid). A full circle is passed as two half arcs (cad-kernel's `Seg3` has no closed circle), so OCCT shows two edges per circle; edges are picked by distance to their polyline (≤ 1e-3 mm), and where a point hits a vertex of OCCT's split circle only the curved edges (both halves) are kept; faces are picked by bounding box."
     );
     let _ = writeln!(
         s,
@@ -236,7 +236,7 @@ pub fn render(out: &RunOutput, cat: &Catalogue) -> String {
     );
     let _ = writeln!(
         s,
-        "4. cad-geom counts are its arena sizes (edges include degenerate edges; seams are edges used twice by one face; literal count = no curve or start vertex == end vertex). ASM rows are loaded leniently from `research/evidence/asm-v5/reference.json` and type names normalised (e.g. `Arc3D`→circle, `NurbsSurface`→bspline)."
+        "4. cad-geom counts are its arena sizes (edges include degenerate edges; seams are edges used twice by one face; literal count = no curve or start vertex == end vertex). ASM rows are loaded leniently from `research/evidence/asm-v5/reference.json` (primitives, booleans) and `research/evidence/asm-v6/reference.json` (features, when recorded) and type names normalised (e.g. `Arc3D`→circle, `NurbsSurface`→bspline)."
     );
     let _ = writeln!(
         s,
@@ -248,7 +248,7 @@ pub fn render(out: &RunOutput, cat: &Catalogue) -> String {
     );
     let _ = writeln!(
         s,
-        "7. Where the ASM probe exported a STEP file (`research/evidence/asm-v5/step/<id>.step`), it is imported with cad-kernel's STEP reader, measured by OCCT (`asm-step(occt)`) and compared with the ASM row: a cross-check of the exported geometry.\n"
+        "7. Where an ASM probe exported a STEP file (`research/evidence/asm-v5/step/<id>.step` or `asm-v6/step/<id>.step`), it is imported with cad-kernel's STEP reader, measured by OCCT (`asm-step(occt)`) and compared with the ASM row: a cross-check of the exported geometry.\n"
     );
 
     let _ = writeln!(

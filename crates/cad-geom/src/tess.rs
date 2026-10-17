@@ -28,8 +28,8 @@
 //!
 //! Edge sampling is shared: an edge is cut into the same number of equal parameter steps by
 //! every face that uses it (its own chord count raised to the grid count of the non-planar faces
-//! around it), the end samples are the vertex positions and the interior ones `curve.point(t)`
-//! with one formula, so neighbouring faces meet at identical points and a closed B-rep gives a
+//! around it, transitively through grid faces), the end samples are the vertex positions and
+//! the interior ones `curve.point(t)` with one formula, so neighbouring faces meet at identical points and a closed B-rep gives a
 //! closed mesh.
 //!
 //! Sizing. A grid triangle with legs a (along u) and b (along v) deviates from the surface most
@@ -207,26 +207,42 @@ fn runs_along_u(s: &Surface, e: &Edge) -> bool {
 }
 
 /// Segments used to sample an edge: its own chord count, raised to the grid count of every
-/// non-planar face it bounds (so shared boundaries match).
+/// non-planar face it bounds (so shared boundaries match). A grid face (see [`grid_face`]) puts
+/// the same count on every edge running in the same direction, so the count is taken over all
+/// edges linked through grid faces in that direction (a cylinder band between a plane cap and a
+/// finer torus or sphere: both of its circles take the finer count).
 fn edge_segments(brep: &Brep, eid: EdgeId, chord: f64) -> GResult<usize> {
-    let e = brep.edge(eid);
-    let own = match &e.curve {
-        None | Some(Curve::Line { .. }) => 1,
-        Some(Curve::Circle { radius, .. }) => arc_segments(*radius, e.t1 - e.t0, chord),
-        Some(Curve::Ellipse { major, minor, .. }) => arc_segments(minor * minor / major, e.t1 - e.t0, chord),
-        Some(Curve::Nurbs(_)) => return Err(GeomError::Unsupported("tessellation of NURBS edges".into())),
-    };
-    let mut n = own;
-    for f in brep.edge_faces(eid) {
-        let s = &brep.face(f).surface;
-        if matches!(s, Surface::Plane { .. }) {
-            continue;
+    let mut n = 1;
+    let mut seen = vec![eid];
+    let mut todo = vec![eid];
+    while let Some(id) = todo.pop() {
+        let e = brep.edge(id);
+        n = n.max(match &e.curve {
+            None | Some(Curve::Line { .. }) => 1,
+            Some(Curve::Circle { radius, .. }) => arc_segments(*radius, e.t1 - e.t0, chord),
+            Some(Curve::Ellipse { major, minor, .. }) => arc_segments(minor * minor / major, e.t1 - e.t0, chord),
+            Some(Curve::Nurbs(_)) => return Err(GeomError::Unsupported("tessellation of NURBS edges".into())),
+        });
+        for f in brep.edge_faces(id) {
+            let s = &brep.face(f).surface;
+            if matches!(s, Surface::Plane { .. }) {
+                continue;
+            }
+            // a face whose rectangle cannot be derived contributes nothing (both neighbours of the
+            // edge still agree, since this count depends on the edge alone)
+            let Ok((rect, grid)) = param_rect_info(brep, f) else { continue };
+            let (nu, nv) = curvature_counts(s, &rect, chord)?;
+            let along_u = runs_along_u(s, e);
+            n = n.max(if along_u { nu } else { nv });
+            if grid {
+                for other in brep.face_edges(f) {
+                    if !seen.contains(&other) && runs_along_u(s, brep.edge(other)) == along_u {
+                        seen.push(other);
+                        todo.push(other);
+                    }
+                }
+            }
         }
-        // a face whose rectangle cannot be derived contributes nothing (both neighbours of the
-        // edge still agree, since this count depends on the edge alone)
-        let Ok(rect) = param_rect(brep, f) else { continue };
-        let (nu, nv) = curvature_counts(s, &rect, chord)?;
-        n = n.max(if runs_along_u(s, e) { nu } else { nv });
     }
     Ok(n)
 }
