@@ -1,0 +1,11 @@
+{
+	"autodeskProduct": "Fusion",
+	"type": "addin",
+	"id": "8d2e4f6a-1c3b-4e5d-9f70-cad360featp6",
+	"author": "CAD360 investigation",
+	"description": { "": "Temporary, sentinel-gated ASM feature-level reference probe (v6: extrude, revolve, fillet, chamfer, shell). Safe to delete." },
+	"version": "1.0.0",
+	"runOnStartup": true,
+	"supportedOS": "windows",
+	"editEnabled": true
+}

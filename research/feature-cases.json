@@ -1,0 +1,85 @@
+{
+  "about": "Feature-level case catalogue (extrude, revolve, fillet, chamfer, shell) for differential testing; companion to cases.json. Units: mm and degrees. Every kernel builds exactly these inputs: cad-geom (crates/cad-geom/src/sweep.rs and later features), and ASM via a Fusion design (sketch + feature API, probe v6). A profile lies in 'plane' (origin, unit x, unit y; normal z = x × y) and is a list of closed loops in plane coordinates; loop orientation in the file is arbitrary (the loop enclosing the others is the outer boundary). Segments: {line: {a, b}}, {arc: {c, r, a0, sweep}} (start angle a0 from plane x towards plane y, signed sweep, + = counter-clockwise about the normal), {circle: {c, r}} (a whole loop). Extrude: the region swept along the plane normal from offset 'from' to 'to' (either order). Revolve: the region rotated about the world 'axis' line by 'angle' (right-hand rule about axis.dir, starting in the profile plane); the axis lies in the plane and does not cross the region's interior. Fillet / chamfer / shell act on the body of case 'base'; 'edges' and 'faces' are given by a point (world mm) lying on the entity.",
+  "version": 1,
+  "cases": [
+    { "id": "ext.rect", "kind": "extrude", "from": 0, "to": 10,
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,1,0] }, "loops": [[
+        { "line": { "a": [0,0], "b": [50,0] } }, { "line": { "a": [50,0], "b": [50,30] } },
+        { "line": { "a": [50,30], "b": [0,30] } }, { "line": { "a": [0,30], "b": [0,0] } } ]] } },
+    { "id": "ext.rect.negative", "kind": "extrude", "from": 0, "to": -10,
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,1,0] }, "loops": [[
+        { "line": { "a": [0,0], "b": [50,0] } }, { "line": { "a": [50,0], "b": [50,30] } },
+        { "line": { "a": [50,30], "b": [0,30] } }, { "line": { "a": [0,30], "b": [0,0] } } ]] } },
+    { "id": "ext.rect.symmetric", "kind": "extrude", "from": -5, "to": 5,
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,1,0] }, "loops": [[
+        { "line": { "a": [0,0], "b": [50,0] } }, { "line": { "a": [50,0], "b": [50,30] } },
+        { "line": { "a": [50,30], "b": [0,30] } }, { "line": { "a": [0,30], "b": [0,0] } } ]] } },
+    { "id": "ext.circle", "kind": "extrude", "from": 0, "to": 20,
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,1,0] }, "loops": [[
+        { "circle": { "c": [0,0], "r": 10 } } ]] } },
+    { "id": "ext.rect_hole", "kind": "extrude", "from": 0, "to": 10,
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,1,0] }, "loops": [[
+        { "line": { "a": [0,0], "b": [50,0] } }, { "line": { "a": [50,0], "b": [50,30] } },
+        { "line": { "a": [50,30], "b": [0,30] } }, { "line": { "a": [0,30], "b": [0,0] } } ], [
+        { "circle": { "c": [25,15], "r": 6 } } ]] } },
+    { "id": "ext.slot", "kind": "extrude", "from": 0, "to": 5,
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,1,0] }, "loops": [[
+        { "line": { "a": [0,0], "b": [30,0] } }, { "arc": { "c": [30,5], "r": 5, "a0": -90, "sweep": 180 } },
+        { "line": { "a": [30,10], "b": [0,10] } }, { "arc": { "c": [0,5], "r": 5, "a0": 90, "sweep": 180 } } ]] } },
+    { "id": "ext.lshape", "kind": "extrude", "from": 0, "to": 8,
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,1,0] }, "loops": [[
+        { "line": { "a": [0,0], "b": [40,0] } }, { "line": { "a": [40,0], "b": [40,10] } },
+        { "line": { "a": [40,10], "b": [10,10] } }, { "line": { "a": [10,10], "b": [10,30] } },
+        { "line": { "a": [10,30], "b": [0,30] } }, { "line": { "a": [0,30], "b": [0,0] } } ]] } },
+    { "id": "ext.notch", "kind": "extrude", "from": 0, "to": 6,
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,1,0] }, "loops": [[
+        { "line": { "a": [0,0], "b": [40,0] } }, { "line": { "a": [40,0], "b": [40,20] } },
+        { "line": { "a": [40,20], "b": [30,20] } }, { "arc": { "c": [20,20], "r": 10, "a0": 0, "sweep": -180 } },
+        { "line": { "a": [10,20], "b": [0,20] } }, { "line": { "a": [0,20], "b": [0,0] } } ]] } },
+    { "id": "ext.tilted", "kind": "extrude", "from": 0, "to": 7,
+      "profile": { "plane": { "origin": [5,5,5], "x": [1,0,0], "y": [0,0.7071067811865476,0.7071067811865476] }, "loops": [[
+        { "line": { "a": [0,0], "b": [20,0] } }, { "line": { "a": [20,0], "b": [20,10] } },
+        { "line": { "a": [20,10], "b": [0,10] } }, { "line": { "a": [0,10], "b": [0,0] } } ], [
+        { "circle": { "c": [10,5], "r": 3 } } ]] } },
+
+    { "id": "rev.rect.full", "kind": "revolve", "angle": 360, "axis": { "origin": [0,0,0], "dir": [0,0,1] },
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,0,1] }, "loops": [[
+        { "line": { "a": [10,0], "b": [20,0] } }, { "line": { "a": [20,0], "b": [20,10] } },
+        { "line": { "a": [20,10], "b": [10,10] } }, { "line": { "a": [10,10], "b": [10,0] } } ]] } },
+    { "id": "rev.rect.quarter", "kind": "revolve", "angle": 90, "axis": { "origin": [0,0,0], "dir": [0,0,1] },
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,0,1] }, "loops": [[
+        { "line": { "a": [10,0], "b": [20,0] } }, { "line": { "a": [20,0], "b": [20,10] } },
+        { "line": { "a": [20,10], "b": [10,10] } }, { "line": { "a": [10,10], "b": [10,0] } } ]] } },
+    { "id": "rev.rect.on_axis", "kind": "revolve", "angle": 360, "axis": { "origin": [0,0,0], "dir": [0,0,1] },
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,0,1] }, "loops": [[
+        { "line": { "a": [0,0], "b": [10,0] } }, { "line": { "a": [10,0], "b": [10,20] } },
+        { "line": { "a": [10,20], "b": [0,20] } }, { "line": { "a": [0,20], "b": [0,0] } } ]] } },
+    { "id": "rev.triangle.on_axis", "kind": "revolve", "angle": 360, "axis": { "origin": [0,0,0], "dir": [0,0,1] },
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,0,1] }, "loops": [[
+        { "line": { "a": [0,0], "b": [10,0] } }, { "line": { "a": [10,0], "b": [0,20] } },
+        { "line": { "a": [0,20], "b": [0,0] } } ]] } },
+    { "id": "rev.trapezoid", "kind": "revolve", "angle": 360, "axis": { "origin": [0,0,0], "dir": [0,0,1] },
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,0,1] }, "loops": [[
+        { "line": { "a": [10,0], "b": [20,0] } }, { "line": { "a": [20,0], "b": [15,10] } },
+        { "line": { "a": [15,10], "b": [10,10] } }, { "line": { "a": [10,10], "b": [10,0] } } ]] } },
+    { "id": "rev.semicircle", "kind": "revolve", "angle": 360, "axis": { "origin": [0,0,0], "dir": [0,0,1] },
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,0,1] }, "loops": [[
+        { "arc": { "c": [0,0], "r": 10, "a0": -90, "sweep": 180 } }, { "line": { "a": [0,10], "b": [0,-10] } } ]] } },
+    { "id": "rev.circle.full", "kind": "revolve", "angle": 360, "axis": { "origin": [0,0,0], "dir": [0,0,1] },
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,0,1] }, "loops": [[
+        { "circle": { "c": [20,0], "r": 5 } } ]] } },
+    { "id": "rev.circle.half", "kind": "revolve", "angle": 180, "axis": { "origin": [0,0,0], "dir": [0,0,1] },
+      "profile": { "plane": { "origin": [0,0,0], "x": [1,0,0], "y": [0,0,1] }, "loops": [[
+        { "circle": { "c": [20,0], "r": 5 } } ]] } },
+
+    { "id": "fillet.edge", "kind": "fillet", "base": "ext.rect", "radius": 3, "edges": [[25,0,10]] },
+    { "id": "fillet.vertical4", "kind": "fillet", "base": "ext.rect", "radius": 5, "edges": [[0,0,5],[50,0,5],[50,30,5],[0,30,5]] },
+    { "id": "fillet.corner3", "kind": "fillet", "base": "ext.rect", "radius": 3, "edges": [[25,0,10],[0,15,10],[0,0,5]] },
+    { "id": "fillet.cyl_top", "kind": "fillet", "base": "ext.circle", "radius": 2, "edges": [[10,0,20]] },
+    { "id": "fillet.hole_edge", "kind": "fillet", "base": "ext.rect_hole", "radius": 1, "edges": [[31,15,10]] },
+    { "id": "chamfer.edge", "kind": "chamfer", "base": "ext.rect", "distance": 2, "edges": [[25,0,10]] },
+    { "id": "chamfer.vertical4", "kind": "chamfer", "base": "ext.rect", "distance": 5, "edges": [[0,0,5],[50,0,5],[50,30,5],[0,30,5]] },
+    { "id": "chamfer.cyl_top", "kind": "chamfer", "base": "ext.circle", "distance": 2, "edges": [[10,0,20]] },
+    { "id": "shell.top", "kind": "shell", "base": "ext.rect", "thickness": 2, "direction": "inside", "faces": [[25,15,10]] }
+  ]
+}
