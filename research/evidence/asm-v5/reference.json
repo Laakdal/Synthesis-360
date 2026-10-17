@@ -1,0 +1,2607 @@
+{
+ "kernel": "ASM",
+ "source": "Fusion 2705.1.30 TemporaryBRepManager (probe v5)",
+ "fusion_version": "2705.1.30",
+ "units": "mm",
+ "global": {
+  "point_tolerance_mm": 9.999999999999999e-06,
+  "vector_angle_tolerance_rad": 1e-10
+ },
+ "cases": [
+  {
+   "id": "prim.box",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 6,
+   "edges": 12,
+   "vertices": 8,
+   "loops": 6,
+   "face_types": [
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 15000.0,
+   "area": 4600.0,
+   "centroid": [
+    25.0,
+    14.999999999999998,
+    5.0
+   ],
+   "inertia_centroid": [
+    [
+     1249999.9999999995,
+     -7.071484233281252e-10,
+     0.0
+    ],
+    [
+     -7.071484233281252e-10,
+     3250000.000000001,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     4249999.999999998
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     50.0,
+     30.0,
+     10.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "INERTIA CONVENTION: inertia_centroid is the full inertia tensor about the centroid, unit density, mm^5, with products of inertia in TENSOR form: off-diagonal I_xy = -integral((x-cx)(y-cy) dV). Fusion's PhysicalProperties.getXYZMomentsOfInertia returns kg*cm^2 about the WORLD ORIGIN (not the centroid) with products already in tensor form (negative for this box in the positive octant); verified here against the closed form (Ixx_origin = m(b^2+c^2)/3 = 0.3925, xy = -m*cx*cy = -0.44156). Converted by the parallel-axis theorem, then divided by density. mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 15000.0 mm3 / 4600.0 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 12}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "prim.box.tiny",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 6,
+   "edges": 12,
+   "vertices": 8,
+   "loops": 6,
+   "face_types": [
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 6e-06,
+   "area": 0.0022,
+   "centroid": null,
+   "inertia_centroid": null,
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.01,
+     0.02,
+     0.03
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "centroid and inertia REJECTED: Fusion's centerOfMass [3.0000000000000005e-12, 6.000000000000001e-12, 9.000000000000001e-12] cm is not strictly inside the bounding box [[0.0, 0.0, 0.0], [0.001, 0.002, 0.003]] cm (for tiny bodies it equals the unnormalised first moment integral(x dV), and the XYZ moments equal plain second moments) -- see REFERENCE_BEHAVIOR.md; mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 6e-06 mm3 / 0.0022 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 12}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "prim.box.huge",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 6,
+   "edges": 12,
+   "vertices": 8,
+   "loops": 6,
+   "face_types": [
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 100000000000000.0,
+   "area": 16000000000.0,
+   "centroid": [
+    50000.0,
+    25000.0,
+    10000.0
+   ],
+   "inertia_centroid": [
+    [
+     2.4166666666666665e+22,
+     -25477707.006369427,
+     0.0
+    ],
+    [
+     -25477707.006369427,
+     8.666666666666671e+22,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0416666666666672e+23
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     100000.0,
+     50000.0,
+     20000.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 100000000000000.0 mm3 / 16000000000.0 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 12}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "prim.cylinder",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 3,
+   "edges": 2,
+   "vertices": 2,
+   "loops": 4,
+   "face_types": [
+    "cylinder",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "circle",
+    "circle"
+   ],
+   "degenerate_edges": 2,
+   "seam_edges": 0,
+   "volume": 6283.185307179587,
+   "area": 1884.9555921538758,
+   "centroid": [
+    0.0,
+    0.0,
+    9.999999999999998
+   ],
+   "inertia_centroid": [
+    [
+     366519.14291881176,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     366519.14291880274,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     314159.26535897487
+    ]
+   ],
+   "bbox": [
+    [
+     -10.0,
+     -10.0,
+     0.0
+    ],
+    [
+     10.0,
+     10.0,
+     20.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 6283.1853071793175 mm3 / 1884.9555921538758 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 2: 2 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 2}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "prim.cylinder.tilted",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 3,
+   "edges": 2,
+   "vertices": 2,
+   "loops": 4,
+   "face_types": [
+    "cylinder",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "circle",
+    "circle"
+   ],
+   "degenerate_edges": 2,
+   "seam_edges": 0,
+   "volume": 753.9822368615402,
+   "area": 477.522083345649,
+   "centroid": [
+    5.330127019149763,
+    6.330127018694517,
+    7.330127019150091
+   ],
+   "inertia_centroid": [
+    [
+     13446.016775056843,
+     -3707.0794610692806,
+     -3707.0791987948082
+    ],
+    [
+     -3707.0794610692806,
+     13446.016689805352,
+     -3707.0792663188417
+    ],
+    [
+     -3707.0791987948082,
+     -3707.0792663188417,
+     13446.016385557228
+    ]
+   ],
+   "bbox": [
+    [
+     -2.265986323710906,
+     -1.265986323710906,
+     -0.265986323710905
+    ],
+    [
+     12.926240361555292,
+     13.926240361555294,
+     14.926240361555294
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 753.98223688137 mm3 / 477.522083345649 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 2: 2 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 2}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "prim.cone",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 2,
+   "edges": 2,
+   "vertices": 2,
+   "loops": 3,
+   "face_types": [
+    "cone",
+    "plane"
+   ],
+   "edge_types": [
+    "circle",
+    "none"
+   ],
+   "degenerate_edges": 2,
+   "seam_edges": 0,
+   "volume": 2094.395102393195,
+   "area": 1016.6407384630521,
+   "centroid": [
+    4.761779408135354e-16,
+    2.524254525820733e-15,
+    5.000000000000004
+   ],
+   "inertia_centroid": [
+    [
+     62831.85307179412,
+     -1.807842771770761e-11,
+     -4.986523735537721e-12
+    ],
+    [
+     -1.807842771770761e-11,
+     62831.853071792335,
+     -2.4107653472228413e-11
+    ],
+    [
+     -4.986523735537721e-12,
+     -2.4107653472228413e-11,
+     62831.853071791396
+    ]
+   ],
+   "bbox": [
+    [
+     -10.0,
+     -10.0,
+     0.0
+    ],
+    [
+     10.0,
+     10.0,
+     20.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 2094.3951023934637 mm3 / 1016.6407384630521 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 2: 1 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 1 truly degenerate edge(s) (ASM isDegenerate / no geometry: isDegenerate+no geometry); coedges per edge histogram: {\"1\": 1, \"2\": 1}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "prim.frustum",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 3,
+   "edges": 2,
+   "vertices": 2,
+   "loops": 4,
+   "face_types": [
+    "cone",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "circle",
+    "circle"
+   ],
+   "degenerate_edges": 2,
+   "seam_edges": 0,
+   "volume": 3665.1914291880394,
+   "area": 1364.1829574548633,
+   "centroid": [
+    4.5515130877604025e-10,
+    0.0,
+    7.857142857142762
+   ],
+   "inertia_centroid": [
+    [
+     169702.10399868287,
+     4.440892098500626e-11,
+     -1.02989267907513e-05
+    ],
+    [
+     4.440892098500626e-11,
+     169702.1006545902,
+     0.0
+    ],
+    [
+     -1.02989267907513e-05,
+     0.0,
+     121736.71365455698
+    ]
+   ],
+   "bbox": [
+    [
+     -10.0,
+     -10.0,
+     0.0
+    ],
+    [
+     10.0,
+     10.0,
+     20.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 3665.1914291879352 mm3 / 1364.1829574548633 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 2: 2 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 2}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "prim.sphere",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 1,
+   "edges": 0,
+   "vertices": 0,
+   "loops": 0,
+   "face_types": [
+    "sphere"
+   ],
+   "edge_types": [],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 4188.790204786391,
+   "area": 1256.6370614359173,
+   "centroid": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "inertia_centroid": [
+    [
+     167551.60819145569,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     167551.60819145569,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     167551.60819145569
+    ]
+   ],
+   "bbox": [
+    [
+     -10.0,
+     -10.0,
+     -10.0
+    ],
+    [
+     10.0,
+     10.0,
+     10.0
+    ]
+   ],
+   "max_edge_tolerance": null,
+   "max_vertex_tolerance": null,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 4188.790204786391 mm3 / 1256.6370614359173 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); max_edge_tolerance is null: the body has no edges; max_vertex_tolerance is null: the body has no vertices; coedges per edge histogram: {}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "prim.torus",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 1,
+   "edges": 0,
+   "vertices": 0,
+   "loops": 0,
+   "face_types": [
+    "torus"
+   ],
+   "edge_types": [],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 9869.604401089358,
+   "area": 3947.8417604357433,
+   "centroid": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "inertia_centroid": [
+    [
+     2128133.4489848926,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     2128133.4489848926,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     4132896.8429561686
+    ]
+   ],
+   "bbox": [
+    [
+     -25.0,
+     -25.0,
+     -5.0
+    ],
+    [
+     25.0,
+     25.0,
+     5.0
+    ]
+   ],
+   "max_edge_tolerance": null,
+   "max_vertex_tolerance": null,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 9869.604401089358 mm3 / 3947.8417604357433 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); max_edge_tolerance is null: the body has no edges; max_vertex_tolerance is null: the body has no vertices; coedges per edge histogram: {}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "bool.union.overlap",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 12,
+   "edges": 30,
+   "vertices": 20,
+   "loops": 12,
+   "face_types": [
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 15000.0,
+   "area": 4200.0,
+   "centroid": [
+    14.999999999999998,
+    14.999999999999998,
+    14.999999999999998
+   ],
+   "inertia_centroid": [
+    [
+     1850000.000000002,
+     -400000.0000000005,
+     -400000.0000000005
+    ],
+    [
+     -400000.0000000005,
+     1850000.000000002,
+     -400000.0000000005
+    ],
+    [
+     -400000.0000000005,
+     -400000.0000000005,
+     1850000.000000002
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     30.0,
+     30.0,
+     30.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 15000.0 mm3 / 4200.0 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 30}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "bool.cut.hole",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 7,
+   "edges": 14,
+   "vertices": 10,
+   "loops": 10,
+   "face_types": [
+    "cylinder",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "circle",
+    "circle",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 2,
+   "seam_edges": 0,
+   "volume": 13869.026644707626,
+   "area": 4750.79644737231,
+   "centroid": [
+    24.999999999948834,
+    14.999999999999998,
+    5.0
+   ],
+   "inertia_centroid": [
+    [
+     1230396.4638134409,
+     -1.4142968466562504e-09,
+     -3.535742116640626e-10
+    ],
+    [
+     -1.4142968466562504e-09,
+     3230396.461184322,
+     -1.767871058320313e-10
+    ],
+    [
+     -3.535742116640626e-10,
+     -1.767871058320313e-10,
+     4229642.480919302
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     50.0,
+     30.0,
+     10.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 13869.026644707626 mm3 / 4750.79644737231 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 2: 2 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 14}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "bool.union.coincident_face",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 6,
+   "edges": 12,
+   "vertices": 8,
+   "loops": 6,
+   "face_types": [
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 16000.0,
+   "area": 4000.0,
+   "centroid": [
+    20.0,
+    10.0,
+    10.0
+   ],
+   "inertia_centroid": [
+    [
+     1066666.6666666672,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     2666666.666666666,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     2666666.666666666
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     40.0,
+     20.0,
+     20.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 16000.0 mm3 / 4000.0 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 12}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "bool.union.coincident_partial",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 11,
+   "edges": 24,
+   "vertices": 16,
+   "loops": 12,
+   "face_types": [
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 10000.0,
+   "area": 3200.0,
+   "centroid": [
+    14.0,
+    10.0,
+    10.0
+   ],
+   "inertia_centroid": [
+    [
+     566666.6666666669,
+     -3.535742116640626e-10,
+     -3.535742116640626e-10
+    ],
+    [
+     -3.535742116640626e-10,
+     1256666.6666666667,
+     0.0
+    ],
+    [
+     -3.535742116640626e-10,
+     0.0,
+     1256666.666666666
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     40.0,
+     20.0,
+     20.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 10000.0 mm3 / 3200.0 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 24}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "bool.cut.coplanar_through",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 10,
+   "edges": 24,
+   "vertices": 16,
+   "loops": 12,
+   "face_types": [
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 6000.0,
+   "area": 3000.0,
+   "centroid": [
+    10.0,
+    10.0,
+    10.0
+   ],
+   "inertia_centroid": [
+    [
+     450000.0000000002,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     450000.0000000002,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     500000.0
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     20.0,
+     20.0,
+     20.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 6000.0 mm3 / 3000.0 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 24}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "bool.union.tangent_cylinder",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 10,
+   "edges": 17,
+   "vertices": 10,
+   "loops": 10,
+   "face_types": [
+    "cylinder",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "circle",
+    "circle",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 2,
+   "seam_edges": 1,
+   "volume": 14283.185307179589,
+   "area": 4284.955592153876,
+   "centroid": [
+    18.798016929768853,
+    9.999999999999998,
+    9.999999999999998
+   ],
+   "inertia_centroid": [
+    [
+     899852.476252145,
+     -3.535742116640626e-10,
+     -3.535742116640626e-10
+    ],
+    [
+     -3.535742116640626e-10,
+     2307535.1850151536,
+     -1.767871058320313e-10
+    ],
+    [
+     -3.535742116640626e-10,
+     -1.767871058320313e-10,
+     2255175.3074553246
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     40.0,
+     20.0,
+     20.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 14283.185307179318 mm3 / 4284.955592153876 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 2: 2 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 16, \"4\": 1}; 1 non-manifold edge(s) with >2 coedges; the seam count includes them because one face uses each of them twice; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "bool.union.near_tangent_cylinder",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 10,
+   "edges": 17,
+   "vertices": 10,
+   "loops": 10,
+   "face_types": [
+    "cylinder",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "circle",
+    "circle",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 2,
+   "seam_edges": 1,
+   "volume": 14283.185307179589,
+   "area": 4284.955592153876,
+   "centroid": [
+    18.798012530760385,
+    10.0,
+    9.999999999999998
+   ],
+   "inertia_centroid": [
+    [
+     899852.476252145,
+     -3.535742116640626e-10,
+     -1.4142968466562504e-09
+    ],
+    [
+     -3.535742116640626e-10,
+     2307533.7773327995,
+     0.0
+    ],
+    [
+     -1.4142968466562504e-09,
+     0.0,
+     2255173.8997729705
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     39.999990000000004,
+     20.0,
+     20.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 14283.185307179318 mm3 / 4284.955592153876 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 2: 2 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 16, \"4\": 1}; 1 non-manifold edge(s) with >2 coedges; the seam count includes them because one face uses each of them twice; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "bool.intersect.box_sphere",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 7,
+   "edges": 6,
+   "vertices": 6,
+   "loops": 12,
+   "face_types": [
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "sphere"
+   ],
+   "edge_types": [
+    "circle",
+    "circle",
+    "circle",
+    "circle",
+    "circle",
+    "circle"
+   ],
+   "degenerate_edges": 6,
+   "seam_edges": 0,
+   "volume": 6383.716273841073,
+   "area": 1734.1591447824858,
+   "centroid": [
+    8.347912547488984e-15,
+    -1.3913187579148307e-15,
+    1.3913187579148307e-15
+   ],
+   "inertia_centroid": [
+    [
+     343373.56383801915,
+     8.881784197001245e-11,
+     -8.881784197001245e-11
+    ],
+    [
+     8.881784197001245e-11,
+     343373.56370887964,
+     8.88178419700125e-11
+    ],
+    [
+     -8.881784197001245e-11,
+     8.88178419700125e-11,
+     343373.56383801706
+    ]
+   ],
+   "bbox": [
+    [
+     -10.0,
+     -10.0,
+     -10.0
+    ],
+    [
+     10.0,
+     10.0,
+     10.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 6383.716275583735 mm3 / 1734.1591447824858 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 6: 6 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 6}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "bool.cut.disjoint",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 6,
+   "edges": 12,
+   "vertices": 8,
+   "loops": 6,
+   "face_types": [
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 1000.0,
+   "area": 600.0,
+   "centroid": [
+    5.0,
+    5.0,
+    5.0
+   ],
+   "inertia_centroid": [
+    [
+     16666.666666666675,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     16666.666666666675,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     16666.666666666664
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     10.0,
+     10.0,
+     10.0
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 1000.0 mm3 / 600.0 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 12}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  },
+  {
+   "id": "bool.union.repeated",
+   "ok": true,
+   "error": null,
+   "bodies": 1,
+   "solid": true,
+   "lumps": 1,
+   "shells": 1,
+   "faces": 31,
+   "edges": 72,
+   "vertices": 48,
+   "loops": 36,
+   "face_types": [
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane",
+    "plane"
+   ],
+   "edge_types": [
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line",
+    "line"
+   ],
+   "degenerate_edges": 0,
+   "seam_edges": 0,
+   "volume": 4320.0,
+   "area": 2120.0000000000005,
+   "centroid": [
+    20.0,
+    4.925925925925926,
+    5.518518518518519
+   ],
+   "inertia_centroid": [
+    [
+     82334.814814815,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     622998.5185185185,
+     2074.0740740740803
+    ],
+    [
+     0.0,
+     2074.0740740740803,
+     608776.2962962966
+    ]
+   ],
+   "bbox": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     40.0,
+     10.0,
+     14.000000000000002
+    ]
+   ],
+   "max_edge_tolerance": 0.0,
+   "max_vertex_tolerance": 0.0,
+   "mass_path": "base_feature",
+   "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 4320.0 mm3 / 2120.0000000000005 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 72}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}"
+  }
+ ],
+ "extras": [
+  {
+   "id": "extra.box.zero_height",
+   "description": "createBox with a zero dimension (10 x 10 x 0 mm)",
+   "result": {
+    "id": "extra.box.zero_height",
+    "ok": true,
+    "error": null,
+    "bodies": 1,
+    "solid": false,
+    "lumps": 1,
+    "shells": 1,
+    "faces": 1,
+    "edges": 4,
+    "vertices": 4,
+    "loops": 1,
+    "face_types": [
+     "plane"
+    ],
+    "edge_types": [
+     "line",
+     "line",
+     "line",
+     "line"
+    ],
+    "degenerate_edges": 0,
+    "seam_edges": 0,
+    "volume": 0.0,
+    "area": 100.0,
+    "centroid": null,
+    "inertia_centroid": null,
+    "bbox": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      10.0,
+      10.0,
+      0.0
+     ]
+    ],
+    "max_edge_tolerance": 0.0,
+    "max_vertex_tolerance": 0.0,
+    "mass_path": "base_feature",
+    "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 0.0 mm3 / 100.0 mm2; density used for unit-density normalisation: 0.0 kg/cm3 (Fusion default material); inertia unavailable (getXYZMomentsOfInertia failed or density/mass is 0); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"1\": 4}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}",
+    "_raw_cm": {
+     "volume_cm3": 0.0,
+     "area_cm2": 1.0,
+     "centerOfMass_cm": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "bbox_cm": [
+      [
+       0.0,
+       0.0,
+       0.0
+      ],
+      [
+       1.0,
+       1.0,
+       0.0
+      ]
+     ],
+     "xyz_moments_kgcm2_about_origin": [
+      true,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mass_kg": 0.0,
+     "density_kg_per_cm3": 0.0,
+     "temp_body_volume_cm3": 0.0,
+     "temp_body_area_cm2": 1.0
+    },
+    "calls": [
+     {
+      "api": "OrientedBoundingBox3D.create",
+      "size_cm": [
+       1.0,
+       1.0,
+       0.0
+      ],
+      "returned": "adsk::core::OrientedBoundingBox3D",
+      "obb_dims_cm": [
+       1.0,
+       1.0,
+       0.0
+      ]
+     },
+     {
+      "api": "TemporaryBRepManager.createBox",
+      "returned": "adsk::fusion::BRepBody"
+     }
+    ]
+   }
+  },
+  {
+   "id": "extra.box.negative_height",
+   "description": "createBox with a negative dimension (10 x 10 x -5 mm)",
+   "result": {
+    "id": "extra.box.negative_height",
+    "ok": false,
+    "error": "RuntimeError: 3 : invalid argument height; OrientedBoundingBox3D.create: 3 : invalid argument height",
+    "bodies": null,
+    "solid": null,
+    "lumps": null,
+    "shells": null,
+    "faces": null,
+    "edges": null,
+    "vertices": null,
+    "loops": null,
+    "face_types": null,
+    "edge_types": null,
+    "degenerate_edges": null,
+    "seam_edges": null,
+    "volume": null,
+    "area": null,
+    "centroid": null,
+    "inertia_centroid": null,
+    "bbox": null,
+    "max_edge_tolerance": null,
+    "max_vertex_tolerance": null,
+    "mass_path": null,
+    "notes": "no body was created, so nothing was measurable",
+    "calls": [
+     {
+      "api": "OrientedBoundingBox3D.create",
+      "size_cm": [
+       1.0,
+       1.0,
+       -0.5
+      ],
+      "error": {
+       "type": "RuntimeError",
+       "text": "3 : invalid argument height"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "extra.sphere.zero_radius",
+   "description": "createSphere with r = 0",
+   "result": {
+    "id": "extra.sphere.zero_radius",
+    "ok": false,
+    "error": "RuntimeError: 2 : InternalValidationError : result",
+    "bodies": null,
+    "solid": null,
+    "lumps": null,
+    "shells": null,
+    "faces": null,
+    "edges": null,
+    "vertices": null,
+    "loops": null,
+    "face_types": null,
+    "edge_types": null,
+    "degenerate_edges": null,
+    "seam_edges": null,
+    "volume": null,
+    "area": null,
+    "centroid": null,
+    "inertia_centroid": null,
+    "bbox": null,
+    "max_edge_tolerance": null,
+    "max_vertex_tolerance": null,
+    "mass_path": null,
+    "notes": "no body was created, so nothing was measurable",
+    "calls": []
+   }
+  },
+  {
+   "id": "extra.torus.minor_gt_major",
+   "description": "torus with minor (20 mm) > major (5 mm): spindle torus",
+   "result": {
+    "id": "extra.torus.minor_gt_major",
+    "ok": true,
+    "error": null,
+    "bodies": 1,
+    "solid": true,
+    "lumps": 1,
+    "shells": 1,
+    "faces": 1,
+    "edges": 2,
+    "vertices": 2,
+    "loops": 2,
+    "face_types": [
+     "torus"
+    ],
+    "edge_types": [
+     "none",
+     "none"
+    ],
+    "degenerate_edges": 2,
+    "seam_edges": 0,
+    "volume": 56374.6566120072,
+    "area": 7158.382664690825,
+    "centroid": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "inertia_centroid": [
+     [
+      12231799.917262338,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      12231799.917262338,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      14329356.264740817
+     ]
+    ],
+    "bbox": [
+     [
+      -25.0,
+      -25.0,
+      -20.0
+     ],
+     [
+      25.0,
+      25.0,
+      20.0
+     ]
+    ],
+    "max_edge_tolerance": 0.0,
+    "max_vertex_tolerance": 0.0,
+    "mass_path": "base_feature",
+    "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 56374.6566120072 mm3 / 7158.382664690825 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 2: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 2 truly degenerate edge(s) (ASM isDegenerate / no geometry: isDegenerate+no geometry, isDegenerate+no geometry); coedges per edge histogram: {\"1\": 2}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}",
+    "_raw_cm": {
+     "volume_cm3": 56.3746566120072,
+     "area_cm2": 71.58382664690825,
+     "centerOfMass_cm": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "bbox_cm": [
+      [
+       -2.5,
+       -2.5,
+       -2.0
+      ],
+      [
+       2.5,
+       2.5,
+       2.0
+      ]
+     ],
+     "xyz_moments_kgcm2_about_origin": [
+      true,
+      0.9601962935050935,
+      0.9601962935050935,
+      1.124854466782154,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mass_kg": 0.4425410544042565,
+     "density_kg_per_cm3": 0.00785,
+     "temp_body_volume_cm3": 56.3746566120072,
+     "temp_body_area_cm2": 71.58382664690825
+    },
+    "calls": [
+     {
+      "api": "TemporaryBRepManager.createTorus",
+      "center_cm": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "axis": [
+       0,
+       0,
+       1
+      ],
+      "majorRadius_cm": 0.5,
+      "minorRadius_cm": 2.0,
+      "returned": "adsk::fusion::BRepBody"
+     }
+    ]
+   }
+  },
+  {
+   "id": "extra.torus.minor_eq_major",
+   "description": "torus with minor == major (10 mm): horn torus",
+   "result": {
+    "id": "extra.torus.minor_eq_major",
+    "ok": true,
+    "error": null,
+    "bodies": 1,
+    "solid": true,
+    "lumps": 1,
+    "shells": 1,
+    "faces": 1,
+    "edges": 2,
+    "vertices": 1,
+    "loops": 2,
+    "face_types": [
+     "torus"
+    ],
+    "edge_types": [
+     "none",
+     "none"
+    ],
+    "degenerate_edges": 2,
+    "seam_edges": 0,
+    "volume": 19739.208802178717,
+    "area": 3947.8417604357433,
+    "centroid": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "inertia_centroid": [
+     [
+      2220660.9902451057,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      2220660.9902451057,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      3454361.540381275
+     ]
+    ],
+    "bbox": [
+     [
+      -20.0,
+      -20.0,
+      -10.0
+     ],
+     [
+      20.0,
+      20.0,
+      10.0
+     ]
+    ],
+    "max_edge_tolerance": 0.0,
+    "max_vertex_tolerance": 0.0,
+    "mass_path": "base_feature",
+    "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 19739.208802178717 mm3 / 3947.8417604357433 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 2: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 2 truly degenerate edge(s) (ASM isDegenerate / no geometry: isDegenerate+no geometry, isDegenerate+no geometry); coedges per edge histogram: {\"1\": 2}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}",
+    "_raw_cm": {
+     "volume_cm3": 19.739208802178716,
+     "area_cm2": 39.47841760435743,
+     "centerOfMass_cm": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "bbox_cm": [
+      [
+       -2.0,
+       -2.0,
+       -1.0
+      ],
+      [
+       2.0,
+       2.0,
+       1.0
+      ]
+     ],
+     "xyz_moments_kgcm2_about_origin": [
+      true,
+      0.1743218877342408,
+      0.1743218877342408,
+      0.2711673809199301,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mass_kg": 0.15495278909710292,
+     "density_kg_per_cm3": 0.00785,
+     "temp_body_volume_cm3": 19.739208802178716,
+     "temp_body_area_cm2": 39.47841760435743
+    },
+    "calls": [
+     {
+      "api": "TemporaryBRepManager.createTorus",
+      "center_cm": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "axis": [
+       0,
+       0,
+       1
+      ],
+      "majorRadius_cm": 1.0,
+      "minorRadius_cm": 1.0,
+      "returned": "adsk::fusion::BRepBody"
+     }
+    ]
+   }
+  },
+  {
+   "id": "extra.size.cube_1e-06mm",
+   "description": "size sweep: cube of edge 1e-06 mm",
+   "result": {
+    "id": "extra.size.cube_1e-06mm",
+    "ok": false,
+    "error": "RuntimeError: 3 : invalid argument box; TemporaryBRepManager.createBox: 3 : invalid argument box",
+    "bodies": null,
+    "solid": null,
+    "lumps": null,
+    "shells": null,
+    "faces": null,
+    "edges": null,
+    "vertices": null,
+    "loops": null,
+    "face_types": null,
+    "edge_types": null,
+    "degenerate_edges": null,
+    "seam_edges": null,
+    "volume": null,
+    "area": null,
+    "centroid": null,
+    "inertia_centroid": null,
+    "bbox": null,
+    "max_edge_tolerance": null,
+    "max_vertex_tolerance": null,
+    "mass_path": null,
+    "notes": "no body was created, so nothing was measurable",
+    "calls": [
+     {
+      "api": "OrientedBoundingBox3D.create",
+      "size_cm": [
+       1e-07,
+       1e-07,
+       1e-07
+      ],
+      "returned": "adsk::core::OrientedBoundingBox3D",
+      "obb_dims_cm": [
+       1e-07,
+       1e-07,
+       1e-07
+      ]
+     },
+     {
+      "api": "TemporaryBRepManager.createBox",
+      "error": {
+       "type": "RuntimeError",
+       "text": "3 : invalid argument box"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "extra.size.cube_1e-05mm",
+   "description": "size sweep: cube of edge 1e-05 mm",
+   "result": {
+    "id": "extra.size.cube_1e-05mm",
+    "ok": true,
+    "error": null,
+    "bodies": 1,
+    "solid": true,
+    "lumps": 1,
+    "shells": 1,
+    "faces": 6,
+    "edges": 12,
+    "vertices": 8,
+    "loops": 6,
+    "face_types": [
+     "plane",
+     "plane",
+     "plane",
+     "plane",
+     "plane",
+     "plane"
+    ],
+    "edge_types": [
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line"
+    ],
+    "degenerate_edges": 0,
+    "seam_edges": 0,
+    "volume": 1.0000000000000005e-15,
+    "area": 6.000000000000003e-10,
+    "centroid": null,
+    "inertia_centroid": null,
+    "bbox": [
+     [
+      1.0000000000000003e-05,
+      1.0000000000000003e-05,
+      1.0000000000000003e-05
+     ],
+     [
+      1.0000000000000003e-05,
+      1.0000000000000003e-05,
+      1.0000000000000003e-05
+     ]
+    ],
+    "max_edge_tolerance": 0.0,
+    "max_vertex_tolerance": 0.0,
+    "mass_path": "base_feature",
+    "notes": "centroid and inertia REJECTED: Fusion's centerOfMass [5.000000000000003e-25, 5.000000000000003e-25, 5.000000000000003e-25] cm is not strictly inside the bounding box [[1.0000000000000002e-06, 1.0000000000000002e-06, 1.0000000000000002e-06], [1.0000000000000002e-06, 1.0000000000000002e-06, 1.0000000000000002e-06]] cm (for tiny bodies it equals the unnormalised first moment integral(x dV), and the XYZ moments equal plain second moments) -- see REFERENCE_BEHAVIOR.md; mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 1.0000000000000005e-15 mm3 / 6.000000000000003e-10 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 12}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}",
+    "_raw_cm": {
+     "volume_cm3": 1.0000000000000005e-18,
+     "area_cm2": 6.000000000000003e-12,
+     "centerOfMass_cm": [
+      5.000000000000003e-25,
+      5.000000000000003e-25,
+      5.000000000000003e-25
+     ],
+     "bbox_cm": [
+      [
+       1.0000000000000002e-06,
+       1.0000000000000002e-06,
+       1.0000000000000002e-06
+      ],
+      [
+       1.0000000000000002e-06,
+       1.0000000000000002e-06,
+       1.0000000000000002e-06
+      ]
+     ],
+     "xyz_moments_kgcm2_about_origin": [
+      true,
+      2.6166666666666685e-33,
+      2.6166666666666685e-33,
+      2.6166666666666685e-33,
+      1.9625000000000014e-33,
+      1.9625000000000014e-33,
+      1.9625000000000014e-33
+     ],
+     "mass_kg": 7.850000000000003e-21,
+     "density_kg_per_cm3": 0.00785,
+     "temp_body_volume_cm3": 1.0000000000000005e-18,
+     "temp_body_area_cm2": 6.000000000000003e-12
+    },
+    "calls": [
+     {
+      "api": "OrientedBoundingBox3D.create",
+      "size_cm": [
+       1.0000000000000002e-06,
+       1.0000000000000002e-06,
+       1.0000000000000002e-06
+      ],
+      "returned": "adsk::core::OrientedBoundingBox3D",
+      "obb_dims_cm": [
+       1.0000000000000002e-06,
+       1.0000000000000002e-06,
+       1.0000000000000002e-06
+      ]
+     },
+     {
+      "api": "TemporaryBRepManager.createBox",
+      "returned": "adsk::fusion::BRepBody"
+     }
+    ]
+   }
+  },
+  {
+   "id": "extra.size.cube_0.0001mm",
+   "description": "size sweep: cube of edge 0.0001 mm",
+   "result": {
+    "id": "extra.size.cube_0.0001mm",
+    "ok": true,
+    "error": null,
+    "bodies": 1,
+    "solid": true,
+    "lumps": 1,
+    "shells": 1,
+    "faces": 6,
+    "edges": 12,
+    "vertices": 8,
+    "loops": 6,
+    "face_types": [
+     "plane",
+     "plane",
+     "plane",
+     "plane",
+     "plane",
+     "plane"
+    ],
+    "edge_types": [
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line"
+    ],
+    "degenerate_edges": 0,
+    "seam_edges": 0,
+    "volume": 1.0000000000000002e-12,
+    "area": 6.000000000000002e-08,
+    "centroid": null,
+    "inertia_centroid": null,
+    "bbox": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0001,
+      0.0001,
+      0.0001
+     ]
+    ],
+    "max_edge_tolerance": 0.0,
+    "max_vertex_tolerance": 0.0,
+    "mass_path": "base_feature",
+    "notes": "centroid and inertia REJECTED: Fusion's centerOfMass [5.000000000000002e-21, 5.000000000000002e-21, 5.000000000000002e-21] cm is not strictly inside the bounding box [[0.0, 0.0, 0.0], [1e-05, 1e-05, 1e-05]] cm (for tiny bodies it equals the unnormalised first moment integral(x dV), and the XYZ moments equal plain second moments) -- see REFERENCE_BEHAVIOR.md; mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 1.0000000000000002e-12 mm3 / 6.000000000000002e-08 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 12}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}",
+    "_raw_cm": {
+     "volume_cm3": 1.0000000000000003e-15,
+     "area_cm2": 6.000000000000002e-10,
+     "centerOfMass_cm": [
+      5.000000000000002e-21,
+      5.000000000000002e-21,
+      5.000000000000002e-21
+     ],
+     "bbox_cm": [
+      [
+       0.0,
+       0.0,
+       0.0
+      ],
+      [
+       1e-05,
+       1e-05,
+       1e-05
+      ]
+     ],
+     "xyz_moments_kgcm2_about_origin": [
+      true,
+      2.6166666666666672e-28,
+      2.6166666666666672e-28,
+      2.6166666666666672e-28,
+      1.9625000000000008e-28,
+      1.9625000000000005e-28,
+      1.9625000000000005e-28
+     ],
+     "mass_kg": 7.850000000000002e-18,
+     "density_kg_per_cm3": 0.00785,
+     "temp_body_volume_cm3": 1.0000000000000003e-15,
+     "temp_body_area_cm2": 6.000000000000002e-10
+    },
+    "calls": [
+     {
+      "api": "OrientedBoundingBox3D.create",
+      "size_cm": [
+       1e-05,
+       1e-05,
+       1e-05
+      ],
+      "returned": "adsk::core::OrientedBoundingBox3D",
+      "obb_dims_cm": [
+       1e-05,
+       1e-05,
+       1e-05
+      ]
+     },
+     {
+      "api": "TemporaryBRepManager.createBox",
+      "returned": "adsk::fusion::BRepBody"
+     }
+    ]
+   }
+  },
+  {
+   "id": "extra.size.cube_0.001mm",
+   "description": "size sweep: cube of edge 0.001 mm",
+   "result": {
+    "id": "extra.size.cube_0.001mm",
+    "ok": true,
+    "error": null,
+    "bodies": 1,
+    "solid": true,
+    "lumps": 1,
+    "shells": 1,
+    "faces": 6,
+    "edges": 12,
+    "vertices": 8,
+    "loops": 6,
+    "face_types": [
+     "plane",
+     "plane",
+     "plane",
+     "plane",
+     "plane",
+     "plane"
+    ],
+    "edge_types": [
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line"
+    ],
+    "degenerate_edges": 0,
+    "seam_edges": 0,
+    "volume": 1e-09,
+    "area": 5.999999999999999e-06,
+    "centroid": null,
+    "inertia_centroid": null,
+    "bbox": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.001,
+      0.001,
+      0.001
+     ]
+    ],
+    "max_edge_tolerance": 0.0,
+    "max_vertex_tolerance": 0.0,
+    "mass_path": "base_feature",
+    "notes": "centroid and inertia REJECTED: Fusion's centerOfMass [5e-17, 5e-17, 5.0000000000000005e-17] cm is not strictly inside the bounding box [[0.0, 0.0, 0.0], [0.0001, 0.0001, 0.0001]] cm (for tiny bodies it equals the unnormalised first moment integral(x dV), and the XYZ moments equal plain second moments) -- see REFERENCE_BEHAVIOR.md; mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 1e-09 mm3 / 5.999999999999999e-06 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 12}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}",
+    "_raw_cm": {
+     "volume_cm3": 1e-12,
+     "area_cm2": 6e-08,
+     "centerOfMass_cm": [
+      5e-17,
+      5e-17,
+      5.0000000000000005e-17
+     ],
+     "bbox_cm": [
+      [
+       0.0,
+       0.0,
+       0.0
+      ],
+      [
+       0.0001,
+       0.0001,
+       0.0001
+      ]
+     ],
+     "xyz_moments_kgcm2_about_origin": [
+      true,
+      2.6166666666666668e-23,
+      2.6166666666666665e-23,
+      2.6166666666666665e-23,
+      1.9624999999999996e-23,
+      1.9625e-23,
+      1.9625e-23
+     ],
+     "mass_kg": 7.85e-15,
+     "density_kg_per_cm3": 0.00785,
+     "temp_body_volume_cm3": 1e-12,
+     "temp_body_area_cm2": 6e-08
+    },
+    "calls": [
+     {
+      "api": "OrientedBoundingBox3D.create",
+      "size_cm": [
+       0.0001,
+       0.0001,
+       0.0001
+      ],
+      "returned": "adsk::core::OrientedBoundingBox3D",
+      "obb_dims_cm": [
+       0.0001,
+       0.0001,
+       0.0001
+      ]
+     },
+     {
+      "api": "TemporaryBRepManager.createBox",
+      "returned": "adsk::fusion::BRepBody"
+     }
+    ]
+   }
+  },
+  {
+   "id": "extra.size.cube_1e+06mm",
+   "description": "size sweep: cube of edge 1e+06 mm",
+   "result": {
+    "id": "extra.size.cube_1e+06mm",
+    "ok": true,
+    "error": null,
+    "bodies": 1,
+    "solid": true,
+    "lumps": 1,
+    "shells": 1,
+    "faces": 6,
+    "edges": 12,
+    "vertices": 8,
+    "loops": 6,
+    "face_types": [
+     "plane",
+     "plane",
+     "plane",
+     "plane",
+     "plane",
+     "plane"
+    ],
+    "edge_types": [
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line"
+    ],
+    "degenerate_edges": 0,
+    "seam_edges": 0,
+    "volume": 1e+18,
+    "area": 6000000000000.0,
+    "centroid": [
+     500000.0,
+     500000.0,
+     500000.0
+    ],
+    "inertia_centroid": [
+     [
+      1.6666666666666673e+29,
+      -53430624203821.66,
+      -53430624203821.66
+     ],
+     [
+      -53430624203821.66,
+      1.6666666666666673e+29,
+      -53430624203821.66
+     ],
+     [
+      -53430624203821.66,
+      -53430624203821.66,
+      1.6666666666666673e+29
+     ]
+    ],
+    "bbox": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      1000000.0,
+      1000000.0,
+      1000000.0
+     ]
+    ],
+    "max_edge_tolerance": 0.0,
+    "max_vertex_tolerance": 0.0,
+    "mass_path": "base_feature",
+    "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 1e+18 mm3 / 6000000000000.0 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 12}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}",
+    "_raw_cm": {
+     "volume_cm3": 1000000000000000.0,
+     "area_cm2": 60000000000.0,
+     "centerOfMass_cm": [
+      50000.0,
+      50000.0,
+      50000.0
+     ],
+     "bbox_cm": [
+      [
+       0.0,
+       0.0,
+       0.0
+      ],
+      [
+       100000.0,
+       100000.0,
+       100000.0
+      ]
+     ],
+     "xyz_moments_kgcm2_about_origin": [
+      true,
+      5.233333333333333e+22,
+      5.233333333333333e+22,
+      5.233333333333333e+22,
+      -1.9625e+22,
+      -1.9625e+22,
+      -1.9625e+22
+     ],
+     "mass_kg": 7849999999999.999,
+     "density_kg_per_cm3": 0.00785,
+     "temp_body_volume_cm3": 1000000000000000.0,
+     "temp_body_area_cm2": 60000000000.0
+    },
+    "calls": [
+     {
+      "api": "OrientedBoundingBox3D.create",
+      "size_cm": [
+       100000.0,
+       100000.0,
+       100000.0
+      ],
+      "returned": "adsk::core::OrientedBoundingBox3D",
+      "obb_dims_cm": [
+       100000.0,
+       100000.0,
+       100000.0
+      ]
+     },
+     {
+      "api": "TemporaryBRepManager.createBox",
+      "returned": "adsk::fusion::BRepBody"
+     }
+    ]
+   }
+  },
+  {
+   "id": "extra.size.cube_1e+07mm",
+   "description": "size sweep: cube of edge 1e+07 mm",
+   "result": {
+    "id": "extra.size.cube_1e+07mm",
+    "ok": true,
+    "error": null,
+    "bodies": 1,
+    "solid": true,
+    "lumps": 1,
+    "shells": 1,
+    "faces": 6,
+    "edges": 12,
+    "vertices": 8,
+    "loops": 6,
+    "face_types": [
+     "plane",
+     "plane",
+     "plane",
+     "plane",
+     "plane",
+     "plane"
+    ],
+    "edge_types": [
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line",
+     "line"
+    ],
+    "degenerate_edges": 0,
+    "seam_edges": 0,
+    "volume": 1e+21,
+    "area": 600000000000000.0,
+    "centroid": [
+     5000000.000000001,
+     5000000.000000001,
+     5000000.000000001
+    ],
+    "inertia_centroid": [
+     [
+      1.6666666666666666e+34,
+      7.003258775643312e+18,
+      7.003258775643312e+18
+     ],
+     [
+      7.003258775643312e+18,
+      1.6666666666666666e+34,
+      7.003258775643312e+18
+     ],
+     [
+      7.003258775643312e+18,
+      7.003258775643312e+18,
+      1.6666666666666652e+34
+     ]
+    ],
+    "bbox": [
+     [
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      10000000.0,
+      10000000.0,
+      10000000.0
+     ]
+    ],
+    "max_edge_tolerance": 0.0,
+    "max_vertex_tolerance": 0.0,
+    "mass_path": "base_feature",
+    "notes": "mass properties via base_feature (Parametric design, BaseFeature.startEdit / BRepBodies.add / finishEdit, VeryHighCalculationAccuracy); the temporary-body path (BRepBody.getPhysicalProperties on the TemporaryBRepManager body) returned no error but volume=0.0, density=0.0, XYZ moments=[1.0, 1.0, 1.0], i.e. unusable; temporary BRepBody.volume/area properties do work: 1e+21 mm3 / 600000000000000.0 mm2; density used for unit-density normalisation: 0.00785 kg/cm3 (Fusion default material); degenerate_edges uses the task-spec definition (start vertex == end vertex, OR zero length, OR no geometry) = 0: 0 closed non-degenerate edge(s) (full circles, start==end vertex, length > 0) + 0 truly degenerate edge(s) (ASM isDegenerate / no geometry); coedges per edge histogram: {\"2\": 12}; no tolerant edges/vertices (0/0 tolerant); BRepEdge/BRepVertex.tolerance returns 0.0 for exact entities; persisted body F/E/V identical to the temporary body; exportToFile worked for ['smt', 'sat', 'smb', 'sab']; failed for {'step': 'RuntimeError: 3 : invalid argument filename'}",
+    "_raw_cm": {
+     "volume_cm3": 1e+18,
+     "area_cm2": 6000000000000.0,
+     "centerOfMass_cm": [
+      500000.00000000006,
+      500000.00000000006,
+      500000.00000000006
+     ],
+     "bbox_cm": [
+      [
+       0.0,
+       0.0,
+       0.0
+      ],
+      [
+       1000000.0,
+       1000000.0,
+       1000000.0
+      ]
+     ],
+     "xyz_moments_kgcm2_about_origin": [
+      true,
+      5.233333333333334e+27,
+      5.233333333333334e+27,
+      5.233333333333333e+27,
+      -1.9624999999999998e+27,
+      -1.9624999999999998e+27,
+      -1.9624999999999998e+27
+     ],
+     "mass_kg": 7849999999999999.0,
+     "density_kg_per_cm3": 0.00785,
+     "temp_body_volume_cm3": 1e+18,
+     "temp_body_area_cm2": 6000000000000.0
+    },
+    "calls": [
+     {
+      "api": "OrientedBoundingBox3D.create",
+      "size_cm": [
+       1000000.0,
+       1000000.0,
+       1000000.0
+      ],
+      "returned": "adsk::core::OrientedBoundingBox3D",
+      "obb_dims_cm": [
+       1000000.0,
+       1000000.0,
+       1000000.0
+      ]
+     },
+     {
+      "api": "TemporaryBRepManager.createBox",
+      "returned": "adsk::fusion::BRepBody"
+     }
+    ]
+   }
+  }
+ ]
+}
