@@ -53,6 +53,41 @@ reference (`docs/evidence/findings-ledger.md`).
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
+## Hybrid kernel: OCCT (production) + `cad-geom` (own kernel) + `cad-diff` (differential tests)
+
+The application's geometry is produced by OCCT through `cad-kernel`, and that integration is
+preserved unchanged (OCCT 7.8.1, static, vendored `opencascade-sys`; see `docs/BASELINE.md`). Next
+to it grows an independently implemented pure-Rust kernel whose long-term goal is observable
+parity with Autodesk ShapeManager (ASM), measured rather than assumed:
+
+```
+            research/cases.json  (one case catalogue, mm)
+          ┌──────────────┼──────────────────────────┐
+          ▼              ▼                          ▼
+   cad-geom (Rust)   cad-kernel → OCCT 7.8.1    ASM via Fusion API (probe v5, black-box)
+          │              │                          │  research/evidence/asm-v5/reference.json
+          └──────► cad-diff ◄────────────────────────┘
+                   normalised KernelResult per case and kernel; comparator with explicit
+                   tolerances → research/VALIDATION_REPORT.md, research/evidence/diff/results.json
+```
+
+* **A. OCCT-backed** (`cad-kernel`): every feature the application offers today. Nothing here is
+  replaced until the Rust equivalent is `REFERENCE_VERIFIED` and the switch is authorised.
+* **B. Own kernel** (`crates/cad-geom`): math and tolerance policy, analytic curves and surfaces,
+  NURBS (Piegl & Tiller), projection and intersections, a half-edge B-rep in typed arenas
+  (solid → shell → face → loop → coedge → edge → vertex), primitives, exact mass properties,
+  validation (Euler–Poincaré, manifoldness, orientation, geometry-on-topology) and tessellation.
+  It may not depend on OCCT, cxx or any other workspace crate (enforced by
+  `crates/cad-core/tests/layering.rs`). The application does not use it yet.
+* **C. Differential layer** (`crates/cad-diff`): runs each catalogue case through B and A, loads
+  the recorded ASM results, and classifies each pair as MATCH, MISMATCH, TOPOLOGY_CONVENTION
+  (same volume and area, different entity counts, e.g. seam or pole edges), ONE_SIDED_FAILURE,
+  BOTH_FAILED_SAME or NOT_IMPLEMENTED. Entities are compared by invariants (counts, surface-type
+  multisets, volume, area, centroid, inertia, bounding box), never by identifier or order.
+
+Kernel operation status lives in `docs/FEATURE_MATRIX.md`; the order of work is in `docs/ROADMAP.md`;
+the ASM evidence is in `research/`.
+
 ## Data flow
 
 ```
